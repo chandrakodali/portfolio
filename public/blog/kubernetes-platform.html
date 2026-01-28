@@ -6,586 +6,604 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Building a Self-Service Kubernetes Platform | Chandra Koushik Kodali</title>
     <meta name="description"
-        content="A comprehensive guide to designing and implementing an internal developer platform on Kubernetes that empowers teams while maintaining security.">
+        content="A comprehensive guide to building an Internal Developer Platform (IDP) on Kubernetes that empowers development teams while maintaining security and compliance.">
     <meta name="author" content="Chandra Koushik Kodali">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
     <style>
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #111111;
+            --bg-tertiary: #1a1a1a;
+            --text-primary: #ffffff;
+            --text-secondary: #a3a3a3;
+            --text-muted: #737373;
+            --accent-cyan: #06b6d4;
+            --accent-purple: #8b5cf6;
+            --accent-green: #10b981;
+            --accent-orange: #f59e0b;
+            --accent-red: #ef4444;
+            --border-color: #262626;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(135deg, #030014 0%, #0a0a1f 100%);
-            color: #e5e7eb;
-            line-height: 1.8;
+            background: var(--bg-primary);
+            color: var(--text-secondary);
+            line-height: 1.7;
             min-height: 100vh;
         }
 
-        .container {
-            max-width: 800px;
+        /* Header */
+        .article-header {
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border-color);
+            padding: 24px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1400px;
             margin: 0 auto;
-            padding: 60px 24px;
+            padding: 0 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
         }
 
         .back-link {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            color: #06b6d4;
+            color: var(--text-secondary);
             text-decoration: none;
             font-size: 14px;
-            margin-bottom: 40px;
+            font-weight: 500;
             transition: color 0.2s;
         }
 
         .back-link:hover {
-            color: #22d3ee;
+            color: var(--accent-cyan);
+        }
+
+        .header-meta {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        /* Main Layout */
+        .article-layout {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 48px;
+            padding: 48px 32px;
+        }
+
+        @media (max-width: 1200px) {
+            .article-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .architecture-sidebar {
+                display: none;
+            }
+
+            .architecture-inline {
+                display: block !important;
+            }
+        }
+
+        /* Content Area */
+        .article-content {
+            max-width: 720px;
+        }
+
+        .article-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1.2;
+            margin-bottom: 16px;
+        }
+
+        .article-subtitle {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+            line-height: 1.6;
         }
 
         .tag {
             display: inline-block;
             padding: 4px 12px;
-            background: rgba(6, 182, 212, 0.15);
+            background: rgba(6, 182, 212, 0.1);
             border: 1px solid rgba(6, 182, 212, 0.3);
-            border-radius: 9999px;
-            color: #06b6d4;
+            border-radius: 4px;
+            color: var(--accent-cyan);
             font-size: 12px;
-            font-weight: 500;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
             margin-bottom: 16px;
-        }
-
-        h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            background: linear-gradient(to right, #fff, #a5b4fc);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 16px;
-            line-height: 1.2;
-        }
-
-        .meta {
-            color: #6b7280;
-            font-size: 14px;
-            margin-bottom: 40px;
-            display: flex;
-            gap: 16px;
-            flex-wrap: wrap;
         }
 
         h2 {
             font-size: 1.5rem;
-            color: #fff;
-            margin: 48px 0 16px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+            margin: 56px 0 20px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        h2:first-of-type {
+            margin-top: 32px;
+            padding-top: 0;
+            border-top: none;
         }
 
         h3 {
-            font-size: 1.25rem;
-            color: #e5e7eb;
+            font-size: 1.2rem;
+            color: var(--text-primary);
             margin: 32px 0 12px;
         }
 
         h4 {
-            font-size: 1.1rem;
-            color: #d1d5db;
-            margin: 24px 0 10px;
+            font-size: 1rem;
+            color: var(--text-secondary);
+            margin: 24px 0 8px;
         }
 
         p {
             margin-bottom: 20px;
-            color: #d1d5db;
         }
 
         ul,
         ol {
-            margin: 0 0 20px 24px;
-            color: #d1d5db;
+            margin: 0 0 24px 20px;
         }
 
         li {
             margin-bottom: 8px;
         }
 
-        .diagram {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 16px;
-            padding: 32px;
-            margin: 32px 0;
-            overflow-x: auto;
+        strong {
+            color: var(--text-primary);
+            font-weight: 600;
         }
 
-        .diagram-title {
-            font-size: 14px;
-            color: #9ca3af;
-            text-align: center;
-            margin-bottom: 24px;
-            font-weight: 500;
-        }
-
-        .diagram svg {
-            display: block;
-            margin: 0 auto;
-            max-width: 100%;
-        }
-
+        /* Code Blocks */
         .code-block {
-            background: #0d1117;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
             padding: 20px;
             margin: 20px 0;
             overflow-x: auto;
-            font-family: 'Fira Code', monospace;
-            font-size: 14px;
-            color: #c9d1d9;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #e5e7eb;
         }
 
         .code-block code {
             white-space: pre;
         }
 
-        .highlight {
-            background: linear-gradient(135deg, rgba(6, 182, 212, 0.1), rgba(139, 92, 246, 0.1));
-            border-left: 3px solid #06b6d4;
+        /* Callouts */
+        .callout {
+            border-radius: 8px;
             padding: 16px 20px;
             margin: 24px 0;
-            border-radius: 0 12px 12px 0;
         }
 
-        .warning {
-            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(239, 68, 68, 0.1));
-            border-left: 3px solid #f59e0b;
-            padding: 16px 20px;
-            margin: 24px 0;
-            border-radius: 0 12px 12px 0;
+        .callout-info {
+            background: rgba(6, 182, 212, 0.1);
+            border-left: 3px solid var(--accent-cyan);
         }
 
-        .key-point {
-            background: rgba(16, 185, 129, 0.1);
-            border: 1px solid rgba(16, 185, 129, 0.3);
-            border-radius: 12px;
-            padding: 20px;
-            margin: 24px 0;
+        .callout-warning {
+            background: rgba(245, 158, 11, 0.1);
+            border-left: 3px solid var(--accent-orange);
         }
 
-        .key-point h4 {
-            color: #10b981;
-            margin-bottom: 8px;
-            font-size: 14px;
-        }
-
-        .edge-case {
+        .callout-danger {
             background: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            border-radius: 12px;
-            padding: 20px;
-            margin: 24px 0;
+            border-left: 3px solid var(--accent-red);
         }
 
-        .edge-case h4 {
-            color: #ef4444;
+        .callout-success {
+            background: rgba(16, 185, 129, 0.1);
+            border-left: 3px solid var(--accent-green);
+        }
+
+        .callout-title {
+            font-weight: 600;
+            color: var(--text-primary);
             margin-bottom: 8px;
             font-size: 14px;
         }
 
-        strong {
-            color: #fff;
-        }
-
-        .toc {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            padding: 24px;
-            margin: 32px 0;
-        }
-
-        .toc h3 {
-            margin-top: 0;
-            margin-bottom: 16px;
-            color: #fff;
-        }
-
-        .toc ul {
-            margin: 0;
-            list-style: none;
-            padding-left: 0;
-        }
-
-        .toc li {
-            margin-bottom: 8px;
-        }
-
-        .toc a {
-            color: #06b6d4;
-            text-decoration: none;
-        }
-
-        .toc a:hover {
-            text-decoration: underline;
-        }
-
-        .footer {
-            margin-top: 60px;
-            padding-top: 40px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            text-align: center;
-            color: #6b7280;
-            font-size: 14px;
-        }
-
-        .cta {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: linear-gradient(135deg, #06b6d4, #8b5cf6);
-            color: #fff;
-            padding: 12px 24px;
-            border-radius: 12px;
-            text-decoration: none;
-            font-weight: 500;
-            margin-top: 20px;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .cta:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 40px rgba(6, 182, 212, 0.3);
-        }
-
+        /* Tables */
         table {
             width: 100%;
             border-collapse: collapse;
-            margin: 20px 0;
+            margin: 24px 0;
             font-size: 14px;
         }
 
         th,
         td {
-            padding: 12px;
+            padding: 12px 16px;
             text-align: left;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid var(--border-color);
         }
 
         th {
-            color: #fff;
-            background: rgba(255, 255, 255, 0.05);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-weight: 600;
         }
 
-        td {
-            color: #d1d5db;
+        /* Architecture Sidebar */
+        .architecture-sidebar {
+            position: sticky;
+            top: 100px;
+            height: fit-content;
+            max-height: calc(100vh - 140px);
+            overflow-y: auto;
+        }
+
+        .architecture-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .architecture-card-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .architecture-card-title::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: var(--accent-cyan);
+            border-radius: 50%;
+        }
+
+        .arch-diagram {
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .arch-diagram svg {
+            width: 100%;
+            height: auto;
+        }
+
+        .architecture-inline {
+            display: none;
+            margin: 32px 0;
+        }
+
+        /* TOC in Sidebar */
+        .toc-sidebar {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .toc-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+        }
+
+        .toc-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .toc-list li {
+            margin-bottom: 8px;
+        }
+
+        .toc-list a {
+            font-size: 13px;
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.2s;
+            display: block;
+            padding: 4px 0;
+        }
+
+        .toc-list a:hover {
+            color: var(--accent-cyan);
+        }
+
+        /* Tree Structure */
+        .tree {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            overflow-x: auto;
+        }
+
+        .tree pre {
+            margin: 0;
+            color: var(--text-muted);
+        }
+
+        .tree .folder {
+            color: var(--accent-cyan);
+        }
+
+        .tree .file {
+            color: var(--text-secondary);
+        }
+
+        /* Footer */
+        .article-footer {
+            max-width: 720px;
+            margin: 64px 0;
+            padding-top: 32px;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .cta-section {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 32px;
+            text-align: center;
+        }
+
+        .cta-title {
+            font-size: 1.25rem;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .cta-text {
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        .cta-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--accent-cyan);
+            color: var(--bg-primary);
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(6, 182, 212, 0.3);
+        }
+
+        /* Key Takeaways */
+        .key-takeaways {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            margin: 32px 0;
+        }
+
+        .key-takeaways h3 {
+            margin-top: 0;
+            color: var(--accent-green);
+        }
+
+        .key-takeaways ol {
+            margin-bottom: 0;
         }
     </style>
 </head>
 
 <body>
-    <article class="container">
-        <a href="/portfolio/#blog" class="back-link">
-            ← Back to Portfolio
-        </a>
-
-        <span class="tag">Platform Engineering</span>
-        <h1>Building a Self-Service Kubernetes Platform</h1>
-
-        <div class="meta">
-            <span>By Chandra Koushik Kodali</span>
-            <span>•</span>
-            <span>25 min read</span>
-            <span>•</span>
-            <span>January 2026</span>
+    <header class="article-header">
+        <div class="header-content">
+            <a href="/portfolio/#blog" class="back-link">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M19 12H5M12 19l-7-7 7-7" />
+                </svg>
+                Back to Portfolio
+            </a>
+            <div class="header-meta">
+                <span>25 min read</span>
+                <span>•</span>
+                <span>Platform Engineering</span>
+            </div>
         </div>
+    </header>
 
-        <p>
-            In today's fast-paced development environment, engineering teams need the ability to deploy and manage
-            their applications without waiting for operations teams to provision infrastructure. This is where
-            <strong>Internal Developer Platforms (IDPs)</strong> come in — they provide self-service capabilities
-            while maintaining security, compliance, and operational best practices.
-        </p>
+    <main class="article-layout">
+        <article class="article-content">
+            <span class="tag">Platform Engineering</span>
+            <h1 class="article-title">Building a Self-Service Kubernetes Platform</h1>
+            <p class="article-subtitle">A comprehensive guide to building an Internal Developer Platform (IDP) on
+                Kubernetes that empowers development teams while maintaining security and compliance.</p>
 
-        <p>
-            In this comprehensive guide, I'll walk you through how to design and build a production-ready
-            Kubernetes platform that has served 200+ engineers across multiple organizations. We'll cover
-            architecture decisions, implementation details, edge cases you'll encounter, and lessons learned
-            from real-world deployments.
-        </p>
+            <h2 id="introduction">Introduction</h2>
+            <p>
+                The rise of Kubernetes has fundamentally changed how organizations deploy and manage applications.
+                However, the complexity of Kubernetes often creates bottlenecks where developers depend heavily on
+                platform teams for routine tasks. An Internal Developer Platform (IDP) solves this by providing
+                self-service capabilities while maintaining the guardrails that platform teams need.
+            </p>
 
-        <div class="toc">
-            <h3>Table of Contents</h3>
+            <div class="callout callout-info">
+                <div class="callout-title">💡 What You'll Learn</div>
+                <p>This guide covers the complete journey of building a production-ready IDP, from architecture design
+                    to implementation details, including real-world edge cases and troubleshooting strategies.</p>
+            </div>
+
+            <!-- Mobile Architecture Diagram -->
+            <div class="architecture-inline">
+                <div class="architecture-card">
+                    <div class="architecture-card-title">Platform Architecture Overview</div>
+                    <div class="arch-diagram">
+                        <svg viewBox="0 0 350 280" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="10" y="10" width="330" height="50" rx="6" fill="#1a1a1a" stroke="#06b6d4"
+                                stroke-width="1.5" />
+                            <text x="175" y="40" fill="#06b6d4" font-size="12" text-anchor="middle"
+                                font-weight="600">Developer Interface Layer</text>
+
+                            <rect x="10" y="80" width="330" height="50" rx="6" fill="#1a1a1a" stroke="#8b5cf6"
+                                stroke-width="1.5" />
+                            <text x="175" y="110" fill="#8b5cf6" font-size="12" text-anchor="middle"
+                                font-weight="600">Platform Services Layer</text>
+
+                            <rect x="10" y="150" width="330" height="50" rx="6" fill="#1a1a1a" stroke="#10b981"
+                                stroke-width="1.5" />
+                            <text x="175" y="180" fill="#10b981" font-size="12" text-anchor="middle"
+                                font-weight="600">Kubernetes Layer</text>
+
+                            <rect x="10" y="220" width="330" height="50" rx="6" fill="#1a1a1a" stroke="#f59e0b"
+                                stroke-width="1.5" />
+                            <text x="175" y="250" fill="#f59e0b" font-size="12" text-anchor="middle"
+                                font-weight="600">Infrastructure Layer (AWS/GCP/Azure)</text>
+
+                            <path d="M175 60 L175 80" stroke="#525252" stroke-width="2" />
+                            <path d="M175 130 L175 150" stroke="#525252" stroke-width="2" />
+                            <path d="M175 200 L175 220" stroke="#525252" stroke-width="2" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <h2 id="platform-layers">Platform Architecture Layers</h2>
+
+            <h3>1. Developer Interface Layer</h3>
+            <p>This is where developers interact with the platform. It includes:</p>
             <ul>
-                <li><a href="#what-is-idp">1. What is an Internal Developer Platform?</a></li>
-                <li><a href="#architecture">2. Platform Architecture Deep Dive</a></li>
-                <li><a href="#multi-tenancy">3. Multi-Tenancy and Isolation Strategies</a></li>
-                <li><a href="#gitops">4. GitOps Workflow Implementation</a></li>
-                <li><a href="#security">5. Security Hardening and Best Practices</a></li>
-                <li><a href="#observability">6. Observability and Monitoring</a></li>
-                <li><a href="#scaling">7. Scaling and Capacity Planning</a></li>
-                <li><a href="#disaster-recovery">8. Disaster Recovery and Business Continuity</a></li>
-                <li><a href="#edge-cases">9. Edge Cases and Troubleshooting</a></li>
-                <li><a href="#implementation">10. Step-by-Step Implementation</a></li>
-                <li><a href="#results">11. Results and Metrics</a></li>
+                <li><strong>Web Portal:</strong> A self-service UI built with React/Vue for browsing services, viewing
+                    logs, and triggering deployments</li>
+                <li><strong>CLI Tools:</strong> Custom CLI wrapping kubectl with guardrails and simplified commands</li>
+                <li><strong>IDE Plugins:</strong> VS Code extensions for direct cluster interaction</li>
+                <li><strong>API Gateway:</strong> REST/GraphQL APIs for programmatic access</li>
             </ul>
-        </div>
 
-        <h2 id="what-is-idp">1. What is an Internal Developer Platform?</h2>
+            <h3>2. Platform Services Layer</h3>
+            <p>Core services that power the platform:</p>
 
-        <p>
-            An Internal Developer Platform (IDP) is a layer on top of your underlying infrastructure that provides
-            developers with self-service access to deploy, manage, and observe their applications. Think of it as
-            an "abstraction layer" that hides the complexity of Kubernetes while exposing only what developers need.
-        </p>
+            <table>
+                <tr>
+                    <th>Service</th>
+                    <th>Purpose</th>
+                    <th>Technology</th>
+                </tr>
+                <tr>
+                    <td>GitOps Controller</td>
+                    <td>Continuous deployment</td>
+                    <td>ArgoCD / Flux</td>
+                </tr>
+                <tr>
+                    <td>Secret Management</td>
+                    <td>Secure credential storage</td>
+                    <td>Vault / External Secrets</td>
+                </tr>
+                <tr>
+                    <td>Service Mesh</td>
+                    <td>Traffic management, mTLS</td>
+                    <td>Istio / Linkerd</td>
+                </tr>
+                <tr>
+                    <td>Observability</td>
+                    <td>Metrics, logs, traces</td>
+                    <td>Prometheus, Loki, Tempo</td>
+                </tr>
+                <tr>
+                    <td>Policy Engine</td>
+                    <td>Admission control</td>
+                    <td>OPA Gatekeeper / Kyverno</td>
+                </tr>
+            </table>
 
-        <p>
-            The key distinction between an IDP and simply "giving developers kubectl access" is the level of
-            abstraction and guardrails provided. An IDP should:
-        </p>
+            <h3>3. Kubernetes Layer</h3>
+            <p>The orchestration layer managing workloads:</p>
+            <ul>
+                <li><strong>Managed Kubernetes:</strong> EKS, GKE, or AKS for reduced operational overhead</li>
+                <li><strong>Multi-cluster:</strong> Separate clusters for dev/staging/prod environments</li>
+                <li><strong>Node pools:</strong> Specialized pools for different workload types (compute, memory, GPU)
+                </li>
+            </ul>
 
-        <ul>
-            <li><strong>Abstract complexity:</strong> Developers shouldn't need to understand every Kubernetes concept
-            </li>
-            <li><strong>Enforce standards:</strong> Security policies, resource limits, and best practices are built-in
-            </li>
-            <li><strong>Enable self-service:</strong> Teams can deploy without filing tickets or waiting for approvals
-            </li>
-            <li><strong>Provide visibility:</strong> Developers can see logs, metrics, and traces for their applications
-            </li>
-            <li><strong>Support the full lifecycle:</strong> From development to production, including rollbacks</li>
-        </ul>
+            <h3>4. Infrastructure Layer</h3>
+            <p>The foundation layer managed with Infrastructure as Code:</p>
+            <ul>
+                <li><strong>Networking:</strong> VPCs, subnets, load balancers, DNS</li>
+                <li><strong>Storage:</strong> Block storage, object storage, file systems</li>
+                <li><strong>Databases:</strong> Managed RDS, DocumentDB, ElastiCache</li>
+                <li><strong>Security:</strong> IAM, KMS, security groups, WAF</li>
+            </ul>
 
-        <div class="highlight">
-            <strong>Key Principle:</strong> A good platform should feel like a product. Developers are your customers,
-            and their experience determines adoption rates. If your platform is harder to use than the alternative
-            (even if that alternative is "just SSH into a VM"), developers will find ways around it.
-        </div>
+            <h2 id="multi-tenancy">Multi-Tenancy Strategies</h2>
 
-        <h3>The Platform Team's Role</h3>
+            <p>Choosing the right isolation model is critical for security and resource management:</p>
 
-        <p>
-            Building an IDP requires a dedicated platform team with a specific mindset. Unlike traditional ops teams
-            that respond to tickets, platform teams should:
-        </p>
+            <h3>Namespace-Based Isolation</h3>
+            <p>Best for trusted teams within the same organization:</p>
 
-        <ul>
-            <li>Treat the platform as a product with a roadmap and user feedback loops</li>
-            <li>Measure success by developer productivity, not just uptime</li>
-            <li>Provide golden paths that make the right thing easy to do</li>
-            <li>Document extensively and provide training</li>
-            <li>Continuously iterate based on developer feedback</li>
-        </ul>
-
-        <h2 id="architecture">2. Platform Architecture Deep Dive</h2>
-
-        <p>
-            Our platform consists of four main layers, each with specific responsibilities. Understanding this
-            layered architecture is crucial for making the right decisions about tool selection and integration.
-        </p>
-
-        <div class="diagram">
-            <div class="diagram-title">Figure 1: Internal Developer Platform Architecture</div>
-            <svg viewBox="0 0 700 500" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                    <linearGradient id="developerGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" style="stop-color:#06b6d4;stop-opacity:0.2" />
-                        <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:0.2" />
-                    </linearGradient>
-                    <linearGradient id="platformGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" style="stop-color:#10b981;stop-opacity:0.2" />
-                        <stop offset="100%" style="stop-color:#06b6d4;stop-opacity:0.2" />
-                    </linearGradient>
-                    <linearGradient id="k8sGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:0.2" />
-                        <stop offset="100%" style="stop-color:#6366f1;stop-opacity:0.2" />
-                    </linearGradient>
-                    <linearGradient id="infraGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" style="stop-color:#f59e0b;stop-opacity:0.2" />
-                        <stop offset="100%" style="stop-color:#ef4444;stop-opacity:0.2" />
-                    </linearGradient>
-                </defs>
-
-                <!-- Developer Interface Layer -->
-                <rect x="30" y="20" width="640" height="90" rx="12" fill="url(#developerGrad)" stroke="#06b6d4"
-                    stroke-width="1" />
-                <text x="50" y="50" fill="#06b6d4" font-size="14" font-weight="600">Developer Interface Layer</text>
-                <rect x="50" y="60" width="120" height="40" rx="8" fill="#0d1117" stroke="#06b6d4" stroke-width="1" />
-                <text x="110" y="85" fill="#e5e7eb" font-size="12" text-anchor="middle">Developer Portal</text>
-                <rect x="190" y="60" width="100" height="40" rx="8" fill="#0d1117" stroke="#06b6d4" stroke-width="1" />
-                <text x="240" y="85" fill="#e5e7eb" font-size="12" text-anchor="middle">CLI Tool</text>
-                <rect x="310" y="60" width="100" height="40" rx="8" fill="#0d1117" stroke="#06b6d4" stroke-width="1" />
-                <text x="360" y="85" fill="#e5e7eb" font-size="12" text-anchor="middle">Templates</text>
-                <rect x="430" y="60" width="120" height="40" rx="8" fill="#0d1117" stroke="#06b6d4" stroke-width="1" />
-                <text x="490" y="85" fill="#e5e7eb" font-size="12" text-anchor="middle">GitOps Repos</text>
-                <rect x="570" y="60" width="80" height="40" rx="8" fill="#0d1117" stroke="#06b6d4" stroke-width="1" />
-                <text x="610" y="85" fill="#e5e7eb" font-size="12" text-anchor="middle">APIs</text>
-
-                <!-- Arrow -->
-                <path d="M350 115 L350 135" stroke="#6b7280" stroke-width="2" stroke-dasharray="4" />
-                <polygon points="350,140 345,130 355,130" fill="#6b7280" />
-
-                <!-- Platform Services Layer -->
-                <rect x="30" y="145" width="640" height="90" rx="12" fill="url(#platformGrad)" stroke="#10b981"
-                    stroke-width="1" />
-                <text x="50" y="175" fill="#10b981" font-size="14" font-weight="600">Platform Services Layer</text>
-                <rect x="50" y="185" width="100" height="40" rx="8" fill="#0d1117" stroke="#10b981" stroke-width="1" />
-                <text x="100" y="210" fill="#e5e7eb" font-size="12" text-anchor="middle">ArgoCD</text>
-                <rect x="170" y="185" width="100" height="40" rx="8" fill="#0d1117" stroke="#10b981" stroke-width="1" />
-                <text x="220" y="210" fill="#e5e7eb" font-size="12" text-anchor="middle">Crossplane</text>
-                <rect x="290" y="185" width="100" height="40" rx="8" fill="#0d1117" stroke="#10b981" stroke-width="1" />
-                <text x="340" y="210" fill="#e5e7eb" font-size="12" text-anchor="middle">Vault</text>
-                <rect x="410" y="185" width="110" height="40" rx="8" fill="#0d1117" stroke="#10b981" stroke-width="1" />
-                <text x="465" y="210" fill="#e5e7eb" font-size="12" text-anchor="middle">Cert-Manager</text>
-                <rect x="540" y="185" width="110" height="40" rx="8" fill="#0d1117" stroke="#10b981" stroke-width="1" />
-                <text x="595" y="210" fill="#e5e7eb" font-size="12" text-anchor="middle">External DNS</text>
-
-                <!-- Arrow -->
-                <path d="M350 240 L350 260" stroke="#6b7280" stroke-width="2" stroke-dasharray="4" />
-                <polygon points="350,265 345,255 355,255" fill="#6b7280" />
-
-                <!-- Kubernetes Layer -->
-                <rect x="30" y="270" width="640" height="90" rx="12" fill="url(#k8sGrad)" stroke="#3b82f6"
-                    stroke-width="1" />
-                <text x="50" y="300" fill="#3b82f6" font-size="14" font-weight="600">Kubernetes Layer</text>
-                <rect x="50" y="310" width="90" height="40" rx="8" fill="#0d1117" stroke="#3b82f6" stroke-width="1" />
-                <text x="95" y="335" fill="#e5e7eb" font-size="12" text-anchor="middle">Ingress</text>
-                <rect x="160" y="310" width="110" height="40" rx="8" fill="#0d1117" stroke="#3b82f6" stroke-width="1" />
-                <text x="215" y="335" fill="#e5e7eb" font-size="12" text-anchor="middle">Service Mesh</text>
-                <rect x="290" y="310" width="100" height="40" rx="8" fill="#0d1117" stroke="#3b82f6" stroke-width="1" />
-                <text x="340" y="335" fill="#e5e7eb" font-size="12" text-anchor="middle">Namespaces</text>
-                <rect x="410" y="310" width="90" height="40" rx="8" fill="#0d1117" stroke="#3b82f6" stroke-width="1" />
-                <text x="455" y="335" fill="#e5e7eb" font-size="12" text-anchor="middle">RBAC</text>
-                <rect x="520" y="310" width="130" height="40" rx="8" fill="#0d1117" stroke="#3b82f6" stroke-width="1" />
-                <text x="585" y="335" fill="#e5e7eb" font-size="12" text-anchor="middle">Network Policies</text>
-
-                <!-- Arrow -->
-                <path d="M350 365 L350 385" stroke="#6b7280" stroke-width="2" stroke-dasharray="4" />
-                <polygon points="350,390 345,380 355,380" fill="#6b7280" />
-
-                <!-- Infrastructure Layer -->
-                <rect x="30" y="395" width="640" height="90" rx="12" fill="url(#infraGrad)" stroke="#f59e0b"
-                    stroke-width="1" />
-                <text x="50" y="425" fill="#f59e0b" font-size="14" font-weight="600">Infrastructure Layer
-                    (Terraform)</text>
-                <rect x="50" y="435" width="120" height="40" rx="8" fill="#0d1117" stroke="#f59e0b" stroke-width="1" />
-                <text x="110" y="460" fill="#e5e7eb" font-size="12" text-anchor="middle">AWS EKS</text>
-                <rect x="190" y="435" width="100" height="40" rx="8" fill="#0d1117" stroke="#f59e0b" stroke-width="1" />
-                <text x="240" y="460" fill="#e5e7eb" font-size="12" text-anchor="middle">VPC / Subnets</text>
-                <rect x="310" y="435" width="100" height="40" rx="8" fill="#0d1117" stroke="#f59e0b" stroke-width="1" />
-                <text x="360" y="460" fill="#e5e7eb" font-size="12" text-anchor="middle">RDS / S3</text>
-                <rect x="430" y="435" width="90" height="40" rx="8" fill="#0d1117" stroke="#f59e0b" stroke-width="1" />
-                <text x="475" y="460" fill="#e5e7eb" font-size="12" text-anchor="middle">IAM</text>
-                <rect x="540" y="435" width="110" height="40" rx="8" fill="#0d1117" stroke="#f59e0b" stroke-width="1" />
-                <text x="595" y="460" fill="#e5e7eb" font-size="12" text-anchor="middle">CloudWatch</text>
-            </svg>
-        </div>
-
-        <h3>Layer 1: Developer Interface</h3>
-        <p>
-            This is what developers interact with daily. The goal is to provide multiple entry points
-            that cater to different preferences and use cases:
-        </p>
-
-        <ul>
-            <li><strong>Developer Portal (Backstage):</strong> A web UI for browsing services, viewing documentation,
-                creating new projects from templates, and accessing dashboards. This is the primary interface for
-                developers who prefer visual tools.</li>
-            <li><strong>CLI Tool:</strong> A custom command-line tool for developers who prefer terminal workflows.
-                This wraps kubectl and adds platform-specific functionality like deploying from templates,
-                checking deployment status, and accessing logs.</li>
-            <li><strong>Templates:</strong> Pre-configured application scaffolding that includes Dockerfiles,
-                Kubernetes manifests, CI/CD pipelines, and observability configuration.</li>
-            <li><strong>GitOps Repositories:</strong> The source of truth for all deployments. Developers
-                push changes here, and the platform automatically syncs the desired state.</li>
-            <li><strong>APIs:</strong> RESTful and GraphQL APIs for integration with other tools and automation.</li>
-        </ul>
-
-        <h3>Layer 2: Platform Services</h3>
-        <p>
-            This layer provides the automation and tooling that makes self-service possible. Each component
-            has a specific role:
-        </p>
-
-        <table>
-            <tr>
-                <th>Component</th>
-                <th>Purpose</th>
-                <th>Why This Choice</th>
-            </tr>
-            <tr>
-                <td>ArgoCD</td>
-                <td>GitOps continuous delivery</td>
-                <td>Native Kubernetes, declarative, excellent UI</td>
-            </tr>
-            <tr>
-                <td>Crossplane</td>
-                <td>Infrastructure provisioning</td>
-                <td>Kubernetes-native, supports multiple clouds</td>
-            </tr>
-            <tr>
-                <td>Vault</td>
-                <td>Secrets management</td>
-                <td>Dynamic secrets, PKI, encryption as a service</td>
-            </tr>
-            <tr>
-                <td>Cert-Manager</td>
-                <td>Certificate management</td>
-                <td>Automatic TLS, Let's Encrypt integration</td>
-            </tr>
-            <tr>
-                <td>External DNS</td>
-                <td>DNS automation</td>
-                <td>Automatic DNS records from Ingress/Service</td>
-            </tr>
-        </table>
-
-        <h3>Layer 3: Kubernetes</h3>
-        <p>
-            The container orchestration layer that runs your workloads. Key components include:
-        </p>
-
-        <ul>
-            <li><strong>Ingress Controller (NGINX or Istio):</strong> Routes external traffic to services</li>
-            <li><strong>Service Mesh (Istio/Linkerd):</strong> Provides mTLS, traffic management, and observability</li>
-            <li><strong>Namespaces:</strong> Logical isolation for teams and environments</li>
-            <li><strong>RBAC:</strong> Role-based access control for fine-grained permissions</li>
-            <li><strong>Network Policies:</strong> Microsegmentation to control pod-to-pod communication</li>
-        </ul>
-
-        <h3>Layer 4: Infrastructure</h3>
-        <p>
-            Everything managed by Terraform — the cloud resources that power your platform. This includes
-            the Kubernetes cluster itself, networking, databases, storage, and IAM.
-        </p>
-
-        <h2 id="multi-tenancy">3. Multi-Tenancy and Isolation Strategies</h2>
-
-        <p>
-            One of the most challenging aspects of building a shared platform is providing adequate isolation
-            between tenants while maximizing resource efficiency. There are three main approaches:
-        </p>
-
-        <h3>Namespace-Based Isolation (Soft Multi-Tenancy)</h3>
-        <p>
-            The most common approach where each team or application gets their own namespace with:
-        </p>
-
-        <ul>
-            <li>ResourceQuotas to limit CPU, memory, and object counts</li>
-            <li>LimitRanges to set default and maximum resource requests</li>
-            <li>NetworkPolicies to control ingress/egress traffic</li>
-            <li>RBAC to restrict what users can do within their namespace</li>
-        </ul>
-
-        <div class="code-block"><code>apiVersion: v1
+            <div class="code-block"><code>apiVersion: v1
+kind: Namespace
+metadata:
+  name: team-alpha
+  labels:
+    team: alpha
+    environment: production
+    cost-center: engineering
+---
+apiVersion: v1
 kind: ResourceQuota
 metadata:
-  name: team-quota
+  name: team-alpha-quota
   namespace: team-alpha
 spec:
   hard:
@@ -593,530 +611,411 @@ spec:
     requests.memory: 40Gi
     limits.cpu: "40"
     limits.memory: 80Gi
-    persistentvolumeclaims: "10"
-    services.loadbalancers: "2"
----
-apiVersion: v1
-kind: LimitRange
-metadata:
-  name: default-limits
-  namespace: team-alpha
-spec:
-  limits:
-  - default:
-      cpu: 500m
-      memory: 512Mi
-    defaultRequest:
-      cpu: 100m
-      memory: 128Mi
-    type: Container</code></div>
-
-        <div class="edge-case">
-            <h4>⚠️ Edge Case: Noisy Neighbors</h4>
-            <p>
-                Even with ResourceQuotas, a misbehaving application can impact others through shared resources
-                like the API server, etcd, or node-level resources. Mitigation strategies include:
-            </p>
-            <ul>
-                <li>Priority classes to ensure critical workloads get resources first</li>
-                <li>Pod Disruption Budgets to prevent cascading failures</li>
-                <li>Dedicated node pools for high-priority or noisy workloads</li>
-                <li>API Priority and Fairness to prevent API server overload</li>
-            </ul>
-        </div>
-
-        <h3>Cluster-Based Isolation (Hard Multi-Tenancy)</h3>
-        <p>
-            For stricter isolation requirements (compliance, security, or performance), provide separate
-            clusters per tenant or environment. This is more expensive but provides:
-        </p>
-
-        <ul>
-            <li>Complete blast radius isolation</li>
-            <li>Independent upgrade cycles</li>
-            <li>Separate control planes and etcd instances</li>
-            <li>Geographic distribution options</li>
-        </ul>
-
-        <h3>Virtual Clusters (vCluster)</h3>
-        <p>
-            A middle ground using vCluster to provide virtual Kubernetes clusters within a host cluster.
-            Each virtual cluster has its own API server and control plane, but shares the underlying
-            worker nodes.
-        </p>
-
-        <div class="key-point">
-            <h4>💡 Recommendation</h4>
-            <p>
-                Start with namespace-based isolation for development and staging environments. Use separate
-                clusters for production workloads with different compliance requirements or when teams need
-                complete independence (e.g., different Kubernetes versions).
-            </p>
-        </div>
-
-        <h2 id="gitops">4. GitOps Workflow Implementation</h2>
-
-        <p>
-            At the heart of our platform is GitOps — a paradigm where Git is the single source of truth
-            for declarative infrastructure and applications. Every change flows through Git, providing:
-        </p>
-
-        <ul>
-            <li><strong>Audit trail:</strong> Every change is a commit with author, timestamp, and message</li>
-            <li><strong>Rollback capability:</strong> Revert to any previous state with git revert</li>
-            <li><strong>Collaboration:</strong> Changes go through pull requests with reviews</li>
-            <li><strong>Consistency:</strong> The repo always reflects the desired state</li>
-            <li><strong>Security:</strong> No direct cluster access needed for deployments</li>
-        </ul>
-
-        <h3>Repository Structure</h3>
-        <p>
-            We recommend a mono-repo approach with the following structure:
-        </p>
-
-        <div class="code-block"><code>platform-gitops/
-├── apps/                      # Application deployments
-│   ├── team-alpha/
-│   │   ├── service-a/
-│   │   │   ├── base/          # Base Kustomize manifests
-│   │   │   └── overlays/
-│   │   │       ├── dev/
-│   │   │       ├── staging/
-│   │   │       └── prod/
-│   │   └── service-b/
-│   └── team-beta/
-├── infrastructure/            # Platform components
-│   ├── argocd/
-│   ├── cert-manager/
-│   ├── external-dns/
-│   ├── istio/
-│   └── monitoring/
-├── clusters/                  # Cluster-specific config
-│   ├── dev-cluster/
-│   ├── staging-cluster/
-│   └── prod-cluster/
-└── projects/                  # ArgoCD AppProject definitions
-    ├── team-alpha.yaml
-    └── team-beta.yaml</code></div>
-
-        <h3>ArgoCD Application of Applications</h3>
-        <p>
-            We use the "App of Apps" pattern where a root application manages all other applications:
-        </p>
-
-        <div class="code-block"><code>apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: root-app
-  namespace: argocd
-spec:
-  project: default
-  source:
-    repoURL: https://github.com/your-org/platform-gitops
-    targetRevision: main
-    path: clusters/prod-cluster
-  destination:
-    server: https://kubernetes.default.svc
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-    - CreateNamespace=true</code></div>
-
-        <div class="warning">
-            <strong>⚠️ Important:</strong> Never enable automated sync with prune on production without
-            proper safeguards. A misconfigured manifest could delete running workloads. Use sync waves,
-            hooks, and require manual approval for production deployments.
-        </div>
-
-        <h2 id="security">5. Security Hardening and Best Practices</h2>
-
-        <p>
-            Security must be built into every layer of the platform. Here are the critical areas:
-        </p>
-
-        <h3>Pod Security Standards</h3>
-        <p>
-            Enforce Pod Security Standards (replacing Pod Security Policies) at the namespace level:
-        </p>
-
-        <div class="code-block"><code>apiVersion: v1
-kind: Namespace
-metadata:
-  name: team-alpha
-  labels:
-    pod-security.kubernetes.io/enforce: restricted
-    pod-security.kubernetes.io/audit: restricted
-    pod-security.kubernetes.io/warn: restricted</code></div>
-
-        <h3>Network Policies</h3>
-        <p>
-            Implement zero-trust networking with default-deny policies:
-        </p>
-
-        <div class="code-block"><code>apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  name: default-deny-all
-  namespace: team-alpha
-spec:
-  podSelector: {}
-  policyTypes:
-  - Ingress
-  - Egress
+    pods: "100"
+    services: "20"
 ---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: allow-dns
+  name: default-deny-ingress
   namespace: team-alpha
 spec:
   podSelector: {}
   policyTypes:
-  - Egress
-  egress:
-  - to:
-    - namespaceSelector:
-        matchLabels:
-          kubernetes.io/metadata.name: kube-system
-    ports:
-    - protocol: UDP
-      port: 53</code></div>
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              team: alpha</code></div>
 
-        <h3>Secrets Management with Vault</h3>
-        <p>
-            Never store secrets in Git. Use Vault with the Kubernetes auth method for dynamic secrets:
-        </p>
+            <div class="callout callout-warning">
+                <div class="callout-title">⚠️ Edge Case: Resource Quota Exhaustion</div>
+                <p>When a namespace hits its quota, all new pod creations fail silently in Deployments. Monitor
+                    <code>kube_resourcequota</code> metrics and set alerts at 80% utilization.</p>
+            </div>
 
-        <div class="code-block"><code># Vault policy for team-alpha
-path "secret/data/team-alpha/*" {
-  capabilities = ["read", "list"]
-}
-
-path "database/creds/team-alpha-db" {
-  capabilities = ["read"]
-}
-
-# Kubernetes auth role
-vault write auth/kubernetes/role/team-alpha \
-    bound_service_account_names=default \
-    bound_service_account_namespaces=team-alpha \
-    policies=team-alpha-policy \
-    ttl=1h</code></div>
-
-        <h3>Image Security</h3>
-        <ul>
-            <li>Use private container registries (ECR, GCR, Harbor)</li>
-            <li>Implement image signing with Sigstore/Cosign</li>
-            <li>Scan images for vulnerabilities with Trivy or Grype</li>
-            <li>Enforce allowed registries with admission controllers</li>
-            <li>Use distroless or minimal base images</li>
-        </ul>
-
-        <h2 id="observability">6. Observability and Monitoring</h2>
-
-        <p>
-            A platform without observability is a black box. Implement the three pillars:
-        </p>
-
-        <h3>Metrics (Prometheus + Grafana)</h3>
-        <p>
-            Deploy Prometheus with the kube-prometheus-stack for comprehensive metrics:
-        </p>
-
-        <ul>
-            <li>Cluster-level metrics (node CPU, memory, disk, network)</li>
-            <li>Kubernetes metrics (pod status, deployment replicas, HPA status)</li>
-            <li>Application metrics (custom metrics via ServiceMonitor)</li>
-            <li>SLO/SLI dashboards for platform health</li>
-        </ul>
-
-        <h3>Logging (Loki or Elasticsearch)</h3>
-        <p>
-            Centralized logging is essential for debugging. Key considerations:
-        </p>
-
-        <ul>
-            <li>Structured JSON logging from applications</li>
-            <li>Correlation IDs for distributed tracing</li>
-            <li>Log retention policies based on compliance requirements</li>
-            <li>Multi-tenant log isolation</li>
-        </ul>
-
-        <h3>Tracing (Jaeger or Tempo)</h3>
-        <p>
-            Distributed tracing for understanding request flows across services. Implement OpenTelemetry
-            for vendor-agnostic instrumentation.
-        </p>
-
-        <h2 id="scaling">7. Scaling and Capacity Planning</h2>
-
-        <h3>Horizontal Pod Autoscaling</h3>
-        <p>
-            Configure HPA based on CPU, memory, or custom metrics:
-        </p>
-
-        <div class="code-block"><code>apiVersion: autoscaling/v2
-kind: HorizontalPodAutoscaler
-metadata:
-  name: my-app
-spec:
-  scaleTargetRef:
-    apiVersion: apps/v1
-    kind: Deployment
-    name: my-app
-  minReplicas: 3
-  maxReplicas: 50
-  metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      target:
-        type: Utilization
-        averageUtilization: 70
-  - type: Pods
-    pods:
-      metric:
-        name: requests_per_second
-      target:
-        type: AverageValue
-        averageValue: 1000
-  behavior:
-    scaleDown:
-      stabilizationWindowSeconds: 300
-      policies:
-      - type: Percent
-        value: 10
-        periodSeconds: 60</code></div>
-
-        <h3>Cluster Autoscaling</h3>
-        <p>
-            Configure the Cluster Autoscaler to add/remove nodes based on pending pods:
-        </p>
-
-        <ul>
-            <li>Set appropriate min/max node counts per node group</li>
-            <li>Use expanders to prefer specific instance types</li>
-            <li>Configure scale-down thresholds to avoid thrashing</li>
-            <li>Use Spot/Preemptible instances for non-critical workloads</li>
-        </ul>
-
-        <div class="edge-case">
-            <h4>⚠️ Edge Case: Scale-Up Latency</h4>
-            <p>
-                Cloud provider APIs can take 3-5 minutes to provision new nodes. For workloads that need
-                faster scaling, consider:
-            </p>
+            <h3>Cluster-Based Isolation</h3>
+            <p>Use separate clusters when you need:</p>
             <ul>
-                <li>Over-provisioning with pause pods that can be evicted quickly</li>
-                <li>Using Karpenter for faster node provisioning</li>
-                <li>Pre-warming node pools during expected traffic spikes</li>
+                <li>Complete blast radius isolation between environments</li>
+                <li>Different compliance requirements (PCI-DSS, HIPAA)</li>
+                <li>Independent upgrade cycles</li>
+                <li>Multi-region deployments</li>
             </ul>
-        </div>
 
-        <h2 id="disaster-recovery">8. Disaster Recovery and Business Continuity</h2>
+            <h2 id="gitops">GitOps Workflow</h2>
 
-        <h3>Backup Strategies</h3>
-        <p>
-            Use Velero for cluster-level backups:
-        </p>
+            <p>Implement GitOps for declarative, auditable deployments:</p>
 
-        <ul>
-            <li>Daily backups of all namespaces and cluster resources</li>
-            <li>Persistent volume snapshots for stateful workloads</li>
-            <li>Cross-region replication for disaster recovery</li>
-            <li>Regular restore testing (at least quarterly)</li>
-        </ul>
+            <div class="tree">
+                <pre><span class="folder">gitops-repo/</span>
+├── <span class="folder">apps/</span>
+│   ├── <span class="folder">team-alpha/</span>
+│   │   ├── <span class="folder">service-a/</span>
+│   │   │   ├── <span class="file">deployment.yaml</span>
+│   │   │   ├── <span class="file">service.yaml</span>
+│   │   │   └── <span class="file">kustomization.yaml</span>
+│   │   └── <span class="folder">service-b/</span>
+│   └── <span class="folder">team-beta/</span>
+├── <span class="folder">infrastructure/</span>
+│   ├── <span class="folder">argocd/</span>
+│   ├── <span class="folder">cert-manager/</span>
+│   └── <span class="folder">monitoring/</span>
+└── <span class="folder">clusters/</span>
+    ├── <span class="folder">dev/</span>
+    ├── <span class="folder">staging/</span>
+    └── <span class="folder">prod/</span></pre>
+            </div>
 
-        <h3>Multi-Region Architecture</h3>
-        <p>
-            For critical workloads, deploy across multiple regions:
-        </p>
+            <h3>App-of-Apps Pattern</h3>
 
-        <ul>
-            <li>Active-passive: Secondary region on standby</li>
-            <li>Active-active: Both regions serving traffic</li>
-            <li>Use Global Load Balancer (AWS Global Accelerator, GCP Global LB)</li>
-            <li>Database replication (RDS Multi-AZ, CockroachDB)</li>
-        </ul>
-
-        <h2 id="edge-cases">9. Edge Cases and Troubleshooting</h2>
-
-        <div class="edge-case">
-            <h4>⚠️ Stuck Namespace Deletion</h4>
-            <p>
-                Namespaces can get stuck in "Terminating" state due to finalizers. Resolution:
-            </p>
-            <div class="code-block"><code>kubectl get namespace stuck-ns -o json | \
-  jq '.spec.finalizers = []' | \
-  kubectl replace --raw "/api/v1/namespaces/stuck-ns/finalize" -f -</code></div>
-        </div>
-
-        <div class="edge-case">
-            <h4>⚠️ etcd Database Too Large</h4>
-            <p>
-                etcd has a default 2GB size limit. Monitor etcd_db_total_size_in_bytes and implement:
-            </p>
-            <ul>
-                <li>Regular compaction:
-                    <code>etcdctl compact $(etcdctl endpoint status -w json | jq '.[0].Status.header.revision')</code>
-                </li>
-                <li>Defragmentation: <code>etcdctl defrag</code></li>
-                <li>Limit object size with admission controllers</li>
-            </ul>
-        </div>
-
-        <div class="edge-case">
-            <h4>⚠️ Certificate Expiry</h4>
-            <p>
-                Kubernetes certificates expire (typically 1 year). Automate renewal:
-            </p>
-            <ul>
-                <li>Use cert-manager for workload certificates</li>
-                <li>Monitor certificate expiry with Prometheus alerts</li>
-                <li>Test renewal processes in staging regularly</li>
-            </ul>
-        </div>
-
-        <h2 id="implementation">10. Step-by-Step Implementation</h2>
-
-        <h3>Step 1: Set Up the Kubernetes Cluster</h3>
-
-        <div class="code-block"><code>module "eks" {
-  source  = "terraform-aws-modules/eks/aws"
-  version = "~> 19.0"
-
-  cluster_name    = "platform-cluster"
-  cluster_version = "1.28"
-
-  vpc_id     = module.vpc.vpc_id
-  subnet_ids = module.vpc.private_subnets
-
-  cluster_endpoint_public_access = true
-  cluster_endpoint_private_access = true
-
-  eks_managed_node_groups = {
-    platform = {
-      instance_types = ["m5.xlarge"]
-      min_size       = 3
-      max_size       = 10
-      desired_size   = 5
-
-      labels = {
-        role = "platform"
-      }
-    }
-  }
-
-  enable_irsa = true
-
-  cluster_addons = {
-    coredns    = { most_recent = true }
-    kube-proxy = { most_recent = true }
-    vpc-cni    = { most_recent = true }
-  }
-}</code></div>
-
-        <h3>Step 2: Install Platform Components</h3>
-
-        <div class="code-block"><code># Install ArgoCD
-kubectl create namespace argocd
-kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
-
-# Install cert-manager
-kubectl apply -f https://github.com/cert-manager/cert-manager/releases/download/v1.13.0/cert-manager.yaml
-
-# Install external-dns (Helm)
-helm repo add external-dns https://kubernetes-sigs.github.io/external-dns/
-helm install external-dns external-dns/external-dns \
-  --namespace external-dns --create-namespace \
-  --set provider=aws \
-  --set aws.zoneType=public</code></div>
-
-        <h3>Step 3: Configure ArgoCD</h3>
-
-        <div class="code-block"><code>kubectl apply -f - <<EOF
-apiVersion: argoproj.io/v1alpha1
+            <div class="code-block"><code>apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: platform-apps
   namespace: argocd
 spec:
-  project: default
+  project: platform
   source:
-    repoURL: https://github.com/your-org/platform-gitops
+    repoURL: https://github.com/org/gitops
+    path: clusters/prod
     targetRevision: main
-    path: clusters/prod-cluster
   destination:
     server: https://kubernetes.default.svc
+    namespace: argocd
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
-EOF</code></div>
+    syncOptions:
+      - CreateNamespace=true</code></div>
 
-        <h2 id="results">11. Results and Metrics</h2>
+            <h2 id="security">Security Hardening</h2>
 
-        <p>After implementing this platform across multiple organizations:</p>
+            <h3>Pod Security Standards</h3>
+            <p>Enforce baseline security with Pod Security Admission:</p>
 
-        <table>
-            <tr>
-                <th>Metric</th>
-                <th>Before</th>
-                <th>After</th>
-                <th>Improvement</th>
-            </tr>
-            <tr>
-                <td>Deployment Time</td>
-                <td>45 minutes</td>
-                <td>12 minutes</td>
-                <td>73% faster</td>
-            </tr>
-            <tr>
-                <td>New Service Onboarding</td>
-                <td>2-3 weeks</td>
-                <td>2-4 hours</td>
-                <td>95% faster</td>
-            </tr>
-            <tr>
-                <td>Mean Time to Detection</td>
-                <td>15 minutes</td>
-                <td>3 minutes</td>
-                <td>80% faster</td>
-            </tr>
-            <tr>
-                <td>Platform Adoption</td>
-                <td>N/A</td>
-                <td>95%</td>
-                <td>-</td>
-            </tr>
-            <tr>
-                <td>Deployment Frequency</td>
-                <td>Weekly</td>
-                <td>Daily</td>
-                <td>7x increase</td>
-            </tr>
-        </table>
+            <div class="code-block"><code>apiVersion: v1
+kind: Namespace
+metadata:
+  name: production
+  labels:
+    pod-security.kubernetes.io/enforce: restricted
+    pod-security.kubernetes.io/audit: restricted
+    pod-security.kubernetes.io/warn: restricted</code></div>
 
-        <h2>Key Takeaways</h2>
+            <h3>Network Policies</h3>
+            <p>Implement zero-trust networking with default-deny policies:</p>
 
-        <ol>
-            <li><strong>Start small:</strong> Begin with GitOps and templates, then add capabilities incrementally</li>
-            <li><strong>Focus on developer experience:</strong> If it's hard to use, developers won't adopt it</li>
-            <li><strong>Automate guardrails:</strong> Use policies and defaults to prevent misconfigurations</li>
-            <li><strong>Plan for failure:</strong> Every component will fail — design for resilience</li>
-            <li><strong>Measure everything:</strong> You can't improve what you don't measure</li>
-            <li><strong>Iterate based on feedback:</strong> Your platform is a product — treat it like one</li>
-        </ol>
+            <div class="code-block"><code>apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: api-policy
+  namespace: production
+spec:
+  podSelector:
+    matchLabels:
+      app: api
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: frontend
+      ports:
+        - protocol: TCP
+          port: 8080
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app: database
+      ports:
+        - protocol: TCP
+          port: 5432</code></div>
 
-        <div class="footer">
-            <p>Want to discuss platform engineering strategies?</p>
-            <a href="/portfolio/#contact" class="cta">
-                Get in Touch →
-            </a>
-        </div>
-    </article>
+            <h2 id="observability">Observability Stack</h2>
+
+            <h3>Metrics with Prometheus</h3>
+            <p>Deploy a comprehensive metrics stack:</p>
+
+            <div class="code-block"><code># ServiceMonitor for automatic scraping
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: app-metrics
+  namespace: monitoring
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/monitored: "true"
+  endpoints:
+    - port: metrics
+      interval: 30s
+      path: /metrics</code></div>
+
+            <h3>Key Metrics to Monitor</h3>
+            <table>
+                <tr>
+                    <th>Metric</th>
+                    <th>Purpose</th>
+                    <th>Alert Threshold</th>
+                </tr>
+                <tr>
+                    <td>container_cpu_usage</td>
+                    <td>CPU utilization</td>
+                    <td>> 80% for 5m</td>
+                </tr>
+                <tr>
+                    <td>container_memory_usage</td>
+                    <td>Memory consumption</td>
+                    <td>> 85% of limit</td>
+                </tr>
+                <tr>
+                    <td>kube_pod_status_phase</td>
+                    <td>Pod health</td>
+                    <td>Pending > 5m</td>
+                </tr>
+                <tr>
+                    <td>kube_deployment_replicas</td>
+                    <td>Replica status</td>
+                    <td>Available != Desired</td>
+                </tr>
+            </table>
+
+            <h2 id="scaling">Scaling Strategies</h2>
+
+            <h3>Horizontal Pod Autoscaler</h3>
+
+            <div class="code-block"><code>apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: api-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: api
+  minReplicas: 3
+  maxReplicas: 50
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+    - type: Pods
+      pods:
+        metric:
+          name: requests_per_second
+        target:
+          type: AverageValue
+          averageValue: "1000"
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+        - type: Percent
+          value: 10
+          periodSeconds: 60</code></div>
+
+            <div class="callout callout-danger">
+                <div class="callout-title">🚨 Edge Case: Scale-Up Latency</div>
+                <p>When cluster autoscaler needs to add nodes, there's a 2-5 minute delay before new pods can be
+                    scheduled. For latency-sensitive applications, maintain buffer capacity with pod disruption budgets.
+                </p>
+            </div>
+
+            <h2 id="disaster-recovery">Disaster Recovery</h2>
+
+            <h3>Backup Strategy with Velero</h3>
+
+            <div class="code-block"><code># Daily backup of all namespaces
+apiVersion: velero.io/v1
+kind: Schedule
+metadata:
+  name: daily-backup
+  namespace: velero
+spec:
+  schedule: "0 2 * * *"
+  template:
+    includedNamespaces:
+      - "*"
+    excludedNamespaces:
+      - kube-system
+      - velero
+    storageLocation: aws-s3
+    ttl: 720h  # 30 days retention</code></div>
+
+            <h2 id="troubleshooting">Common Issues & Solutions</h2>
+
+            <div class="callout callout-danger">
+                <div class="callout-title">🔧 Stuck Namespace Deletion</div>
+                <p>Namespaces stuck in "Terminating" state usually have finalizers blocking deletion:</p>
+            </div>
+
+            <div class="code-block"><code># Find stuck resources
+kubectl api-resources --verbs=list --namespaced -o name | \
+  xargs -n 1 kubectl get -n stuck-namespace
+
+# Remove finalizers (use with caution!)
+kubectl get namespace stuck-namespace -o json | \
+  jq '.spec.finalizers = []' | \
+  kubectl replace --raw "/api/v1/namespaces/stuck-namespace/finalize" -f -</code></div>
+
+            <div class="key-takeaways">
+                <h3>🎯 Key Takeaways</h3>
+                <ol>
+                    <li><strong>Layer your architecture:</strong> Clear separation between developer experience,
+                        platform services, Kubernetes, and infrastructure</li>
+                    <li><strong>Choose isolation carefully:</strong> Namespace isolation for most cases, cluster
+                        isolation for strict compliance</li>
+                    <li><strong>GitOps everything:</strong> Treat your cluster state as code in version control</li>
+                    <li><strong>Security by default:</strong> Implement Pod Security Standards and Network Policies from
+                        day one</li>
+                    <li><strong>Observable platforms:</strong> You can't manage what you can't measure</li>
+                    <li><strong>Plan for failure:</strong> Regular backups and tested recovery procedures are
+                        non-negotiable</li>
+                </ol>
+            </div>
+
+            <div class="article-footer">
+                <div class="cta-section">
+                    <h3 class="cta-title">Ready to build your platform?</h3>
+                    <p class="cta-text">Let's discuss how to implement these patterns in your organization.</p>
+                    <a href="/portfolio/#contact" class="cta-button">
+                        Get in Touch
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7" />
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </article>
+
+        <!-- Architecture Sidebar -->
+        <aside class="architecture-sidebar">
+            <div class="architecture-card">
+                <div class="architecture-card-title">Platform Architecture</div>
+                <div class="arch-diagram">
+                    <svg viewBox="0 0 350 320" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Developer Interface Layer -->
+                        <rect x="10" y="10" width="330" height="60" rx="8" fill="#0a0a0a" stroke="#06b6d4"
+                            stroke-width="2" />
+                        <text x="175" y="32" fill="#06b6d4" font-size="11" text-anchor="middle"
+                            font-weight="600">Developer Interface</text>
+                        <text x="60" y="52" fill="#a3a3a3" font-size="9" text-anchor="middle">Portal</text>
+                        <text x="130" y="52" fill="#a3a3a3" font-size="9" text-anchor="middle">CLI</text>
+                        <text x="200" y="52" fill="#a3a3a3" font-size="9" text-anchor="middle">API</text>
+                        <text x="280" y="52" fill="#a3a3a3" font-size="9" text-anchor="middle">IDE</text>
+
+                        <!-- Platform Services Layer -->
+                        <rect x="10" y="90" width="330" height="70" rx="8" fill="#0a0a0a" stroke="#8b5cf6"
+                            stroke-width="2" />
+                        <text x="175" y="110" fill="#8b5cf6" font-size="11" text-anchor="middle"
+                            font-weight="600">Platform Services</text>
+                        <rect x="20" y="120" width="70" height="28" rx="4" fill="#1a1a1a" />
+                        <text x="55" y="138" fill="#a3a3a3" font-size="8" text-anchor="middle">ArgoCD</text>
+                        <rect x="100" y="120" width="70" height="28" rx="4" fill="#1a1a1a" />
+                        <text x="135" y="138" fill="#a3a3a3" font-size="8" text-anchor="middle">Vault</text>
+                        <rect x="180" y="120" width="70" height="28" rx="4" fill="#1a1a1a" />
+                        <text x="215" y="138" fill="#a3a3a3" font-size="8" text-anchor="middle">Istio</text>
+                        <rect x="260" y="120" width="70" height="28" rx="4" fill="#1a1a1a" />
+                        <text x="295" y="138" fill="#a3a3a3" font-size="8" text-anchor="middle">Prometheus</text>
+
+                        <!-- Kubernetes Layer -->
+                        <rect x="10" y="180" width="330" height="60" rx="8" fill="#0a0a0a" stroke="#10b981"
+                            stroke-width="2" />
+                        <text x="175" y="202" fill="#10b981" font-size="11" text-anchor="middle"
+                            font-weight="600">Kubernetes (EKS/GKE/AKS)</text>
+                        <text x="80" y="225" fill="#a3a3a3" font-size="9" text-anchor="middle">Dev Cluster</text>
+                        <text x="175" y="225" fill="#a3a3a3" font-size="9" text-anchor="middle">Staging</text>
+                        <text x="270" y="225" fill="#a3a3a3" font-size="9" text-anchor="middle">Production</text>
+
+                        <!-- Infrastructure Layer -->
+                        <rect x="10" y="260" width="330" height="50" rx="8" fill="#0a0a0a" stroke="#f59e0b"
+                            stroke-width="2" />
+                        <text x="175" y="290" fill="#f59e0b" font-size="11" text-anchor="middle" font-weight="600">Cloud
+                            Infrastructure (AWS/GCP/Azure)</text>
+
+                        <!-- Arrows -->
+                        <path d="M175 70 L175 90" stroke="#525252" stroke-width="2" marker-end="url(#arrowhead)" />
+                        <path d="M175 160 L175 180" stroke="#525252" stroke-width="2" />
+                        <path d="M175 240 L175 260" stroke="#525252" stroke-width="2" />
+                    </svg>
+                </div>
+                <p style="font-size: 12px; color: var(--text-muted); margin: 0;">
+                    Four-layer architecture ensuring separation of concerns between developers, platform, orchestration,
+                    and infrastructure.
+                </p>
+            </div>
+
+            <div class="architecture-card">
+                <div class="architecture-card-title">Multi-Tenancy Model</div>
+                <div class="arch-diagram">
+                    <svg viewBox="0 0 350 200" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="10" y="10" width="330" height="180" rx="8" fill="#0a0a0a" stroke="#10b981"
+                            stroke-width="2" />
+                        <text x="175" y="35" fill="#10b981" font-size="12" text-anchor="middle"
+                            font-weight="600">Production Cluster</text>
+
+                        <!-- Team A Namespace -->
+                        <rect x="25" y="50" width="145" height="60" rx="6" fill="#1a1a1a" stroke="#06b6d4"
+                            stroke-width="1" />
+                        <text x="97" y="70" fill="#06b6d4" font-size="10" text-anchor="middle" font-weight="500">ns:
+                            team-alpha</text>
+                        <rect x="35" y="80" width="50" height="20" rx="3" fill="#262626" />
+                        <text x="60" y="93" fill="#a3a3a3" font-size="8" text-anchor="middle">app-1</text>
+                        <rect x="95" y="80" width="50" height="20" rx="3" fill="#262626" />
+                        <text x="120" y="93" fill="#a3a3a3" font-size="8" text-anchor="middle">app-2</text>
+
+                        <!-- Team B Namespace -->
+                        <rect x="180" y="50" width="145" height="60" rx="6" fill="#1a1a1a" stroke="#8b5cf6"
+                            stroke-width="1" />
+                        <text x="252" y="70" fill="#8b5cf6" font-size="10" text-anchor="middle" font-weight="500">ns:
+                            team-beta</text>
+                        <rect x="190" y="80" width="50" height="20" rx="3" fill="#262626" />
+                        <text x="215" y="93" fill="#a3a3a3" font-size="8" text-anchor="middle">svc-1</text>
+                        <rect x="250" y="80" width="50" height="20" rx="3" fill="#262626" />
+                        <text x="275" y="93" fill="#a3a3a3" font-size="8" text-anchor="middle">svc-2</text>
+
+                        <!-- Shared Services -->
+                        <rect x="25" y="125" width="300" height="50" rx="6" fill="#1a1a1a" stroke="#f59e0b"
+                            stroke-width="1" />
+                        <text x="175" y="145" fill="#f59e0b" font-size="10" text-anchor="middle" font-weight="500">ns:
+                            platform-services</text>
+                        <text x="80" y="163" fill="#a3a3a3" font-size="8" text-anchor="middle">Ingress</text>
+                        <text x="150" y="163" fill="#a3a3a3" font-size="8" text-anchor="middle">Monitoring</text>
+                        <text x="220" y="163" fill="#a3a3a3" font-size="8" text-anchor="middle">Logging</text>
+                        <text x="280" y="163" fill="#a3a3a3" font-size="8" text-anchor="middle">Secrets</text>
+                    </svg>
+                </div>
+                <p style="font-size: 12px; color: var(--text-muted); margin: 0;">
+                    Namespace-based isolation with shared platform services for cost efficiency.
+                </p>
+            </div>
+
+            <div class="toc-sidebar">
+                <div class="toc-title">On This Page</div>
+                <ul class="toc-list">
+                    <li><a href="#introduction">Introduction</a></li>
+                    <li><a href="#platform-layers">Platform Architecture</a></li>
+                    <li><a href="#multi-tenancy">Multi-Tenancy</a></li>
+                    <li><a href="#gitops">GitOps Workflow</a></li>
+                    <li><a href="#security">Security Hardening</a></li>
+                    <li><a href="#observability">Observability</a></li>
+                    <li><a href="#scaling">Scaling Strategies</a></li>
+                    <li><a href="#disaster-recovery">Disaster Recovery</a></li>
+                    <li><a href="#troubleshooting">Troubleshooting</a></li>
+                </ul>
+            </div>
+        </aside>
+    </main>
 </body>
 
 </html>
