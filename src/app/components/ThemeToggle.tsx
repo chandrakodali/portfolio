@@ -1,52 +1,52 @@
-import { motion, AnimatePresence } from 'motion/react';
-import { Sun, Moon } from 'lucide-react';
-import { useTheme } from '@/app/context/ThemeContext';
+import { Moon, Sun } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 export function ThemeToggle() {
-    const { theme, toggleTheme } = useTheme();
+    const [theme, setTheme] = useState('dark');
+
+    useEffect(() => {
+        // Check local storage or system preference
+        const savedTheme = localStorage.getItem('theme');
+        const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+        // Default to dark if no preference, or if saved is dark
+        // If saved is light, set light
+        // If no saved and system prefers light, set light? 
+        // The requirement implies default is dark (portfolio style), but toggleable.
+
+        if (savedTheme === 'light') {
+            setTheme('light');
+            document.documentElement.classList.add('light');
+        } else {
+            setTheme('dark');
+            document.documentElement.classList.remove('light');
+        }
+    }, []);
+
+    const toggleTheme = () => {
+        const newTheme = theme === 'dark' ? 'light' : 'dark';
+        setTheme(newTheme);
+        localStorage.setItem('theme', newTheme);
+
+        if (newTheme === 'light') {
+            document.documentElement.classList.add('light');
+        } else {
+            document.documentElement.classList.remove('light');
+        }
+    };
 
     return (
-        <motion.button
+        <button
             onClick={toggleTheme}
-            className="relative w-10 h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:border-white/20 transition-colors overflow-hidden"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            className="p-2 rounded-md hover:bg-secondary/80 transition-colors focus:outline-none focus:ring-2 focus:ring-primary/50"
             aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+            title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
         >
-            <AnimatePresence mode="wait" initial={false}>
-                {theme === 'dark' ? (
-                    <motion.div
-                        key="moon"
-                        initial={{ y: -20, opacity: 0, rotate: -90 }}
-                        animate={{ y: 0, opacity: 1, rotate: 0 }}
-                        exit={{ y: 20, opacity: 0, rotate: 90 }}
-                        transition={{ duration: 0.2, ease: 'easeInOut' }}
-                    >
-                        <Moon className="w-4 h-4" />
-                    </motion.div>
-                ) : (
-                    <motion.div
-                        key="sun"
-                        initial={{ y: -20, opacity: 0, rotate: -90 }}
-                        animate={{ y: 0, opacity: 1, rotate: 0 }}
-                        exit={{ y: 20, opacity: 0, rotate: 90 }}
-                        transition={{ duration: 0.2, ease: 'easeInOut' }}
-                    >
-                        <Sun className="w-4 h-4 text-amber-400" />
-                    </motion.div>
-                )}
-            </AnimatePresence>
-
-            {/* Glow effect */}
-            <motion.div
-                className="absolute inset-0 rounded-xl"
-                animate={{
-                    boxShadow: theme === 'light'
-                        ? '0 0 20px rgba(251, 191, 36, 0.3)'
-                        : '0 0 20px rgba(139, 92, 246, 0.2)'
-                }}
-                transition={{ duration: 0.3 }}
-            />
-        </motion.button>
+            {theme === 'dark' ? (
+                <Sun className="w-5 h-5 text-muted-foreground hover:text-foreground transition-colors" />
+            ) : (
+                <Moon className="w-5 h-5 text-muted-foreground hover:text-foreground transition-colors" />
+            )}
+        </button>
     );
 }

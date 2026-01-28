@@ -12,6 +12,45 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            /* Dark Theme (Default) */
+            --bg-primary: #030014;
+            --bg-gradient-start: #030014;
+            --bg-gradient-end: #0a0a1f;
+            --text-primary: #e5e7eb;
+            --text-secondary: #9ca3af;
+            --text-muted: #6b7280;
+            --accent: #06b6d4;
+            --accent-hover: #22d3ee;
+            --border: rgba(255, 255, 255, 0.1);
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --code-bg: #0d1117;
+            --heading-gradient-start: #fff;
+            --heading-gradient-end: #a5b4fc;
+            --heading-color: #fff;
+            --table-header-bg: rgba(255, 255, 255, 0.05);
+        }
+
+        .light {
+            /* Light Theme */
+            --bg-primary: #ffffff;
+            --bg-gradient-start: #ffffff;
+            --bg-gradient-end: #f9fafb;
+            --text-primary: #1f2937;
+            --text-secondary: #4b5563;
+            --text-muted: #6b7280;
+            --accent: #2563eb;
+            --accent-hover: #1d4ed8;
+            --border: #e5e7eb;
+            --card-bg: #f3f4f6;
+            --code-bg: #1f2937;
+            /* Keep code dark for contrast or use #f3f4f6 */
+            --heading-gradient-start: #111827;
+            --heading-gradient-end: #374151;
+            --heading-color: #111827;
+            --table-header-bg: #f3f4f6;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -20,40 +59,69 @@
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(135deg, #030014 0%, #0a0a1f 100%);
-            color: #e5e7eb;
+            background: var(--bg-primary);
+            /* Fallback */
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            color: var(--text-primary);
             line-height: 1.8;
             min-height: 100vh;
+            transition: background 0.3s, color 0.3s;
         }
 
         .container {
             max-width: 800px;
             margin: 0 auto;
             padding: 60px 24px;
+            position: relative;
+        }
+
+        .nav-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .theme-toggle {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .theme-toggle:hover {
+            color: var(--text-primary);
+            border-color: var(--accent);
         }
 
         .back-link {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            color: #06b6d4;
+            color: var(--accent);
             text-decoration: none;
             font-size: 14px;
-            margin-bottom: 40px;
             transition: color 0.2s;
         }
 
         .back-link:hover {
-            color: #22d3ee;
+            color: var(--accent-hover);
         }
 
         .tag {
             display: inline-block;
             padding: 4px 12px;
             background: rgba(6, 182, 212, 0.15);
+            /* Keep generic or generic accent opacity */
             border: 1px solid rgba(6, 182, 212, 0.3);
             border-radius: 9999px;
-            color: #06b6d4;
+            color: var(--accent);
             font-size: 12px;
             font-weight: 500;
             margin-bottom: 16px;
@@ -62,16 +130,18 @@
         h1 {
             font-size: 2.5rem;
             font-weight: 700;
-            background: linear-gradient(to right, #fff, #a5b4fc);
+            background: linear-gradient(to right, var(--heading-gradient-start), var(--heading-gradient-end));
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 16px;
             line-height: 1.2;
+            /* Fallback for when gradient fails or isn't desired in print */
+            color: var(--heading-color);
         }
 
         .meta {
-            color: #6b7280;
+            color: var(--text-muted);
             font-size: 14px;
             margin-bottom: 40px;
             display: flex;
@@ -81,33 +151,33 @@
 
         h2 {
             font-size: 1.5rem;
-            color: #fff;
+            color: var(--heading-color);
             margin: 48px 0 16px;
             padding-bottom: 8px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid var(--border);
         }
 
         h3 {
             font-size: 1.25rem;
-            color: #e5e7eb;
+            color: var(--text-primary);
             margin: 32px 0 12px;
         }
 
         h4 {
             font-size: 1.1rem;
-            color: #d1d5db;
+            color: var(--text-secondary);
             margin: 24px 0 10px;
         }
 
         p {
             margin-bottom: 20px;
-            color: #d1d5db;
+            color: var(--text-secondary);
         }
 
         ul,
         ol {
             margin: 0 0 20px 24px;
-            color: #d1d5db;
+            color: var(--text-secondary);
         }
 
         li {
@@ -115,8 +185,8 @@
         }
 
         .diagram {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: var(--card-bg);
+            border: 1px solid var(--border);
             border-radius: 16px;
             padding: 32px;
             margin: 32px 0;
@@ -125,7 +195,7 @@
 
         .diagram-title {
             font-size: 14px;
-            color: #9ca3af;
+            color: var(--text-muted);
             text-align: center;
             margin-bottom: 24px;
             font-weight: 500;
@@ -139,7 +209,8 @@
 
         .code-block {
             background: #0d1117;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            /* Always dark for code */
+            border: 1px solid var(--border);
             border-radius: 12px;
             padding: 20px;
             margin: 20px 0;
@@ -155,7 +226,7 @@
 
         .highlight {
             background: linear-gradient(135deg, rgba(6, 182, 212, 0.1), rgba(139, 92, 246, 0.1));
-            border-left: 3px solid #06b6d4;
+            border-left: 3px solid var(--accent);
             padding: 16px 20px;
             margin: 24px 0;
             border-radius: 0 12px 12px 0;
@@ -198,12 +269,12 @@
         }
 
         strong {
-            color: #fff;
+            color: var(--heading-color);
         }
 
         .toc {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: var(--card-bg);
+            border: 1px solid var(--border);
             border-radius: 12px;
             padding: 24px;
             margin: 32px 0;
@@ -212,7 +283,7 @@
         .toc h3 {
             margin-top: 0;
             margin-bottom: 16px;
-            color: #fff;
+            color: var(--heading-color);
         }
 
         .toc ul {
@@ -226,7 +297,7 @@
         }
 
         .toc a {
-            color: #06b6d4;
+            color: var(--accent);
             text-decoration: none;
         }
 
@@ -237,9 +308,9 @@
         .footer {
             margin-top: 60px;
             padding-top: 40px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-top: 1px solid var(--border);
             text-align: center;
-            color: #6b7280;
+            color: var(--text-muted);
             font-size: 14px;
         }
 
@@ -247,7 +318,7 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            background: linear-gradient(135deg, #06b6d4, #8b5cf6);
+            background: linear-gradient(135deg, var(--accent), #8b5cf6);
             color: #fff;
             padding: 12px 24px;
             border-radius: 12px;
@@ -273,25 +344,56 @@
         td {
             padding: 12px;
             text-align: left;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid var(--border);
         }
 
         th {
-            color: #fff;
-            background: rgba(255, 255, 255, 0.05);
+            color: var(--heading-color);
+            background: var(--table-header-bg);
         }
 
         td {
-            color: #d1d5db;
+            color: var(--text-secondary);
         }
     </style>
 </head>
 
+<script>
+    // Check for theme preference
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light') {
+        document.documentElement.classList.add('light');
+    }
+
+    function toggleTheme() {
+        const isLight = document.documentElement.classList.toggle('light');
+        localStorage.setItem('theme', isLight ? 'light' : 'dark');
+    }
+</script>
+</head>
+
 <body>
     <article class="container">
-        <a href="/portfolio/#blog" class="back-link">
-            ← Back to Portfolio
-        </a>
+        <div class="nav-header">
+            <a href="/portfolio/#articles" class="back-link">
+                ← Back to Portfolio
+            </a>
+            <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme">
+                <!-- Sun Icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="5"></circle>
+                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                </svg>
+            </button>
+        </div>
 
         <span class="tag">Platform Engineering</span>
         <h1>Building a Self-Service Kubernetes Platform</h1>
@@ -557,6 +659,12 @@
             <li><strong>Network Policies:</strong> Microsegmentation to control pod-to-pod communication</li>
         </ul>
 
+        <div class="diagram">
+            <div class="diagram-title">Figure 2: Kubernetes Cluster Architecture</div>
+            <img src="images/k8s-arch.png" alt="Kubernetes Architecture Diagram"
+                style="width:100%; border-radius: 8px;">
+        </div>
+
         <h3>Layer 4: Infrastructure</h3>
         <p>
             Everything managed by Terraform — the cloud resources that power your platform. This includes
@@ -581,6 +689,10 @@
             <li>NetworkPolicies to control ingress/egress traffic</li>
             <li>RBAC to restrict what users can do within their namespace</li>
         </ul>
+
+        <p>
+            Here is an example <code>ResourceQuota</code> and <code>LimitRange</code> configuration:
+        </p>
 
         <div class="code-block"><code>apiVersion: v1
 kind: ResourceQuota

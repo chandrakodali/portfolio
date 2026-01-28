@@ -1,265 +1,133 @@
 import { motion, useScroll, useMotionValueEvent } from 'motion/react';
-import { useState, useEffect, useCallback } from 'react';
-import { Menu, X, Terminal, Zap } from 'lucide-react';
-
+import { useState } from 'react';
+import { Menu, X, Terminal } from 'lucide-react';
+import { ThemeToggle } from './ThemeToggle';
 
 const navLinks = [
-  { name: 'Home', href: '#hero' },
   { name: 'About', href: '#about' },
   { name: 'Skills', href: '#skills' },
   { name: 'Experience', href: '#experience' },
   { name: 'Projects', href: '#projects' },
-  { name: 'Blog', href: '#blog' },
+  { name: 'Articles', href: '#articles' },
   { name: 'Contact', href: '#contact' },
 ];
 
 export function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [activeSection, setActiveSection] = useState('hero');
   const { scrollY } = useScroll();
 
   useMotionValueEvent(scrollY, 'change', (latest) => {
-    setIsScrolled(latest > 50);
+    setIsScrolled(latest > 20);
   });
 
-  // Track active section with Intersection Observer
-  useEffect(() => {
-    const sectionIds = navLinks.map(link => link.href.replace('#', ''));
-    const observers: IntersectionObserver[] = [];
-
-    const observerOptions: IntersectionObserverInit = {
-      root: null,
-      rootMargin: '-20% 0px -70% 0px', // Trigger when section is in top 30% of viewport
-      threshold: 0,
-    };
-
-    sectionIds.forEach((id) => {
-      const element = document.getElementById(id);
-      if (element) {
-        const observer = new IntersectionObserver((entries) => {
-          entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-              setActiveSection(id);
-            }
-          });
-        }, observerOptions);
-
-        observer.observe(element);
-        observers.push(observer);
-      }
-    });
-
-    return () => {
-      observers.forEach(observer => observer.disconnect());
-    };
-  }, []);
-
-  // Body scroll lock when mobile menu is open
-  useEffect(() => {
-    if (isMobileMenuOpen) {
-      const scrollY = window.scrollY;
-      document.body.style.position = 'fixed';
-      document.body.style.top = `-${scrollY}px`;
-      document.body.style.width = '100%';
-      document.body.style.overflow = 'hidden';
-    } else {
-      const scrollY = document.body.style.top;
-      document.body.style.position = '';
-      document.body.style.top = '';
-      document.body.style.width = '';
-      document.body.style.overflow = '';
-      if (scrollY) {
-        window.scrollTo(0, parseInt(scrollY || '0', 10) * -1);
-      }
+  const menuVariants = {
+    closed: {
+      opacity: 0,
+      y: -20,
+      transition: { staggerChildren: 0.05, staggerDirection: -1 }
+    },
+    open: {
+      opacity: 1,
+      y: 0,
+      transition: { staggerChildren: 0.07, delayChildren: 0.1 }
     }
+  };
 
-    return () => {
-      document.body.style.position = '';
-      document.body.style.top = '';
-      document.body.style.width = '';
-      document.body.style.overflow = '';
-    };
-  }, [isMobileMenuOpen]);
-
-  // Close menu on escape key
-  useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isMobileMenuOpen) {
-        setIsMobileMenuOpen(false);
-      }
-    };
-
-    window.addEventListener('keydown', handleEscape);
-    return () => window.removeEventListener('keydown', handleEscape);
-  }, [isMobileMenuOpen]);
-
-  const scrollToSection = useCallback((href: string) => {
-    const element = document.querySelector(href);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
-    setIsMobileMenuOpen(false);
-  }, []);
-
-  const isActiveLink = (href: string) => {
-    return activeSection === href.replace('#', '');
+  const itemVariants = {
+    closed: { opacity: 0, x: -20 },
+    open: { opacity: 1, x: 0 }
   };
 
   return (
     <>
       <motion.nav
-        initial={{ y: -100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.6, delay: 0.3 }}
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
-          ? 'bg-[#030014]/90 backdrop-blur-xl border-b border-white/5'
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${isScrolled
+          ? 'bg-background/70 backdrop-blur-xl saturate-150 border-b border-border/50 shadow-sm'
           : 'bg-transparent'
           }`}
-        role="navigation"
-        aria-label="Main navigation"
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
-          <div className="flex items-center justify-between">
+        <div className="max-w-7xl mx-auto px-[var(--container-padding)]">
+          <div className="flex items-center justify-between h-16">
             {/* Logo */}
-            <motion.a
-              href="#hero"
-              onClick={(e) => {
-                e.preventDefault();
-                scrollToSection('#hero');
-              }}
-              className="flex items-center gap-2 sm:gap-3 group"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              aria-label="Go to home section"
-            >
-              <div className="relative">
-                <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br from-cyan-500 to-violet-600 flex items-center justify-center">
-                  <Terminal className="w-4 h-4 sm:w-5 sm:h-5 text-white" aria-hidden="true" />
-                </div>
-                <motion.div
-                  className="absolute -top-0.5 -right-0.5 w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full bg-emerald-400"
-                  animate={{ scale: [1, 1.2, 1] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                  aria-hidden="true"
-                />
+            <a href="#hero" className="flex items-center gap-2 group">
+              <div className="p-1.5 rounded-md bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
+                <Terminal className="w-5 h-5" />
               </div>
-              <div className="hidden sm:block">
-                <span className="text-base sm:text-lg font-bold text-white">
-                  CK
-                </span>
-                <div className="flex items-center gap-1 text-[10px] text-gray-500 font-mono">
-                  <Zap className="w-2.5 h-2.5" aria-hidden="true" />
-                  <span>Platform Engineer</span>
-                </div>
-              </div>
-            </motion.a>
+              <span className="font-bold text-lg tracking-tight">CK</span>
+            </a>
 
             {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center gap-1" role="menubar">
+            <div className="hidden md:flex items-center gap-8">
               {navLinks.map((link) => (
-                <button
+                <a
                   key={link.name}
-                  onClick={() => scrollToSection(link.href)}
-                  role="menuitem"
-                  aria-current={isActiveLink(link.href) ? 'page' : undefined}
-                  className={`px-3 lg:px-4 py-2 text-sm transition-colors rounded-lg relative ${isActiveLink(link.href)
-                    ? 'text-white'
-                    : 'text-gray-400 hover:text-white hover:bg-white/5'
-                    }`}
+                  href={link.href}
+                  className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors duration-200"
                 >
                   {link.name}
-                  {isActiveLink(link.href) && (
-                    <motion.div
-                      layoutId="activeSection"
-                      className="absolute inset-0 bg-white/10 rounded-lg"
-                      transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-                    />
-                  )}
-                </button>
+                </a>
               ))}
-            </div>
-
-            {/* CTA Button - Desktop */}
-            <div className="hidden md:flex items-center gap-3">
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => scrollToSection('#contact')}
-                className="flex items-center gap-2 px-4 lg:px-5 py-2 bg-gradient-to-r from-cyan-500 to-violet-600 rounded-lg text-white font-medium text-sm"
-              >
-                <span>Let's Talk</span>
-              </motion.button>
+              <div className="flex items-center gap-4">
+                <ThemeToggle />
+                <a
+                  href="#contact"
+                  className="px-4 py-2 rounded-full bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-all hover:scale-105 active:scale-95"
+                >
+                  Hire Me
+                </a>
+              </div>
             </div>
 
             {/* Mobile Menu Button */}
-            <button
-              className="md:hidden p-2 text-white rounded-lg hover:bg-white/5"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
-              aria-expanded={isMobileMenuOpen}
-              aria-controls="mobile-menu"
-            >
-              {isMobileMenuOpen ? <X className="w-5 h-5" aria-hidden="true" /> : <Menu className="w-5 h-5" aria-hidden="true" />}
-            </button>
+            <div className="flex items-center gap-4 md:hidden">
+              <ThemeToggle />
+              <button
+                className="p-2 text-muted-foreground hover:text-foreground transition-colors"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              >
+                {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              </button>
+            </div>
           </div>
         </div>
       </motion.nav>
 
       {/* Mobile Menu */}
-      <motion.div
-        id="mobile-menu"
-        initial={false}
-        animate={{
-          opacity: isMobileMenuOpen ? 1 : 0,
-          pointerEvents: isMobileMenuOpen ? 'auto' : 'none',
-        }}
-        transition={{ duration: 0.2 }}
-        className="fixed inset-0 z-40 md:hidden"
-        aria-hidden={!isMobileMenuOpen}
-        role="dialog"
-        aria-modal="true"
-        aria-label="Mobile navigation menu"
-      >
-        {/* Backdrop */}
-        <div
-          className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-          onClick={() => setIsMobileMenuOpen(false)}
-          aria-hidden="true"
-        />
-
-        {/* Menu panel */}
+      {isMobileMenuOpen && (
         <motion.div
-          initial={{ x: '100%' }}
-          animate={{ x: isMobileMenuOpen ? 0 : '100%' }}
-          transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-          className="absolute right-0 top-0 h-full w-64 sm:w-72 bg-[#0a0a0a] border-l border-white/5 p-6 pt-20"
+          initial="closed"
+          animate="open"
+          exit="closed"
+          variants={menuVariants}
+          className="fixed inset-0 z-40 bg-background/95 backdrop-blur-3xl md:hidden pt-24 px-[var(--container-padding)]"
         >
-          <nav className="flex flex-col gap-2" role="menu">
+          <div className="flex flex-col space-y-6">
             {navLinks.map((link) => (
-              <button
+              <motion.a
                 key={link.name}
-                onClick={() => scrollToSection(link.href)}
-                role="menuitem"
-                aria-current={isActiveLink(link.href) ? 'page' : undefined}
-                className={`text-left px-4 py-3 text-base rounded-lg transition-all ${isActiveLink(link.href)
-                  ? 'text-white bg-white/10'
-                  : 'text-gray-300 hover:text-white hover:bg-white/5'
-                  }`}
+                variants={itemVariants}
+                href={link.href}
+                className="text-2xl font-medium text-foreground py-2 border-b border-border/30"
+                onClick={() => setIsMobileMenuOpen(false)}
               >
                 {link.name}
-              </button>
+              </motion.a>
             ))}
-            <button
-              onClick={() => scrollToSection('#contact')}
-              role="menuitem"
-              className="mt-4 w-full py-3 bg-gradient-to-r from-cyan-500 to-violet-600 rounded-lg text-white font-semibold text-sm"
+            <motion.a
+              variants={itemVariants}
+              href="#contact"
+              className="mt-8 w-full py-4 rounded-xl bg-primary text-primary-foreground text-center text-lg font-medium shadow-lg shadow-primary/20"
+              onClick={() => setIsMobileMenuOpen(false)}
             >
-              Let's Talk
-            </button>
-          </nav>
+              Hire Me
+            </motion.a>
+          </div>
         </motion.div>
-      </motion.div>
+      )}
     </>
   );
 }

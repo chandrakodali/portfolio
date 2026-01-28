@@ -12,6 +12,45 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            /* Dark Theme (Default) */
+            --bg-primary: #030014;
+            --bg-gradient-start: #030014;
+            --bg-gradient-end: #0a0a1f;
+            --text-primary: #e5e7eb;
+            --text-secondary: #9ca3af;
+            --text-muted: #6b7280;
+            --accent: #10b981;
+            /* Emerald/Green for Terraform */
+            --accent-hover: #34d399;
+            --border: rgba(255, 255, 255, 0.1);
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --code-bg: #0d1117;
+            --heading-gradient-start: #fff;
+            --heading-gradient-end: #6ee7b7;
+            --heading-color: #fff;
+            --table-header-bg: rgba(255, 255, 255, 0.05);
+        }
+
+        .light {
+            /* Light Theme */
+            --bg-primary: #ffffff;
+            --bg-gradient-start: #ffffff;
+            --bg-gradient-end: #f9fafb;
+            --text-primary: #1f2937;
+            --text-secondary: #4b5563;
+            --text-muted: #6b7280;
+            --accent: #059669;
+            --accent-hover: #047857;
+            --border: #e5e7eb;
+            --card-bg: #f3f4f6;
+            --code-bg: #1f2937;
+            --heading-gradient-start: #111827;
+            --heading-gradient-end: #047857;
+            --heading-color: #111827;
+            --table-header-bg: #f3f4f6;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -20,31 +59,58 @@
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(135deg, #030014 0%, #0a0a1f 100%);
-            color: #e5e7eb;
+            background: var(--bg-primary);
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            color: var(--text-primary);
             line-height: 1.8;
             min-height: 100vh;
+            transition: background 0.3s, color 0.3s;
         }
 
         .container {
             max-width: 800px;
             margin: 0 auto;
             padding: 60px 24px;
+            position: relative;
+        }
+
+        .nav-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+
+        .theme-toggle {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .theme-toggle:hover {
+            color: var(--text-primary);
+            border-color: var(--accent);
         }
 
         .back-link {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            color: #10b981;
+            color: var(--accent);
             text-decoration: none;
             font-size: 14px;
-            margin-bottom: 40px;
             transition: color 0.2s;
         }
 
         .back-link:hover {
-            color: #34d399;
+            color: var(--accent-hover);
         }
 
         .tag {
@@ -53,7 +119,7 @@
             background: rgba(16, 185, 129, 0.15);
             border: 1px solid rgba(16, 185, 129, 0.3);
             border-radius: 9999px;
-            color: #10b981;
+            color: var(--accent);
             font-size: 12px;
             font-weight: 500;
             margin-bottom: 16px;
@@ -62,16 +128,17 @@
         h1 {
             font-size: 2.5rem;
             font-weight: 700;
-            background: linear-gradient(to right, #fff, #6ee7b7);
+            background: linear-gradient(to right, var(--heading-gradient-start), var(--heading-gradient-end));
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 16px;
             line-height: 1.2;
+            color: var(--heading-color);
         }
 
         .meta {
-            color: #6b7280;
+            color: var(--text-muted);
             font-size: 14px;
             margin-bottom: 40px;
             display: flex;
@@ -81,33 +148,33 @@
 
         h2 {
             font-size: 1.5rem;
-            color: #fff;
+            color: var(--heading-color);
             margin: 48px 0 16px;
             padding-bottom: 8px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid var(--border);
         }
 
         h3 {
             font-size: 1.25rem;
-            color: #e5e7eb;
+            color: var(--text-primary);
             margin: 32px 0 12px;
         }
 
         h4 {
             font-size: 1.1rem;
-            color: #d1d5db;
+            color: var(--text-secondary);
             margin: 24px 0 10px;
         }
 
         p {
             margin-bottom: 20px;
-            color: #d1d5db;
+            color: var(--text-secondary);
         }
 
         ul,
         ol {
             margin: 0 0 20px 24px;
-            color: #d1d5db;
+            color: var(--text-secondary);
         }
 
         li {
@@ -116,7 +183,7 @@
 
         .code-block {
             background: #0d1117;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border);
             border-radius: 12px;
             padding: 20px;
             margin: 20px 0;
@@ -132,7 +199,7 @@
 
         .highlight {
             background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(6, 182, 212, 0.1));
-            border-left: 3px solid #10b981;
+            border-left: 3px solid var(--accent);
             padding: 16px 20px;
             margin: 24px 0;
             border-radius: 0 12px 12px 0;
@@ -177,12 +244,12 @@
         }
 
         strong {
-            color: #fff;
+            color: var(--heading-color);
         }
 
         .toc {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: var(--card-bg);
+            border: 1px solid var(--border);
             border-radius: 12px;
             padding: 24px;
             margin: 32px 0;
@@ -191,7 +258,7 @@
         .toc h3 {
             margin-top: 0;
             margin-bottom: 16px;
-            color: #fff;
+            color: var(--heading-color);
         }
 
         .toc ul {
@@ -205,7 +272,7 @@
         }
 
         .toc a {
-            color: #10b981;
+            color: var(--accent);
             text-decoration: none;
         }
 
@@ -214,8 +281,8 @@
         }
 
         .diagram {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: var(--card-bg);
+            border: 1px solid var(--border);
             border-radius: 16px;
             padding: 32px;
             margin: 32px 0;
@@ -224,7 +291,7 @@
 
         .diagram-title {
             font-size: 14px;
-            color: #9ca3af;
+            color: var(--text-muted);
             text-align: center;
             margin-bottom: 24px;
             font-weight: 500;
@@ -241,23 +308,23 @@
         td {
             padding: 12px;
             text-align: left;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid var(--border);
         }
 
         th {
-            color: #fff;
-            background: rgba(255, 255, 255, 0.05);
+            color: var(--heading-color);
+            background: var(--table-header-bg);
         }
 
         td {
-            color: #d1d5db;
+            color: var(--text-secondary);
         }
 
         .tree {
             font-family: 'Fira Code', monospace;
             font-size: 13px;
             line-height: 1.6;
-            color: #9ca3af;
+            color: var(--text-secondary);
             background: #0d1117;
             padding: 20px;
             border-radius: 12px;
@@ -266,19 +333,19 @@
         }
 
         .tree .folder {
-            color: #10b981;
+            color: var(--accent);
         }
 
         .tree .file {
-            color: #d1d5db;
+            color: var(--text-secondary);
         }
 
         .footer {
             margin-top: 60px;
             padding-top: 40px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-top: 1px solid var(--border);
             text-align: center;
-            color: #6b7280;
+            color: var(--text-muted);
             font-size: 14px;
         }
 
@@ -286,7 +353,7 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            background: linear-gradient(135deg, #10b981, #06b6d4);
+            background: linear-gradient(135deg, var(--accent), #06b6d4);
             color: #fff;
             padding: 12px 24px;
             border-radius: 12px;
@@ -301,11 +368,40 @@
             box-shadow: 0 10px 40px rgba(16, 185, 129, 0.3);
         }
     </style>
+    <script>
+        // Check for theme preference
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'light') {
+            document.documentElement.classList.add('light');
+        }
+
+        function toggleTheme() {
+            const isLight = document.documentElement.classList.toggle('light');
+            localStorage.setItem('theme', isLight ? 'light' : 'dark');
+        }
+    </script>
 </head>
 
 <body>
     <article class="container">
-        <a href="/portfolio/#blog" class="back-link">← Back to Portfolio</a>
+        <div class="nav-header">
+            <a href="/portfolio/#articles" class="back-link">← Back to Portfolio</a>
+            <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme">
+                <!-- Sun Icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="5"></circle>
+                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                </svg>
+            </button>
+        </div>
 
         <span class="tag">Infrastructure</span>
         <h1>Terraform at Scale: Module Design Patterns</h1>
@@ -412,7 +508,17 @@ resource "aws_instance" "example" {
 
         <h2 id="module-structure">2. Module Structure and Organization</h2>
 
+        <div class="diagram">
+            <div class="diagram-title">Figure 1: Terraform Module Composition</div>
+            <img src="images/terraform-structure.png" alt="Terraform Module Structure Diagram"
+                style="width:100%; border-radius: 8px;">
+        </div>
+
         <h3>Standard Module Layout</h3>
+        <p>
+            A consistent directory structure is crucial for discoverability. We recommend the following standard layout
+            that separates implementation, interface, and examples:
+        </p>
 
         <div class="tree"><span class="folder">terraform-aws-eks/</span>
             ├── <span class="file">README.md</span> # Documentation with examples
@@ -439,6 +545,10 @@ resource "aws_instance" "example" {
             └── <span class="file">eks_test.go</span></div>
 
         <h3>Variables Best Practices</h3>
+        <p>
+            Use robust validation rules and explicit types to fail fast. Here is an example of a well-structured
+            <code>variables.tf</code> file:
+        </p>
 
         <div class="code-block"><code># variables.tf
 variable "cluster_name" {
@@ -481,6 +591,11 @@ variable "node_groups" {
 }</code></div>
 
         <h3>Outputs Design</h3>
+        <p>
+            Outputs are the API of your module. Return detailed information that consumers might need, and mark
+            sensitive
+            data appropriately:
+        </p>
 
         <div class="code-block"><code># outputs.tf
 output "cluster_endpoint" {
@@ -614,6 +729,10 @@ environments = {
         <h2 id="state-management">4. State Management Strategies</h2>
 
         <h3>Remote State Backend</h3>
+        <p>
+            Never store state locally. Use a remote backend like S3 with DynamoDB locking to ensure team collaboration
+            safety:
+        </p>
 
         <div class="code-block"><code># backend.tf
 terraform {
@@ -657,6 +776,11 @@ terraform {
         </table>
 
         <h3>Cross-State References</h3>
+        <p>
+            Use the <code>terraform_remote_state</code> data source to read outputs from other stacks, such as reading
+            VPC
+            details into your EKS stack:
+        </p>
 
         <div class="code-block"><code># In the EKS module, reference VPC state
 data "terraform_remote_state" "vpc" {
@@ -684,6 +808,10 @@ module "eks" {
         <h2 id="testing">5. Testing and Validation</h2>
 
         <h3>Static Analysis</h3>
+        <p>
+            Shift testing left by running static analysis tools in your pre-commit hooks. This catches syntax errors and
+            policy violations before code is even pushed:
+        </p>
 
         <div class="code-block"><code># .pre-commit-config.yaml
 repos:
@@ -703,6 +831,10 @@ repos:
           - '--args=--quiet --framework terraform'</code></div>
 
         <h3>Unit Tests with Terratest</h3>
+        <p>
+            For critical modules, write integration tests using Terratest (Go) to spin up real resources, validate them,
+            and tear them down:
+        </p>
 
         <div class="code-block"><code>// test/eks_test.go
 package test
@@ -736,6 +868,9 @@ func TestEKSModule(t *testing.T) {
 }</code></div>
 
         <h3>Policy as Code with OPA</h3>
+        <p>
+            Enforce organizational standards (like required tags or encryption) using Open Policy Agent (OPA) rules:
+        </p>
 
         <div class="code-block"><code># policies/required_tags.rego
 package terraform.policies
