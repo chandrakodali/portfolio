@@ -227,21 +227,39 @@ export function Hero() {
               Hello, I'm
             </motion.p>
 
-            <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-bold leading-none mb-4" style={{ fontFamily: "'Clash Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" }}>
-              <AnimatedText
-                text="Chandra"
-                className="bg-gradient-to-r from-white via-gray-100 to-gray-300 bg-clip-text [-webkit-text-fill-color:transparent] [text-fill-color:transparent]"
-                delay={0.4}
-                reducedMotion={prefersReducedMotion}
-              />
+            <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-bold leading-none mb-4" style={{ fontFamily: "'Clash Display', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" }}>
+              <span
+                style={{
+                  background: 'linear-gradient(to right, #ffffff, #f3f4f6, #d1d5db)',
+                  WebkitBackgroundClip: 'text',
+                  backgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  color: 'transparent'
+                }}
+              >
+                <AnimatedText
+                  text="Chandra"
+                  delay={0.4}
+                  reducedMotion={prefersReducedMotion}
+                />
+              </span>
               <br className="sm:hidden" />
               <span className="sm:ml-4"> </span>
-              <AnimatedText
-                text="Koushik"
-                className="bg-gradient-to-r from-cyan-400 via-violet-400 to-fuchsia-400 bg-clip-text [-webkit-text-fill-color:transparent] [text-fill-color:transparent]"
-                delay={0.7}
-                reducedMotion={prefersReducedMotion}
-              />
+              <span
+                style={{
+                  background: 'linear-gradient(to right, #22d3ee, #a78bfa, #e879f9)',
+                  WebkitBackgroundClip: 'text',
+                  backgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  color: 'transparent'
+                }}
+              >
+                <AnimatedText
+                  text="Koushik"
+                  delay={0.7}
+                  reducedMotion={prefersReducedMotion}
+                />
+              </span>
             </h1>
           </div>
 
