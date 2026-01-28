@@ -1,6 +1,7 @@
-import { motion } from 'motion/react';
-import { Container, Cloud, GitBranch, Shield, Gauge, Network, ArrowRight } from 'lucide-react';
+import { motion, useMotionValue, useSpring, useTransform } from 'motion/react';
+import { Container, Cloud, GitBranch, Shield, Gauge, Network, ArrowRight, ExternalLink } from 'lucide-react';
 import { Section } from './Section';
+import { useRef, useState } from 'react';
 
 const projects = [
   {
@@ -10,6 +11,7 @@ const projects = [
     icon: Container,
     metrics: { services: '20+', deploy: '-55%', uptime: '99.9%' },
     tags: ['Kubernetes', 'Helm', 'ArgoCD', 'Terraform'],
+    featured: true,
   },
   {
     title: 'Multi-Cloud IaC',
@@ -18,6 +20,7 @@ const projects = [
     icon: Cloud,
     metrics: { envs: '15+', manual: '-30%', drift: '0%' },
     tags: ['Terraform', 'AWS', 'Azure', 'CloudFormation'],
+    featured: false,
   },
   {
     title: 'CI/CD Framework',
@@ -26,6 +29,7 @@ const projects = [
     icon: GitBranch,
     metrics: { time: '<20m', freq: '2-3x', failed: '-25%' },
     tags: ['Jenkins', 'GitLab CI', 'GitHub Actions'],
+    featured: false,
   },
   {
     title: 'Observability Stack',
@@ -34,6 +38,7 @@ const projects = [
     icon: Gauge,
     metrics: { mttd: '-35%', dashboards: '50+', alerts: '200+' },
     tags: ['Prometheus', 'Grafana', 'Datadog', 'Splunk'],
+    featured: false,
   },
   {
     title: 'Secrets Management',
@@ -42,6 +47,7 @@ const projects = [
     icon: Shield,
     metrics: { secrets: '1K+', compliance: 'HIPAA', rotation: 'Auto' },
     tags: ['HashiCorp Vault', 'OPA', 'IAM'],
+    featured: false,
   },
   {
     title: 'Service Mesh',
@@ -50,18 +56,187 @@ const projects = [
     icon: Network,
     metrics: { services: '50+', security: 'mTLS', traces: '1M/day' },
     tags: ['Istio', 'Envoy', 'Jaeger', 'Kiali'],
+    featured: false,
   },
 ];
 
+// 3D Tilt Card Component
+function ProjectCard({
+  project,
+  index,
+}: {
+  project: (typeof projects)[0];
+  index: number;
+}) {
+  const ref = useRef<HTMLDivElement>(null);
+  const [isHovered, setIsHovered] = useState(false);
+
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+
+  const mouseXSpring = useSpring(x, { stiffness: 150, damping: 20 });
+  const mouseYSpring = useSpring(y, { stiffness: 150, damping: 20 });
+
+  const rotateX = useTransform(mouseYSpring, [-0.5, 0.5], ['8deg', '-8deg']);
+  const rotateY = useTransform(mouseXSpring, [-0.5, 0.5], ['-8deg', '8deg']);
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!ref.current) return;
+    const rect = ref.current.getBoundingClientRect();
+    const width = rect.width;
+    const height = rect.height;
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+    const xPct = mouseX / width - 0.5;
+    const yPct = mouseY / height - 0.5;
+    x.set(xPct);
+    y.set(yPct);
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+    x.set(0);
+    y.set(0);
+  };
+
+  const isFeatured = project.featured;
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-50px' }}
+      transition={{
+        duration: 0.6,
+        delay: index * 0.1,
+        ease: [0.22, 1, 0.36, 1],
+      }}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={handleMouseLeave}
+      style={{
+        rotateX: isHovered ? rotateX : 0,
+        rotateY: isHovered ? rotateY : 0,
+        transformStyle: 'preserve-3d',
+      }}
+      className={`group relative ${isFeatured ? 'md:col-span-2 lg:col-span-2' : ''}`}
+    >
+      <motion.div
+        className={`relative h-full rounded-2xl border border-border/50 bg-card/50 backdrop-blur-xl p-8 overflow-hidden transition-colors duration-500 ${
+          isFeatured ? 'bg-gradient-to-br from-primary/5 via-card/50 to-transparent' : ''
+        }`}
+        whileHover={{
+          borderColor: 'hsl(var(--primary) / 0.3)',
+          boxShadow: '0 25px 50px -12px hsl(var(--primary) / 0.15)',
+        }}
+        transition={{ duration: 0.3 }}
+      >
+        {/* Hover glow effect */}
+        <motion.div
+          className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+          style={{
+            background:
+              'radial-gradient(600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), hsl(var(--primary) / 0.06), transparent 40%)',
+          }}
+        />
+
+        {/* Featured badge */}
+        {isFeatured && (
+          <div className="absolute top-4 right-4">
+            <span className="px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium border border-primary/20">
+              Featured
+            </span>
+          </div>
+        )}
+
+        <div className="relative z-10 flex flex-col h-full">
+          {/* Icon */}
+          <motion.div
+            className="mb-6 w-fit"
+            whileHover={{ scale: 1.1, rotate: 5 }}
+            transition={{ type: 'spring', stiffness: 300 }}
+          >
+            <div className="p-4 rounded-2xl bg-primary/10 text-primary ring-1 ring-primary/20">
+              <project.icon className="w-7 h-7" />
+            </div>
+          </motion.div>
+
+          {/* Content */}
+          <h3 className="text-xl font-bold mb-2 group-hover:text-primary transition-colors duration-300">
+            {project.title}
+          </h3>
+          <p className="text-sm text-muted-foreground font-medium mb-4">
+            {project.subtitle}
+          </p>
+
+          <p className="text-muted-foreground text-sm leading-relaxed mb-6 flex-grow">
+            {project.description}
+          </p>
+
+          {/* Metrics */}
+          <div className="grid grid-cols-3 gap-4 mb-6 py-4 border-y border-border/50">
+            {Object.entries(project.metrics).map(([key, value]) => (
+              <div key={key} className="text-center">
+                <div className="text-lg font-bold text-foreground">{value}</div>
+                <div className="text-xs text-muted-foreground capitalize">{key}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Tags */}
+          <div className="flex flex-wrap gap-2 mb-6">
+            {project.tags.map((tag) => (
+              <motion.span
+                key={tag}
+                className="px-3 py-1.5 rounded-full bg-secondary/50 text-secondary-foreground text-xs font-medium border border-border/30 hover:border-primary/30 hover:bg-primary/5 transition-colors cursor-default"
+                whileHover={{ scale: 1.05 }}
+              >
+                {tag}
+              </motion.span>
+            ))}
+          </div>
+
+          {/* Action */}
+          <motion.div
+            className="flex items-center gap-2 text-sm font-medium text-muted-foreground group-hover:text-primary transition-colors cursor-pointer"
+            whileHover={{ x: 5 }}
+          >
+            <span>View Details</span>
+            <motion.div
+              initial={{ x: 0, opacity: 0.5 }}
+              whileHover={{ x: 5, opacity: 1 }}
+            >
+              <ArrowRight className="w-4 h-4" />
+            </motion.div>
+          </motion.div>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
 export function Projects() {
   return (
-    <Section id="projects" className="py-20 md:py-32 bg-secondary/30">
+    <Section id="projects" className="py-20 md:py-32 bg-secondary/20">
       <div className="container max-w-7xl mx-auto px-[var(--container-padding)]">
+        {/* Header */}
         <div className="text-center mb-20">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6"
+          >
+            <ExternalLink className="w-4 h-4" />
+            <span>Portfolio</span>
+          </motion.div>
+
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
             className="text-[length:var(--font-3xl)] font-bold tracking-tight mb-4"
           >
             Featured Projects
@@ -70,66 +245,19 @@ export function Projects() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
+            transition={{ delay: 0.2 }}
             className="text-muted-foreground max-w-2xl mx-auto text-[length:var(--font-lg)]"
           >
             Infrastructure solutions that power mission-critical applications.
           </motion.p>
         </div>
 
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ staggerChildren: 0.1 }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
-        >
-          {projects.map((project) => (
-            <motion.div
-              key={project.title}
-              variants={{
-                hidden: { opacity: 0, y: 20 },
-                visible: {
-                  opacity: 1,
-                  y: 0,
-                  transition: {
-                    type: "spring",
-                    stiffness: 100,
-                    damping: 20
-                  }
-                }
-              }}
-              className="group flex flex-col rounded-2xl border border-border bg-card p-8 shadow-sm hover:border-primary/50 hover:shadow-lg transition-all duration-300"
-            >
-              <div className="mb-6 flex items-center justify-between">
-                <div className="p-3 rounded-xl bg-primary/10 text-primary group-hover:scale-110 transition-transform duration-300">
-                  <project.icon className="w-6 h-6" />
-                </div>
-              </div>
-
-              <h3 className="text-xl font-bold mb-2 group-hover:text-primary transition-colors">{project.title}</h3>
-              <p className="text-sm text-muted-foreground font-medium mb-4">{project.subtitle}</p>
-
-              <p className="text-muted-foreground text-sm leading-relaxed mb-8 flex-grow">
-                {project.description}
-              </p>
-
-              <div className="flex flex-wrap gap-2 mb-8">
-                {project.tags.map(tag => (
-                  <span key={tag} className="px-3 py-1 rounded-full bg-secondary text-secondary-foreground text-xs font-medium border border-border/50">
-                    {tag}
-                  </span>
-                ))}
-              </div>
-
-              <div className="flex items-center gap-4 pt-6 border-t border-border mt-auto">
-                <div className="ml-auto">
-                  <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors group-hover:translate-x-1" />
-                </div>
-              </div>
-            </motion.div>
+        {/* Projects Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {projects.map((project, index) => (
+            <ProjectCard key={project.title} project={project} index={index} />
           ))}
-        </motion.div>
+        </div>
       </div>
     </Section>
   );

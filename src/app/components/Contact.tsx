@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Send, Mail, MapPin, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
+import { motion } from 'motion/react';
+import { Send, Mail, MapPin, CheckCircle, Loader2, MessageSquare, Github, Linkedin, ArrowUpRight } from 'lucide-react';
 import { Section } from './Section';
 
 const FORMSPREE_ENDPOINT = import.meta.env.VITE_FORMSPREE_ID
@@ -26,13 +27,14 @@ export function Contact() {
         const response = await fetch(FORMSPREE_ENDPOINT, {
           method: 'POST',
           body: JSON.stringify(data),
-          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         });
         if (!response.ok) throw new Error('Failed to send message');
         setIsSuccess(true);
       } else {
-        // Fallback mailto
-        window.location.href = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(data.subject as string)}&body=${encodeURIComponent(data.message as string)}`;
+        window.location.href = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(
+          data.subject as string
+        )}&body=${encodeURIComponent(data.message as string)}`;
         setIsSuccess(true);
       }
     } catch (err) {
@@ -43,114 +45,238 @@ export function Contact() {
   };
 
   return (
-    <Section id="contact" className="py-20 md:py-24">
+    <Section id="contact" className="py-20 md:py-32">
       <div className="container max-w-6xl mx-auto px-[var(--container-padding)]">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-24">
+        {/* Header */}
+        <div className="text-center mb-16">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6"
+          >
+            <MessageSquare className="w-4 h-4" />
+            <span>Get in Touch</span>
+          </motion.div>
 
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+            className="text-[length:var(--font-3xl)] font-bold tracking-tight mb-4"
+          >
+            Let's Work Together
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+            className="text-muted-foreground max-w-2xl mx-auto text-[length:var(--font-lg)]"
+          >
+            I'm always open to discussing new opportunities in platform engineering,
+            cloud architecture, or DevOps.
+          </motion.p>
+        </div>
+
+        <div className="grid lg:grid-cols-5 gap-12 lg:gap-16">
           {/* Contact Info */}
-          <div>
-            <h2 className="text-[length:var(--font-3xl)] font-bold tracking-tight mb-6">Get in Touch</h2>
-            <p className="text-muted-foreground text-[length:var(--font-lg)] mb-8 leading-relaxed">
-              I'm always open to discussing new opportunities in platform engineering, cloud architecture, or DevOps.
-            </p>
-
+          <motion.div
+            initial={{ opacity: 0, x: -30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="lg:col-span-2 space-y-6"
+          >
             <div className="space-y-6">
-              <a href={`mailto:${CONTACT_EMAIL}`} className="flex items-center gap-4 p-4 rounded-lg border border-border bg-card hover:bg-accent hover:text-accent-foreground transition-colors group">
-                <div className="p-3 rounded-md bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                  <Mail className="w-5 h-5" />
+              {/* Email Card */}
+              <motion.a
+                href={`mailto:${CONTACT_EMAIL}`}
+                className="group flex items-center gap-4 p-5 rounded-2xl border border-border/50 bg-card/50 backdrop-blur-xl hover:border-primary/30 transition-all duration-300"
+                whileHover={{ y: -5, scale: 1.02 }}
+                transition={{ type: 'spring', stiffness: 300 }}
+              >
+                <div className="p-3 rounded-xl bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-300">
+                  <Mail className="w-6 h-6" />
                 </div>
-                <div>
+                <div className="flex-1">
                   <div className="font-medium">Email</div>
                   <div className="text-sm text-muted-foreground">{CONTACT_EMAIL}</div>
                 </div>
-              </a>
+                <ArrowUpRight className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
+              </motion.a>
 
-              <div className="flex items-center gap-4 p-4 rounded-lg border border-border bg-card">
-                <div className="p-3 rounded-md bg-primary/10 text-primary">
-                  <MapPin className="w-5 h-5" />
+              {/* Location Card */}
+              <motion.div
+                className="flex items-center gap-4 p-5 rounded-2xl border border-border/50 bg-card/50 backdrop-blur-xl"
+                whileHover={{ y: -5 }}
+                transition={{ type: 'spring', stiffness: 300 }}
+              >
+                <div className="p-3 rounded-xl bg-primary/10 text-primary">
+                  <MapPin className="w-6 h-6" />
                 </div>
                 <div>
                   <div className="font-medium">Location</div>
                   <div className="text-sm text-muted-foreground">Illinois, USA</div>
                 </div>
+              </motion.div>
+            </div>
+
+            {/* Social Links */}
+            <div className="pt-6 border-t border-border/50">
+              <p className="text-sm text-muted-foreground mb-4">Or connect with me on</p>
+              <div className="flex gap-3">
+                {[
+                  { href: 'https://github.com/chandrakodali', icon: Github, label: 'GitHub' },
+                  { href: 'https://www.linkedin.com/in/chandrakoushikkodali', icon: Linkedin, label: 'LinkedIn' },
+                ].map((social) => (
+                  <motion.a
+                    key={social.label}
+                    href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-border/50 bg-card/50 text-sm font-medium hover:border-primary/30 hover:bg-primary/5 transition-colors"
+                    whileHover={{ y: -3, scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                  >
+                    <social.icon className="w-4 h-4" />
+                    {social.label}
+                  </motion.a>
+                ))}
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Contact Form */}
-          <div className="rounded-2xl border border-border bg-card p-6 md:p-8 shadow-sm">
-            {isSuccess ? (
-              <div className="text-center py-12">
-                <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <CheckCircle className="w-8 h-8" />
-                </div>
-                <h3 className="text-2xl font-bold mb-2">Message Sent!</h3>
-                <p className="text-muted-foreground mb-6">Thank you for reaching out. I'll get back to you shortly.</p>
-                <button
-                  onClick={() => setIsSuccess(false)}
-                  className="text-primary font-medium hover:underline"
+          <motion.div
+            initial={{ opacity: 0, x: 30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="lg:col-span-3"
+          >
+            <div className="rounded-2xl border border-border/50 bg-card/50 backdrop-blur-xl p-6 md:p-8">
+              {isSuccess ? (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="text-center py-12"
                 >
-                  Send another message
-                </button>
-              </div>
-            ) : (
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid sm:grid-cols-2 gap-4">
+                  <motion.div
+                    className="w-20 h-20 bg-green-500/10 text-green-500 rounded-full flex items-center justify-center mx-auto mb-6"
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ type: 'spring', stiffness: 200, delay: 0.2 }}
+                  >
+                    <CheckCircle className="w-10 h-10" />
+                  </motion.div>
+                  <h3 className="text-2xl font-bold mb-2">Message Sent!</h3>
+                  <p className="text-muted-foreground mb-6">
+                    Thank you for reaching out. I'll get back to you shortly.
+                  </p>
+                  <motion.button
+                    onClick={() => setIsSuccess(false)}
+                    className="text-primary font-medium hover:underline"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    Send another message
+                  </motion.button>
+                </motion.div>
+              ) : (
+                <form onSubmit={handleSubmit} className="space-y-5">
+                  <div className="grid sm:grid-cols-2 gap-5">
+                    <div className="space-y-2">
+                      <label htmlFor="name" className="text-sm font-medium">
+                        Name
+                      </label>
+                      <input
+                        id="name"
+                        name="name"
+                        type="text"
+                        required
+                        className="w-full px-4 py-3 rounded-xl border border-border/50 bg-background/50 focus:border-primary/50 focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+                        placeholder="John Doe"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <label htmlFor="email" className="text-sm font-medium">
+                        Email
+                      </label>
+                      <input
+                        id="email"
+                        name="email"
+                        type="email"
+                        required
+                        className="w-full px-4 py-3 rounded-xl border border-border/50 bg-background/50 focus:border-primary/50 focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+                        placeholder="john@example.com"
+                      />
+                    </div>
+                  </div>
+
                   <div className="space-y-2">
-                    <label htmlFor="name" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Name</label>
+                    <label htmlFor="subject" className="text-sm font-medium">
+                      Subject
+                    </label>
                     <input
-                      id="name" name="name" required
-                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                      placeholder="John Doe"
+                      id="subject"
+                      name="subject"
+                      type="text"
+                      required
+                      className="w-full px-4 py-3 rounded-xl border border-border/50 bg-background/50 focus:border-primary/50 focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+                      placeholder="Project inquiry"
                     />
                   </div>
+
                   <div className="space-y-2">
-                    <label htmlFor="email" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Email</label>
-                    <input
-                      id="email" name="email" type="email" required
-                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                      placeholder="john@example.com"
+                    <label htmlFor="message" className="text-sm font-medium">
+                      Message
+                    </label>
+                    <textarea
+                      id="message"
+                      name="message"
+                      required
+                      rows={5}
+                      className="w-full px-4 py-3 rounded-xl border border-border/50 bg-background/50 focus:border-primary/50 focus:ring-2 focus:ring-primary/20 outline-none transition-all resize-none"
+                      placeholder="Tell me about your project..."
                     />
                   </div>
-                </div>
 
-                <div className="space-y-2">
-                  <label htmlFor="subject" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Subject</label>
-                  <input
-                    id="subject" name="subject" required
-                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                    placeholder="Project inquiry..."
-                  />
-                </div>
+                  {error && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="p-4 rounded-xl bg-destructive/10 text-destructive text-sm"
+                    >
+                      {error}
+                    </motion.div>
+                  )}
 
-                <div className="space-y-2">
-                  <label htmlFor="message" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">Message</label>
-                  <textarea
-                    id="message" name="message" required rows={4}
-                    className="flex min-h-[80px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                    placeholder="How can I help you?"
-                  />
-                </div>
-
-                {error && (
-                  <div className="text-sm text-red-500 flex items-center gap-2 bg-red-500/10 p-3 rounded-md">
-                    <AlertCircle className="w-4 h-4" />
-                    {error}
-                  </div>
-                )}
-
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 w-full"
-                >
-                  {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Send className="w-4 h-4 mr-2" />}
-                  Send Message
-                </button>
-              </form>
-            )}
-          </div>
-
+                  <motion.button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="w-full py-4 rounded-xl bg-primary text-primary-foreground font-medium shadow-lg shadow-primary/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    whileHover={{ scale: 1.02, boxShadow: '0 10px 30px -10px hsl(var(--primary) / 0.4)' }}
+                    whileTap={{ scale: 0.98 }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                        Sending...
+                      </>
+                    ) : (
+                      <>
+                        <Send className="w-5 h-5" />
+                        Send Message
+                      </>
+                    )}
+                  </motion.button>
+                </form>
+              )}
+            </div>
+          </motion.div>
         </div>
       </div>
     </Section>
