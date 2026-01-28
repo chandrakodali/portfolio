@@ -1,5 +1,6 @@
 import { motion } from 'motion/react';
-import { Container, Cloud, GitBranch, Shield, Gauge, Network, Github, ExternalLink, ArrowRight } from 'lucide-react';
+import { Container, Cloud, GitBranch, Shield, Gauge, Network, ArrowRight } from 'lucide-react';
+import { Section } from './Section';
 
 const projects = [
   {
@@ -9,7 +10,6 @@ const projects = [
     icon: Container,
     metrics: { services: '20+', deploy: '-55%', uptime: '99.9%' },
     tags: ['Kubernetes', 'Helm', 'ArgoCD', 'Terraform'],
-    links: { github: 'https://github.com/chandrakodali/k8s-platform' },
   },
   {
     title: 'Multi-Cloud IaC',
@@ -18,7 +18,6 @@ const projects = [
     icon: Cloud,
     metrics: { envs: '15+', manual: '-30%', drift: '0%' },
     tags: ['Terraform', 'AWS', 'Azure', 'CloudFormation'],
-    links: { github: 'https://github.com/chandrakodali/terraform-modules' },
   },
   {
     title: 'CI/CD Framework',
@@ -54,32 +53,9 @@ const projects = [
   },
 ];
 
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1
-    }
-  }
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      type: "spring",
-      stiffness: 100,
-      damping: 20
-    }
-  }
-};
-
 export function Projects() {
   return (
-    <section id="projects" className="py-20 md:py-32 bg-secondary/30">
+    <Section id="projects" className="py-20 md:py-32 bg-secondary/30">
       <div className="container max-w-7xl mx-auto px-[var(--container-padding)]">
         <div className="text-center mb-20">
           <motion.h2
@@ -105,13 +81,24 @@ export function Projects() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
-          variants={containerVariants}
+          transition={{ staggerChildren: 0.1 }}
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
         >
           {projects.map((project) => (
             <motion.div
               key={project.title}
-              variants={itemVariants}
+              variants={{
+                hidden: { opacity: 0, y: 20 },
+                visible: {
+                  opacity: 1,
+                  y: 0,
+                  transition: {
+                    type: "spring",
+                    stiffness: 100,
+                    damping: 20
+                  }
+                }
+              }}
               className="group flex flex-col rounded-2xl border border-border bg-card p-8 shadow-sm hover:border-primary/50 hover:shadow-lg transition-all duration-300"
             >
               <div className="mb-6 flex items-center justify-between">
@@ -136,28 +123,6 @@ export function Projects() {
               </div>
 
               <div className="flex items-center gap-4 pt-6 border-t border-border mt-auto">
-                {project.links?.github && (
-                  <a
-                    href={project.links.github}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    <Github className="w-4 h-4 mr-2" />
-                    Code
-                  </a>
-                )}
-                {(project.links as any)?.demo && (
-                  <a
-                    href={(project.links as any).demo}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    <ExternalLink className="w-4 h-4 mr-2" />
-                    Live Demo
-                  </a>
-                )}
                 <div className="ml-auto">
                   <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors group-hover:translate-x-1" />
                 </div>
@@ -166,6 +131,6 @@ export function Projects() {
           ))}
         </motion.div>
       </div>
-    </section>
+    </Section>
   );
 }
