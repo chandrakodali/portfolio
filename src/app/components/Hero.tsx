@@ -227,10 +227,10 @@ export function Hero() {
               Hello, I'm
             </motion.p>
 
-            <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-bold leading-none mb-4" style={{ fontFamily: 'var(--font-heading)' }}>
+            <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-bold leading-none mb-4" style={{ fontFamily: "'Clash Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" }}>
               <AnimatedText
                 text="Chandra"
-                className="bg-gradient-to-r from-white via-gray-100 to-gray-300 bg-clip-text text-transparent"
+                className="bg-gradient-to-r from-white via-gray-100 to-gray-300 bg-clip-text [-webkit-text-fill-color:transparent] [text-fill-color:transparent]"
                 delay={0.4}
                 reducedMotion={prefersReducedMotion}
               />
@@ -238,7 +238,7 @@ export function Hero() {
               <span className="sm:ml-4"> </span>
               <AnimatedText
                 text="Koushik"
-                className="bg-gradient-to-r from-cyan-400 via-violet-400 to-fuchsia-400 bg-clip-text text-transparent"
+                className="bg-gradient-to-r from-cyan-400 via-violet-400 to-fuchsia-400 bg-clip-text [-webkit-text-fill-color:transparent] [text-fill-color:transparent]"
                 delay={0.7}
                 reducedMotion={prefersReducedMotion}
               />
