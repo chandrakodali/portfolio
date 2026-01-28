@@ -37,12 +37,13 @@ function ArticleCard({ article, index }: { article: typeof articles[0]; index: n
     const isInView = useInView(ref, { once: true, margin: '-50px' });
 
     return (
-        <motion.article
+        <motion.a
             ref={ref}
+            href={article.link}
             initial={{ opacity: 0, y: 40 }}
             animate={isInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6, delay: index * 0.15, ease: [0.25, 0.1, 0.25, 1] }}
-            className="group relative rounded-3xl bg-gradient-to-br from-white/[0.06] to-white/[0.02] border border-white/[0.08] backdrop-blur-xl overflow-hidden hover:border-white/[0.15] transition-all duration-500"
+            className="group relative rounded-3xl bg-gradient-to-br from-white/[0.06] to-white/[0.02] border border-white/[0.08] backdrop-blur-xl overflow-hidden hover:border-white/[0.15] transition-all duration-500 block cursor-pointer"
         >
             {/* Gradient header bar */}
             <div className={`h-2 bg-gradient-to-r ${article.gradient}`} />
@@ -70,22 +71,18 @@ function ArticleCard({ article, index }: { article: typeof articles[0]; index: n
                     {article.excerpt}
                 </p>
 
-                {/* Read more link */}
-                <motion.a
-                    href={article.link}
-                    className="inline-flex items-center gap-2 text-cyan-400 font-medium text-sm group/link"
-                    whileHover={{ x: 5 }}
-                >
+                {/* Read more indicator */}
+                <span className="inline-flex items-center gap-2 text-cyan-400 font-medium text-sm">
                     <span>Read article</span>
-                    <ArrowUpRight className="w-4 h-4 transition-transform group-hover/link:translate-x-1 group-hover/link:-translate-y-1" />
-                </motion.a>
+                    <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
+                </span>
             </div>
 
             {/* Hover glow effect */}
             <motion.div
-                className={`absolute inset-0 bg-gradient-to-br ${article.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-500`}
+                className={`absolute inset-0 bg-gradient-to-br ${article.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-500 pointer-events-none`}
             />
-        </motion.article>
+        </motion.a>
     );
 }
 
@@ -127,25 +124,8 @@ export function Blog() {
                         <ArticleCard key={article.id} article={article} index={index} />
                     ))}
                 </div>
-
-                {/* View all link */}
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={isInView ? { opacity: 1 } : {}}
-                    transition={{ delay: 0.8 }}
-                    className="text-center mt-12"
-                >
-                    <motion.a
-                        href="#"
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white/[0.05] border border-white/[0.1] text-gray-400 hover:text-white hover:border-white/[0.2] transition-all text-sm font-medium"
-                    >
-                        <span>View all articles</span>
-                        <ArrowUpRight className="w-4 h-4" />
-                    </motion.a>
-                </motion.div>
             </div>
         </section>
     );
 }
+
