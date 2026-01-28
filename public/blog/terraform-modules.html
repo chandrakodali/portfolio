@@ -265,6 +265,14 @@
             overflow-x: auto;
         }
 
+        .tree pre {
+            margin: 0;
+            font-family: inherit;
+            font-size: inherit;
+            line-height: inherit;
+            color: inherit;
+        }
+
         .tree .folder {
             color: #10b981;
         }
@@ -414,29 +422,31 @@ resource "aws_instance" "example" {
 
         <h3>Standard Module Layout</h3>
 
-        <div class="tree"><span class="folder">terraform-aws-eks/</span>
-            ├── <span class="file">README.md</span> # Documentation with examples
-            ├── <span class="file">main.tf</span> # Primary resource definitions
-            ├── <span class="file">variables.tf</span> # Input variable definitions
-            ├── <span class="file">outputs.tf</span> # Output value definitions
-            ├── <span class="file">versions.tf</span> # Provider and Terraform version constraints
-            ├── <span class="file">locals.tf</span> # Local value definitions
-            ├── <span class="file">data.tf</span> # Data source definitions
-            ├── <span class="folder">modules/</span> # Nested submodules
-            │ ├── <span class="folder">node-group/</span>
-            │ │ ├── <span class="file">main.tf</span>
-            │ │ ├── <span class="file">variables.tf</span>
-            │ │ └── <span class="file">outputs.tf</span>
-            │ └── <span class="folder">addons/</span>
-            │ ├── <span class="file">main.tf</span>
-            │ ├── <span class="file">variables.tf</span>
-            │ └── <span class="file">outputs.tf</span>
-            ├── <span class="folder">examples/</span> # Usage examples
-            │ ├── <span class="folder">complete/</span>
-            │ ├── <span class="folder">minimal/</span>
-            │ └── <span class="folder">with-fargate/</span>
-            └── <span class="folder">test/</span> # Automated tests
-            └── <span class="file">eks_test.go</span></div>
+        <div class="tree">
+            <pre><span class="folder">terraform-aws-eks/</span>
+├── <span class="file">README.md</span>           # Documentation with examples
+├── <span class="file">main.tf</span>             # Primary resource definitions
+├── <span class="file">variables.tf</span>        # Input variable definitions
+├── <span class="file">outputs.tf</span>          # Output value definitions
+├── <span class="file">versions.tf</span>         # Provider and Terraform version constraints
+├── <span class="file">locals.tf</span>           # Local value definitions
+├── <span class="file">data.tf</span>             # Data source definitions
+├── <span class="folder">modules/</span>            # Nested submodules
+│   ├── <span class="folder">node-group/</span>
+│   │   ├── <span class="file">main.tf</span>
+│   │   ├── <span class="file">variables.tf</span>
+│   │   └── <span class="file">outputs.tf</span>
+│   └── <span class="folder">addons/</span>
+│       ├── <span class="file">main.tf</span>
+│       ├── <span class="file">variables.tf</span>
+│       └── <span class="file">outputs.tf</span>
+├── <span class="folder">examples/</span>           # Usage examples
+│   ├── <span class="folder">complete/</span>
+│   ├── <span class="folder">minimal/</span>
+│   └── <span class="folder">with-fargate/</span>
+└── <span class="folder">test/</span>               # Automated tests
+    └── <span class="file">eks_test.go</span></pre>
+        </div>
 
         <h3>Variables Best Practices</h3>
 
