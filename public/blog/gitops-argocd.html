@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GitOps Best Practices with ArgoCD | Chandra Koushik Kodali</title>
     <meta name="description"
-        content="A comprehensive guide to implementing GitOps workflows for Kubernetes deployments with zero-downtime strategies using ArgoCD.">
+        content="A comprehensive guide to implementing GitOps workflows for Kubernetes deployments with ArgoCD, including multi-environment strategies and zero-downtime deployments.">
     <meta name="author" content="Chandra Koushik Kodali">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -64,6 +64,7 @@
             font-weight: 700;
             background: linear-gradient(to right, #fff, #c4b5fd);
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 16px;
             line-height: 1.2;
@@ -92,6 +93,12 @@
             margin: 32px 0 12px;
         }
 
+        h4 {
+            font-size: 1.1rem;
+            color: #d1d5db;
+            margin: 24px 0 10px;
+        }
+
         p {
             margin-bottom: 20px;
             color: #d1d5db;
@@ -105,6 +112,105 @@
 
         li {
             margin-bottom: 8px;
+        }
+
+        .code-block {
+            background: #0d1117;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            overflow-x: auto;
+            font-family: 'Fira Code', monospace;
+            font-size: 14px;
+            color: #c9d1d9;
+        }
+
+        .code-block code {
+            white-space: pre;
+        }
+
+        .highlight {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(6, 182, 212, 0.1));
+            border-left: 3px solid #8b5cf6;
+            padding: 16px 20px;
+            margin: 24px 0;
+            border-radius: 0 12px 12px 0;
+        }
+
+        .warning {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(239, 68, 68, 0.1));
+            border-left: 3px solid #f59e0b;
+            padding: 16px 20px;
+            margin: 24px 0;
+            border-radius: 0 12px 12px 0;
+        }
+
+        .key-point {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 24px 0;
+        }
+
+        .key-point h4 {
+            color: #10b981;
+            margin-bottom: 8px;
+            font-size: 14px;
+            margin-top: 0;
+        }
+
+        .edge-case {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 24px 0;
+        }
+
+        .edge-case h4 {
+            color: #ef4444;
+            margin-bottom: 8px;
+            font-size: 14px;
+            margin-top: 0;
+        }
+
+        strong {
+            color: #fff;
+        }
+
+        .toc {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 24px;
+            margin: 32px 0;
+        }
+
+        .toc h3 {
+            margin-top: 0;
+            margin-bottom: 16px;
+            color: #fff;
+        }
+
+        .toc ul {
+            margin: 0;
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .toc li {
+            margin-bottom: 8px;
+        }
+
+        .toc a {
+            color: #8b5cf6;
+            text-decoration: none;
+        }
+
+        .toc a:hover {
+            text-decoration: underline;
         }
 
         .diagram {
@@ -130,82 +236,26 @@
             max-width: 100%;
         }
 
-        .code-block {
-            background: #0d1117;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            padding: 20px;
-            margin: 20px 0;
-            overflow-x: auto;
-            font-family: 'Fira Code', monospace;
-            font-size: 14px;
-            color: #c9d1d9;
-        }
-
-        .code-block code {
-            white-space: pre;
-        }
-
-        .highlight {
-            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(236, 72, 153, 0.1));
-            border-left: 3px solid #8b5cf6;
-            padding: 16px 20px;
-            margin: 24px 0;
-            border-radius: 0 12px 12px 0;
-        }
-
-        .key-point {
-            background: rgba(16, 185, 129, 0.1);
-            border: 1px solid rgba(16, 185, 129, 0.3);
-            border-radius: 12px;
-            padding: 20px;
-            margin: 24px 0;
-        }
-
-        .key-point h4 {
-            color: #10b981;
-            margin-bottom: 8px;
-            font-size: 14px;
-        }
-
-        .warning {
-            background: rgba(245, 158, 11, 0.1);
-            border: 1px solid rgba(245, 158, 11, 0.3);
-            border-radius: 12px;
-            padding: 20px;
-            margin: 24px 0;
-        }
-
-        .warning h4 {
-            color: #f59e0b;
-            margin-bottom: 8px;
-            font-size: 14px;
-        }
-
-        strong {
-            color: #fff;
-        }
-
-        .comparison-table {
+        table {
             width: 100%;
             border-collapse: collapse;
-            margin: 24px 0;
+            margin: 20px 0;
+            font-size: 14px;
         }
 
-        .comparison-table th,
-        .comparison-table td {
-            padding: 12px 16px;
+        th,
+        td {
+            padding: 12px;
             text-align: left;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .comparison-table th {
-            color: #8b5cf6;
-            font-weight: 600;
-            background: rgba(139, 92, 246, 0.1);
+        th {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.05);
         }
 
-        .comparison-table td {
+        td {
             color: #d1d5db;
         }
 
@@ -222,7 +272,7 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            background: linear-gradient(135deg, #8b5cf6, #ec4899);
+            background: linear-gradient(135deg, #8b5cf6, #06b6d4);
             color: #fff;
             padding: 12px 24px;
             border-radius: 12px;
@@ -241,9 +291,7 @@
 
 <body>
     <article class="container">
-        <a href="/portfolio/#blog" class="back-link">
-            ← Back to Portfolio
-        </a>
+        <a href="/portfolio/#blog" class="back-link">← Back to Portfolio</a>
 
         <span class="tag">DevOps</span>
         <h1>GitOps Best Practices with ArgoCD</h1>
@@ -251,391 +299,760 @@
         <div class="meta">
             <span>By Chandra Koushik Kodali</span>
             <span>•</span>
-            <span>6 min read</span>
+            <span>22 min read</span>
             <span>•</span>
             <span>January 2026</span>
         </div>
 
         <p>
-            GitOps is a paradigm that has transformed how we manage Kubernetes deployments. Instead of
-            pushing changes to clusters, we <strong>declare the desired state in Git</strong> and let
-            automated controllers pull and apply those changes. This article covers the best practices
-            I've learned from implementing GitOps at scale.
+            GitOps has revolutionized how we deploy and manage applications on Kubernetes. By treating Git as the single
+            source of truth for declarative infrastructure and applications, teams gain unprecedented visibility,
+            auditability, and control over their deployments. In this comprehensive guide, I'll share battle-tested
+            patterns and practices for implementing GitOps with ArgoCD at scale.
         </p>
 
-        <p>
-            Whether you're just starting with GitOps or looking to optimize your existing workflows,
-            this guide will help you build a robust, scalable, and auditable deployment pipeline.
-        </p>
-
-        <h2>What is GitOps?</h2>
-
-        <p>
-            GitOps is an operational framework that uses Git as the single source of truth for
-            declarative infrastructure and applications. The core principles are:
-        </p>
-
-        <ol>
-            <li><strong>Declarative:</strong> The entire system is described declaratively</li>
-            <li><strong>Versioned and Immutable:</strong> The desired state is stored in Git</li>
-            <li><strong>Pulled Automatically:</strong> Approved changes are automatically applied</li>
-            <li><strong>Continuously Reconciled:</strong> The system self-heals to match the desired state</li>
-        </ol>
-
-        <div class="highlight">
-            <strong>Core Concept:</strong> With GitOps, if you want to know what's running in production,
-            you look at Git. If you want to change production, you change Git.
+        <div class="toc">
+            <h3>Table of Contents</h3>
+            <ul>
+                <li><a href="#gitops-principles">1. GitOps Principles and Philosophy</a></li>
+                <li><a href="#argocd-architecture">2. ArgoCD Architecture Deep Dive</a></li>
+                <li><a href="#repository-strategies">3. Repository Structure Strategies</a></li>
+                <li><a href="#multi-environment">4. Multi-Environment Management</a></li>
+                <li><a href="#deployment-strategies">5. Deployment Strategies</a></li>
+                <li><a href="#secrets-management">6. Secrets Management</a></li>
+                <li><a href="#rbac-multitenancy">7. RBAC and Multi-Tenancy</a></li>
+                <li><a href="#sync-strategies">8. Sync Strategies and Hooks</a></li>
+                <li><a href="#rollback-recovery">9. Rollback and Disaster Recovery</a></li>
+                <li><a href="#monitoring">10. Monitoring and Alerting</a></li>
+                <li><a href="#edge-cases">11. Edge Cases and Troubleshooting</a></li>
+                <li><a href="#security-hardening">12. Security Hardening</a></li>
+            </ul>
         </div>
 
-        <h2>Push vs Pull: Understanding the Difference</h2>
+        <h2 id="gitops-principles">1. GitOps Principles and Philosophy</h2>
 
+        <p>GitOps is built on four fundamental principles that differentiate it from traditional CI/CD approaches:</p>
+
+        <h3>Declarative Configuration</h3>
         <p>
-            Traditional CI/CD pipelines <em>push</em> changes to clusters. GitOps tools <em>pull</em> the
-            desired state from Git and apply it. This subtle difference has significant implications:
+            Everything about your system — infrastructure, applications, policies — is described declaratively. This
+            means you define <em>what</em> you want, not <em>how</em> to get there. Kubernetes manifests, Helm charts,
+            and Kustomize overlays are all declarative by nature.
         </p>
 
-        <table class="comparison-table">
-            <thead>
-                <tr>
-                    <th>Aspect</th>
-                    <th>Push-based (Traditional)</th>
-                    <th>Pull-based (GitOps)</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Credential access</td>
-                    <td>CI has cluster credentials</td>
-                    <td>Only the controller has credentials</td>
-                </tr>
-                <tr>
-                    <td>Drift detection</td>
-                    <td>Manual or none</td>
-                    <td>Automatic and continuous</td>
-                </tr>
-                <tr>
-                    <td>Rollback</td>
-                    <td>Re-run pipeline or script</td>
-                    <td>Revert the Git commit</td>
-                </tr>
-                <tr>
-                    <td>Audit trail</td>
-                    <td>CI logs</td>
-                    <td>Git history</td>
-                </tr>
-                <tr>
-                    <td>Security</td>
-                    <td>Cluster credentials in CI</td>
-                    <td>Cluster never exposed externally</td>
-                </tr>
-            </tbody>
-        </table>
-
-        <h2>ArgoCD Architecture</h2>
-
+        <h3>Versioned and Immutable</h3>
         <p>
-            ArgoCD is a declarative, GitOps continuous delivery tool for Kubernetes. Here's how it works:
+            The desired state is stored in Git, providing a complete version history. Every change is tracked, authored,
+            and can be audited. You can always answer "who changed what, when, and why?"
         </p>
+
+        <h3>Pulled Automatically</h3>
+        <p>
+            Unlike traditional CI/CD where changes are pushed to the cluster, GitOps agents <em>pull</em> the desired
+            state and apply it. This eliminates the need to expose cluster credentials to external systems.
+        </p>
+
+        <h3>Continuously Reconciled</h3>
+        <p>
+            GitOps agents continuously compare the actual state with the desired state and automatically correct any
+            drift. If someone manually changes something in the cluster (kubectl edit), the agent will revert it.
+        </p>
+
+        <div class="highlight">
+            <strong>The GitOps Promise:</strong> If it's in Git, it's in the cluster. If it's not in Git, it's not in
+            the cluster. This simple guarantee transforms how teams think about deployments and operations.
+        </div>
+
+        <h2 id="argocd-architecture">2. ArgoCD Architecture Deep Dive</h2>
+
+        <p>Understanding ArgoCD's architecture is essential for operating it effectively at scale.</p>
 
         <div class="diagram">
             <div class="diagram-title">Figure 1: ArgoCD Architecture</div>
             <svg viewBox="0 0 700 400" xmlns="http://www.w3.org/2000/svg">
-                <!-- Git Repos -->
-                <rect x="30" y="30" width="150" height="120" rx="12" fill="#0d1117" stroke="#f59e0b" stroke-width="2" />
-                <text x="105" y="60" fill="#f59e0b" font-size="14" font-weight="600" text-anchor="middle">Git
-                    Repositories</text>
-                <rect x="45" y="75" width="120" height="30" rx="6" fill="rgba(245, 158, 11, 0.1)" stroke="#f59e0b"
+                <defs>
+                    <linearGradient id="argoGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" style="stop-color:#8b5cf6;stop-opacity:0.2" />
+                        <stop offset="100%" style="stop-color:#06b6d4;stop-opacity:0.2" />
+                    </linearGradient>
+                </defs>
+
+                <!-- Git Repository -->
+                <rect x="30" y="50" width="120" height="60" rx="8" fill="#0d1117" stroke="#f59e0b" stroke-width="2" />
+                <text x="90" y="75" fill="#f59e0b" font-size="12" text-anchor="middle">Git Repository</text>
+                <text x="90" y="95" fill="#9ca3af" font-size="10" text-anchor="middle">Source of Truth</text>
+
+                <!-- ArgoCD Components Box -->
+                <rect x="200" y="20" width="300" height="280" rx="12" fill="url(#argoGrad)" stroke="#8b5cf6"
                     stroke-width="1" />
-                <text x="105" y="95" fill="#d1d5db" font-size="11" text-anchor="middle">App Manifests</text>
-                <rect x="45" y="110" width="120" height="30" rx="6" fill="rgba(245, 158, 11, 0.1)" stroke="#f59e0b"
-                    stroke-width="1" />
-                <text x="105" y="130" fill="#d1d5db" font-size="11" text-anchor="middle">Helm Charts</text>
+                <text x="350" y="45" fill="#8b5cf6" font-size="14" font-weight="600" text-anchor="middle">ArgoCD
+                    Components</text>
 
-                <!-- ArgoCD Box -->
-                <rect x="240" y="30" width="220" height="340" rx="12" fill="rgba(16, 185, 129, 0.05)" stroke="#10b981"
-                    stroke-width="2" />
-                <text x="350" y="55" fill="#10b981" font-size="14" font-weight="600" text-anchor="middle">ArgoCD
-                    (Control Plane)</text>
+                <!-- API Server -->
+                <rect x="220" y="60" width="120" height="50" rx="8" fill="#0d1117" stroke="#8b5cf6" stroke-width="1" />
+                <text x="280" y="85" fill="#e5e7eb" font-size="11" text-anchor="middle">API Server</text>
+                <text x="280" y="100" fill="#9ca3af" font-size="9" text-anchor="middle">REST/gRPC API</text>
 
-                <!-- ArgoCD Components -->
-                <rect x="260" y="75" width="180" height="45" rx="8" fill="#0d1117" stroke="#10b981" stroke-width="1" />
-                <text x="350" y="95" fill="#e5e7eb" font-size="12" text-anchor="middle">API Server</text>
-                <text x="350" y="110" fill="#6b7280" font-size="10" text-anchor="middle">REST/gRPC interface</text>
+                <!-- Repo Server -->
+                <rect x="360" y="60" width="120" height="50" rx="8" fill="#0d1117" stroke="#8b5cf6" stroke-width="1" />
+                <text x="420" y="85" fill="#e5e7eb" font-size="11" text-anchor="middle">Repo Server</text>
+                <text x="420" y="100" fill="#9ca3af" font-size="9" text-anchor="middle">Manifest Generation</text>
 
-                <rect x="260" y="135" width="180" height="45" rx="8" fill="#0d1117" stroke="#10b981" stroke-width="1" />
-                <text x="350" y="155" fill="#e5e7eb" font-size="12" text-anchor="middle">Repo Server</text>
-                <text x="350" y="170" fill="#6b7280" font-size="10" text-anchor="middle">Fetches manifests from
-                    Git</text>
+                <!-- Application Controller -->
+                <rect x="220" y="130" width="120" height="50" rx="8" fill="#0d1117" stroke="#8b5cf6" stroke-width="1" />
+                <text x="280" y="155" fill="#e5e7eb" font-size="11" text-anchor="middle">App Controller</text>
+                <text x="280" y="170" fill="#9ca3af" font-size="9" text-anchor="middle">Reconciliation</text>
 
-                <rect x="260" y="195" width="180" height="45" rx="8" fill="#0d1117" stroke="#10b981" stroke-width="1" />
-                <text x="350" y="215" fill="#e5e7eb" font-size="12" text-anchor="middle">Application Controller</text>
-                <text x="350" y="230" fill="#6b7280" font-size="10" text-anchor="middle">Monitors & syncs apps</text>
+                <!-- Redis -->
+                <rect x="360" y="130" width="120" height="50" rx="8" fill="#0d1117" stroke="#8b5cf6" stroke-width="1" />
+                <text x="420" y="155" fill="#e5e7eb" font-size="11" text-anchor="middle">Redis</text>
+                <text x="420" y="170" fill="#9ca3af" font-size="9" text-anchor="middle">Cache</text>
 
-                <rect x="260" y="255" width="180" height="45" rx="8" fill="#0d1117" stroke="#10b981" stroke-width="1" />
-                <text x="350" y="275" fill="#e5e7eb" font-size="12" text-anchor="middle">Redis</text>
-                <text x="350" y="290" fill="#6b7280" font-size="10" text-anchor="middle">Caching layer</text>
+                <!-- Dex -->
+                <rect x="220" y="200" width="120" height="50" rx="8" fill="#0d1117" stroke="#8b5cf6" stroke-width="1" />
+                <text x="280" y="225" fill="#e5e7eb" font-size="11" text-anchor="middle">Dex</text>
+                <text x="280" y="240" fill="#9ca3af" font-size="9" text-anchor="middle">SSO/OIDC</text>
 
-                <rect x="260" y="315" width="180" height="45" rx="8" fill="#0d1117" stroke="#10b981" stroke-width="1" />
-                <text x="350" y="335" fill="#e5e7eb" font-size="12" text-anchor="middle">Dex</text>
-                <text x="350" y="350" fill="#6b7280" font-size="10" text-anchor="middle">SSO / OIDC auth</text>
+                <!-- Notifications -->
+                <rect x="360" y="200" width="120" height="50" rx="8" fill="#0d1117" stroke="#8b5cf6" stroke-width="1" />
+                <text x="420" y="225" fill="#e5e7eb" font-size="11" text-anchor="middle">Notifications</text>
+                <text x="420" y="240" fill="#9ca3af" font-size="9" text-anchor="middle">Alerts/Webhooks</text>
 
-                <!-- Kubernetes Clusters -->
-                <rect x="520" y="30" width="150" height="180" rx="12" fill="#0d1117" stroke="#3b82f6"
-                    stroke-width="2" />
-                <text x="595" y="55" fill="#3b82f6" font-size="14" font-weight="600" text-anchor="middle">Target
-                    Clusters</text>
-
-                <rect x="535" y="75" width="120" height="40" rx="6" fill="rgba(59, 130, 246, 0.1)" stroke="#3b82f6"
-                    stroke-width="1" />
-                <text x="595" y="100" fill="#d1d5db" font-size="11" text-anchor="middle">Production</text>
-
-                <rect x="535" y="125" width="120" height="40" rx="6" fill="rgba(59, 130, 246, 0.1)" stroke="#3b82f6"
-                    stroke-width="1" />
-                <text x="595" y="150" fill="#d1d5db" font-size="11" text-anchor="middle">Staging</text>
-
-                <rect x="535" y="175" width="120" height="40" rx="6" fill="rgba(59, 130, 246, 0.1)" stroke="#3b82f6"
-                    stroke-width="1" />
-                <text x="595" y="200" fill="#d1d5db" font-size="11" text-anchor="middle">Development</text>
-
-                <!-- Users -->
-                <rect x="520" y="250" width="150" height="70" rx="12" fill="#0d1117" stroke="#8b5cf6"
-                    stroke-width="2" />
-                <text x="595" y="280" fill="#8b5cf6" font-size="14" font-weight="600" text-anchor="middle">Users</text>
-                <text x="595" y="300" fill="#6b7280" font-size="10" text-anchor="middle">UI / CLI / API</text>
+                <!-- Kubernetes Cluster -->
+                <rect x="550" y="50" width="120" height="60" rx="8" fill="#0d1117" stroke="#3b82f6" stroke-width="2" />
+                <text x="610" y="75" fill="#3b82f6" font-size="12" text-anchor="middle">Kubernetes</text>
+                <text x="610" y="95" fill="#9ca3af" font-size="10" text-anchor="middle">Target Cluster</text>
 
                 <!-- Arrows -->
-                <!-- Git to ArgoCD -->
-                <path d="M185 90 L235 150" stroke="#6b7280" stroke-width="2" />
-                <polygon points="240,155 228,150 233,140" fill="#6b7280" />
-                <text x="195" y="115" fill="#6b7280" font-size="10">pull</text>
+                <path d="M150 80 L195 80" stroke="#6b7280" stroke-width="2" />
+                <polygon points="200,80 190,75 190,85" fill="#6b7280" />
 
-                <!-- ArgoCD to Clusters -->
-                <path d="M465 160 L515 120" stroke="#6b7280" stroke-width="2" />
-                <polygon points="520,115 508,115 512,125" fill="#6b7280" />
-                <text x="480" y="125" fill="#6b7280" font-size="10">sync</text>
+                <path d="M505 130 L545 80" stroke="#6b7280" stroke-width="2" />
+                <polygon points="550,75 540,80 545,90" fill="#6b7280" />
 
-                <!-- Users to ArgoCD -->
-                <path d="M515 280 L465 220" stroke="#6b7280" stroke-width="2" />
-                <polygon points="460,215 468,225 472,215" fill="#6b7280" />
+                <!-- Users -->
+                <rect x="30" y="320" width="120" height="50" rx="8" fill="#0d1117" stroke="#06b6d4" stroke-width="2" />
+                <text x="90" y="345" fill="#06b6d4" font-size="12" text-anchor="middle">Users/CI</text>
+                <text x="90" y="360" fill="#9ca3af" font-size="10" text-anchor="middle">UI/CLI/API</text>
+
+                <path d="M150 345 L270 270" stroke="#6b7280" stroke-width="2" stroke-dasharray="4" />
             </svg>
         </div>
 
-        <h2>Repository Structure Best Practices</h2>
+        <h3>Key Components</h3>
 
-        <p>
-            How you organize your GitOps repositories significantly impacts maintainability.
-            Here are the two main patterns:
-        </p>
+        <table>
+            <tr>
+                <th>Component</th>
+                <th>Purpose</th>
+                <th>Scaling Considerations</th>
+            </tr>
+            <tr>
+                <td>API Server</td>
+                <td>Exposes REST/gRPC API, serves UI</td>
+                <td>Stateless, can be horizontally scaled</td>
+            </tr>
+            <tr>
+                <td>Repo Server</td>
+                <td>Clones repos, generates manifests</td>
+                <td>CPU intensive, scale based on repo count</td>
+            </tr>
+            <tr>
+                <td>Application Controller</td>
+                <td>Monitors apps, performs sync</td>
+                <td>Single leader with sharding support</td>
+            </tr>
+            <tr>
+                <td>Redis</td>
+                <td>Caches manifests and app state</td>
+                <td>Consider Redis Cluster for HA</td>
+            </tr>
+            <tr>
+                <td>Dex</td>
+                <td>OIDC provider for SSO</td>
+                <td>Stateless, scale as needed</td>
+            </tr>
+        </table>
 
-        <h3>Pattern 1: Mono-repo (Recommended for small teams)</h3>
+        <h2 id="repository-strategies">3. Repository Structure Strategies</h2>
 
-        <p>All applications in a single repository, organized by environment:</p>
+        <p>How you structure your GitOps repositories significantly impacts maintainability and scalability.</p>
 
-        <div class="code-block">
-            <code>gitops-repo/
+        <h3>Mono-Repository Approach</h3>
+        <p>All applications and environments in a single repository:</p>
+
+        <div class="code-block"><code>gitops-repo/
 ├── apps/
-│   ├── base/                    # Base configurations
-│   │   ├── frontend/
-│   │   │   ├── deployment.yaml
-│   │   │   ├── service.yaml
-│   │   │   └── kustomization.yaml
-│   │   └── backend/
-│   │       └── ...
-│   ├── overlays/
-│   │   ├── development/
-│   │   │   ├── frontend/
-│   │   │   │   ├── kustomization.yaml
-│   │   │   │   └── replica-patch.yaml
-│   │   │   └── ...
-│   │   ├── staging/
-│   │   │   └── ...
-│   │   └── production/
-│   │       └── ...
+│   ├── team-a/
+│   │   ├── app-1/
+│   │   │   ├── base/
+│   │   │   │   ├── deployment.yaml
+│   │   │   │   ├── service.yaml
+│   │   │   │   └── kustomization.yaml
+│   │   │   └── overlays/
+│   │   │       ├── dev/
+│   │   │       ├── staging/
+│   │   │       └── prod/
+│   │   └── app-2/
+│   └── team-b/
 ├── infrastructure/
 │   ├── argocd/
 │   ├── cert-manager/
-│   └── ingress-nginx/
-└── projects/                    # ArgoCD AppProjects
-    └── ...</code>
-        </div>
-
-        <h3>Pattern 2: Multi-repo (Recommended for large organizations)</h3>
-
-        <p>Separate repositories per application or team:</p>
-
-        <div class="code-block">
-            <code># App Team A's repo
-app-team-a-gitops/
-├── development/
-├── staging/
-└── production/
-
-# App Team B's repo
-app-team-b-gitops/
-├── development/
-├── staging/
-└── production/
-
-# Platform team's repo (manages ArgoCD itself)
-platform-gitops/
-├── argocd-config/
-├── cluster-addons/
-└── app-of-apps.yaml</code>
-        </div>
+│   └── monitoring/
+└── clusters/
+    ├── dev/
+    ├── staging/
+    └── prod/</code></div>
 
         <div class="key-point">
-            <h4>💡 App of Apps Pattern</h4>
-            <p>
-                Use the "App of Apps" pattern to bootstrap your entire cluster. One ArgoCD Application
-                points to a directory containing other Application manifests. This creates a hierarchy
-                that's easy to manage.
-            </p>
+            <h4>💡 When to Use Mono-Repo</h4>
+            <ul>
+                <li>Smaller organizations (&lt;50 developers)</li>
+                <li>Strong code review culture</li>
+                <li>Need atomic changes across multiple apps</li>
+                <li>Centralized platform team</li>
+            </ul>
         </div>
 
-        <h2>Zero-Downtime Deployment Strategies</h2>
+        <h3>Multi-Repository Approach</h3>
+        <p>Separate repositories per team or application:</p>
 
-        <p>
-            ArgoCD supports multiple sync strategies. Here's how to configure each for zero-downtime:
-        </p>
+        <div class="code-block"><code># Team-owned repos
+team-a-apps/
+├── app-1/
+└── app-2/
 
-        <h3>Rolling Updates (Default)</h3>
+team-b-apps/
+├── app-3/
+└── app-4/
 
-        <div class="code-block">
-            <code>apiVersion: apps/v1
+# Platform-owned repos
+platform-infrastructure/
+├── argocd/
+├── cert-manager/
+└── monitoring/
+
+cluster-config/
+├── dev/
+├── staging/
+└── prod/</code></div>
+
+        <div class="key-point">
+            <h4>💡 When to Use Multi-Repo</h4>
+            <ul>
+                <li>Larger organizations with autonomous teams</li>
+                <li>Different access control requirements</li>
+                <li>Independent release cycles</li>
+                <li>Compliance requirements for separation</li>
+            </ul>
+        </div>
+
+        <h2 id="multi-environment">4. Multi-Environment Management</h2>
+
+        <p>Managing multiple environments (dev, staging, prod) requires careful design to balance consistency with
+            flexibility.</p>
+
+        <h3>Using Kustomize Overlays</h3>
+
+        <div class="code-block"><code># base/kustomization.yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - deployment.yaml
+  - service.yaml
+  - configmap.yaml
+
+# overlays/prod/kustomization.yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - ../../base
+namePrefix: prod-
+namespace: production
+patches:
+  - path: replica-patch.yaml
+  - path: resource-patch.yaml
+images:
+  - name: myapp
+    newTag: v1.2.3
+
+# overlays/prod/replica-patch.yaml
+apiVersion: apps/v1
 kind: Deployment
+metadata:
+  name: myapp
 spec:
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxSurge: 25%        # Allow 25% more pods during update
-      maxUnavailable: 0    # Never remove old pods before new ones are ready</code>
-        </div>
+  replicas: 5</code></div>
 
-        <h3>Blue-Green with ArgoCD Rollouts</h3>
+        <h3>ApplicationSet for Multi-Environment</h3>
 
-        <div class="diagram">
-            <div class="diagram-title">Figure 2: Blue-Green Deployment Flow</div>
-            <svg viewBox="0 0 700 200" xmlns="http://www.w3.org/2000/svg">
-                <!-- Load Balancer -->
-                <rect x="300" y="20" width="100" height="50" rx="8" fill="#0d1117" stroke="#f59e0b" stroke-width="2" />
-                <text x="350" y="50" fill="#f59e0b" font-size="12" text-anchor="middle">Load Balancer</text>
+        <p>Use ApplicationSets to generate applications across environments:</p>
 
-                <!-- Blue (Active) -->
-                <rect x="50" y="120" width="200" height="60" rx="8" fill="#0d1117" stroke="#3b82f6" stroke-width="2" />
-                <text x="150" y="145" fill="#3b82f6" font-size="14" font-weight="600" text-anchor="middle">Blue (v1) -
-                    Active</text>
-                <text x="150" y="165" fill="#6b7280" font-size="10" text-anchor="middle">Receiving 100% traffic</text>
+        <div class="code-block"><code>apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: myapp
+  namespace: argocd
+spec:
+  generators:
+    - list:
+        elements:
+          - env: dev
+            cluster: https://dev-cluster.example.com
+            replicas: "1"
+          - env: staging
+            cluster: https://staging-cluster.example.com
+            replicas: "2"
+          - env: prod
+            cluster: https://prod-cluster.example.com
+            replicas: "5"
+  template:
+    metadata:
+      name: 'myapp-{{env}}'
+    spec:
+      project: default
+      source:
+        repoURL: https://github.com/org/gitops
+        targetRevision: main
+        path: 'apps/myapp/overlays/{{env}}'
+      destination:
+        server: '{{cluster}}'
+        namespace: 'myapp-{{env}}'
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true</code></div>
 
-                <!-- Green (Preview) -->
-                <rect x="450" y="120" width="200" height="60" rx="8" fill="#0d1117" stroke="#10b981" stroke-width="2" />
-                <text x="550" y="145" fill="#10b981" font-size="14" font-weight="600" text-anchor="middle">Green (v2) -
-                    Preview</text>
-                <text x="550" y="165" fill="#6b7280" font-size="10" text-anchor="middle">Ready for promotion</text>
+        <h2 id="deployment-strategies">5. Deployment Strategies</h2>
 
-                <!-- Arrows -->
-                <path d="M320 75 L150 115" stroke="#3b82f6" stroke-width="2" />
-                <polygon points="150,120 155,108 145,107" fill="#3b82f6" />
+        <h3>Blue-Green Deployments</h3>
+        <p>Run two identical environments, switch traffic atomically:</p>
 
-                <path d="M380 75 L550 115" stroke="#10b981" stroke-width="1" stroke-dasharray="5" />
-                <polygon points="550,120 555,108 545,107" fill="#10b981" />
-
-                <text x="425" y="100" fill="#6b7280" font-size="10">switch on promote</text>
-            </svg>
-        </div>
-
-        <div class="code-block">
-            <code>apiVersion: argoproj.io/v1alpha1
+        <div class="code-block"><code>apiVersion: argoproj.io/v1alpha1
 kind: Rollout
 metadata:
-  name: my-app
+  name: myapp
 spec:
+  replicas: 5
   strategy:
     blueGreen:
-      activeService: my-app-active       # Service pointing to live version
-      previewService: my-app-preview     # Service for testing new version
-      autoPromotionEnabled: false        # Require manual promotion
-      scaleDownDelaySeconds: 30          # Keep old pods for 30s after switch</code>
-        </div>
+      activeService: myapp-active
+      previewService: myapp-preview
+      autoPromotionEnabled: false
+      scaleDownDelaySeconds: 30
+      prePromotionAnalysis:
+        templates:
+          - templateName: success-rate
+        args:
+          - name: service-name
+            value: myapp-preview
+  selector:
+    matchLabels:
+      app: myapp
+  template:
+    metadata:
+      labels:
+        app: myapp
+    spec:
+      containers:
+        - name: myapp
+          image: myapp:v2
+          ports:
+            - containerPort: 8080</code></div>
 
         <h3>Canary Deployments</h3>
+        <p>Gradually shift traffic to the new version:</p>
 
-        <p>Gradually shift traffic from old to new version:</p>
-
-        <div class="code-block">
-            <code>apiVersion: argoproj.io/v1alpha1
+        <div class="code-block"><code>apiVersion: argoproj.io/v1alpha1
 kind: Rollout
+metadata:
+  name: myapp
 spec:
+  replicas: 10
   strategy:
     canary:
       steps:
-      - setWeight: 10          # Send 10% traffic to new version
-      - pause: {duration: 5m}  # Wait and monitor
-      - setWeight: 30
-      - pause: {duration: 5m}
-      - setWeight: 60
-      - pause: {duration: 5m}
-      - setWeight: 100         # Full rollout
-      
-      # Automatic rollback on failure
+        - setWeight: 5
+        - pause: { duration: 5m }
+        - setWeight: 20
+        - pause: { duration: 10m }
+        - setWeight: 50
+        - pause: { duration: 10m }
+        - setWeight: 80
+        - pause: { duration: 5m }
       analysis:
-        successfulRunHistoryLimit: 3
         templates:
-        - templateName: success-rate</code>
+          - templateName: success-rate
+        startingStep: 2
+        args:
+          - name: service-name
+            value: myapp-canary
+      canaryService: myapp-canary
+      stableService: myapp-stable
+      trafficRouting:
+        istio:
+          virtualService:
+            name: myapp-vsvc
+            routes:
+              - primary</code></div>
+
+        <h2 id="secrets-management">6. Secrets Management</h2>
+
+        <p>Never store secrets in Git. Here are secure alternatives:</p>
+
+        <h3>Sealed Secrets</h3>
+        <p>Encrypt secrets that can only be decrypted by the cluster:</p>
+
+        <div class="code-block"><code># Create a sealed secret
+kubeseal --format yaml &lt; secret.yaml &gt; sealed-secret.yaml
+
+# The sealed secret can be safely committed to Git
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
+metadata:
+  name: mysecret
+  namespace: myapp
+spec:
+  encryptedData:
+    password: AgBy8hCi...</code></div>
+
+        <h3>External Secrets Operator</h3>
+        <p>Sync secrets from external providers (Vault, AWS Secrets Manager):</p>
+
+        <div class="code-block"><code>apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: db-credentials
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    kind: ClusterSecretStore
+    name: vault-backend
+  target:
+    name: db-secret
+    creationPolicy: Owner
+  data:
+    - secretKey: username
+      remoteRef:
+        key: secret/data/myapp/db
+        property: username
+    - secretKey: password
+      remoteRef:
+        key: secret/data/myapp/db
+        property: password</code></div>
+
+        <h3>SOPS with Age/GPG</h3>
+        <p>Encrypt specific values within YAML files:</p>
+
+        <div class="code-block"><code># .sops.yaml
+creation_rules:
+  - path_regex: .*secrets.*\.yaml$
+    encrypted_regex: ^(data|stringData)$
+    age: age1...
+
+# secrets.yaml (encrypted in Git)
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mysecret
+stringData:
+  password: ENC[AES256_GCM,data:...,type:str]
+sops:
+  age:
+    - recipient: age1...</code></div>
+
+        <h2 id="rbac-multitenancy">7. RBAC and Multi-Tenancy</h2>
+
+        <h3>AppProjects for Isolation</h3>
+        <p>Use AppProjects to isolate teams:</p>
+
+        <div class="code-block"><code>apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: team-alpha
+  namespace: argocd
+spec:
+  description: Team Alpha's applications
+  sourceRepos:
+    - 'https://github.com/org/team-alpha-*'
+  destinations:
+    - namespace: 'team-alpha-*'
+      server: https://kubernetes.default.svc
+    - namespace: 'team-alpha-*'
+      server: https://prod-cluster.example.com
+  clusterResourceWhitelist:
+    - group: ''
+      kind: Namespace
+  namespaceResourceBlacklist:
+    - group: ''
+      kind: ResourceQuota
+    - group: ''
+      kind: LimitRange
+  roles:
+    - name: developer
+      description: Team Alpha developers
+      policies:
+        - p, proj:team-alpha:developer, applications, get, team-alpha/*, allow
+        - p, proj:team-alpha:developer, applications, sync, team-alpha/*, allow
+      groups:
+        - team-alpha-devs</code></div>
+
+        <h3>SSO Integration with Dex</h3>
+
+        <div class="code-block"><code>apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-cm
+  namespace: argocd
+data:
+  url: https://argocd.example.com
+  dex.config: |
+    connectors:
+      - type: oidc
+        id: okta
+        name: Okta
+        config:
+          issuer: https://company.okta.com
+          clientID: $oidc.clientId
+          clientSecret: $oidc.clientSecret
+          requestedScopes:
+            - openid
+            - profile
+            - email
+            - groups</code></div>
+
+        <h2 id="sync-strategies">8. Sync Strategies and Hooks</h2>
+
+        <h3>Sync Waves</h3>
+        <p>Control the order of resource creation:</p>
+
+        <div class="code-block"><code># Namespace first (wave -1)
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: myapp
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+
+# ConfigMaps second (wave 0)
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: myapp-config
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+
+# Deployment last (wave 1)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"</code></div>
+
+        <h3>Resource Hooks</h3>
+        <p>Run jobs at specific phases:</p>
+
+        <div class="code-block"><code>apiVersion: batch/v1
+kind: Job
+metadata:
+  name: db-migration
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
+spec:
+  template:
+    spec:
+      containers:
+        - name: migrate
+          image: myapp:v2
+          command: ["./migrate.sh"]
+      restartPolicy: Never
+  backoffLimit: 3</code></div>
+
+        <h2 id="rollback-recovery">9. Rollback and Disaster Recovery</h2>
+
+        <h3>Quick Rollback</h3>
+
+        <div class="code-block"><code># CLI rollback
+argocd app rollback myapp --revision 5
+
+# Or simply revert the Git commit
+git revert HEAD
+git push origin main
+
+# ArgoCD will automatically sync to the reverted state</code></div>
+
+        <h3>Backup ArgoCD</h3>
+
+        <div class="code-block"><code># Export all ArgoCD resources
+argocd admin export > argocd-backup.yaml
+
+# Backup specific applications
+kubectl get applications -n argocd -o yaml > apps-backup.yaml
+kubectl get appprojects -n argocd -o yaml > projects-backup.yaml
+
+# Restore
+kubectl apply -f argocd-backup.yaml</code></div>
+
+        <h2 id="monitoring">10. Monitoring and Alerting</h2>
+
+        <h3>Prometheus Metrics</h3>
+        <p>ArgoCD exposes metrics at /metrics. Key metrics to monitor:</p>
+
+        <table>
+            <tr>
+                <th>Metric</th>
+                <th>Description</th>
+                <th>Alert Threshold</th>
+            </tr>
+            <tr>
+                <td>argocd_app_info</td>
+                <td>Application health/sync status</td>
+                <td>health_status != "Healthy"</td>
+            </tr>
+            <tr>
+                <td>argocd_app_sync_total</td>
+                <td>Sync operations count</td>
+                <td>Failures > 5/hour</td>
+            </tr>
+            <tr>
+                <td>argocd_cluster_api_resource_objects</td>
+                <td>Cluster resource count</td>
+                <td>> 10000</td>
+            </tr>
+            <tr>
+                <td>argocd_git_request_duration</td>
+                <td>Git operation latency</td>
+                <td>> 30s</td>
+            </tr>
+        </table>
+
+        <h3>Notification Configuration</h3>
+
+        <div class="code-block"><code>apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-notifications-cm
+  namespace: argocd
+data:
+  service.slack: |
+    token: $slack-token
+  template.app-sync-failed: |
+    message: |
+      Application {{.app.metadata.name}} sync failed!
+      Revision: {{.app.status.sync.revision}}
+      Error: {{.app.status.operationState.message}}
+  trigger.on-sync-failed: |
+    - when: app.status.operationState.phase in ['Error', 'Failed']
+      send: [app-sync-failed]</code></div>
+
+        <h2 id="edge-cases">11. Edge Cases and Troubleshooting</h2>
+
+        <div class="edge-case">
+            <h4>⚠️ Application Stuck in "Progressing"</h4>
+            <p>Common causes and solutions:</p>
+            <ul>
+                <li><strong>Image pull failures:</strong> Check imagePullSecrets and registry access</li>
+                <li><strong>Resource limits:</strong> Pod can't be scheduled due to insufficient resources</li>
+                <li><strong>PVC pending:</strong> StorageClass doesn't exist or no capacity</li>
+                <li><strong>Readiness probe failing:</strong> Application not responding on health endpoint</li>
+            </ul>
+            <div class="code-block"><code>kubectl describe pod &lt;pod-name&gt; -n &lt;namespace&gt;
+kubectl logs &lt;pod-name&gt; -n &lt;namespace&gt;
+argocd app get &lt;app-name&gt; --show-operation</code></div>
         </div>
 
-        <h2>Security Best Practices</h2>
-
-        <ol>
-            <li>
-                <strong>RBAC for Applications:</strong> Use ArgoCD Projects to restrict which
-                repos and clusters each team can deploy to
-            </li>
-            <li>
-                <strong>Sealed Secrets:</strong> Never store plain secrets in Git — use Sealed
-                Secrets or External Secrets Operator
-            </li>
-            <li>
-                <strong>GPG Signed Commits:</strong> Require signed commits for production branches
-            </li>
-            <li>
-                <strong>Branch Protection:</strong> Enforce PR reviews for production configurations
-            </li>
-        </ol>
-
-        <div class="warning">
-            <h4>⚠️ Common Mistake</h4>
-            <p>
-                Never enable <code>automated sync</code> with <code>prune: true</code> on production
-                without proper safeguards. A misconfigured sync could delete critical resources.
-            </p>
+        <div class="edge-case">
+            <h4>⚠️ Sync Loops / Continuous Reconciliation</h4>
+            <p>ArgoCD keeps syncing even when nothing changed:</p>
+            <ul>
+                <li>Resource has fields that are constantly mutated (e.g., annotations by other controllers)</li>
+                <li>Solution: Use ignoreDifferences in Application spec</li>
+            </ul>
+            <div class="code-block"><code>spec:
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jsonPointers:
+        - /spec/replicas  # Ignore HPA changes
+    - group: ""
+      kind: Service
+      jqPathExpressions:
+        - .metadata.annotations["field.cattle.io/publicEndpoints"]</code></div>
         </div>
 
-        <h2>Monitoring GitOps Health</h2>
+        <div class="edge-case">
+            <h4>⚠️ Out of Sync with Helm Hooks</h4>
+            <p>Helm hooks can cause permanent OutOfSync status:</p>
+            <div class="code-block"><code>spec:
+  source:
+    helm:
+      skipCrds: true
+  syncPolicy:
+    syncOptions:
+      - RespectIgnoreDifferences=true
+      - ApplyOutOfSyncOnly=true</code></div>
+        </div>
 
-        <p>Track these key metrics to ensure your GitOps pipeline is healthy:</p>
+        <h2 id="security-hardening">12. Security Hardening</h2>
 
-        <ul>
-            <li><strong>Sync Status:</strong> Number of applications in/out of sync</li>
-            <li><strong>Sync Duration:</strong> Time from commit to deployment</li>
-            <li><strong>Drift Occurrences:</strong> How often clusters drift from desired state</li>
-            <li><strong>Rollback Frequency:</strong> How often you need to revert changes</li>
-        </ul>
+        <h3>Network Policies</h3>
+
+        <div class="code-block"><code>apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: argocd-server
+  namespace: argocd
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: argocd-server
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              name: ingress-nginx
+      ports:
+        - protocol: TCP
+          port: 8080
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: argocd-repo-server
+      ports:
+        - protocol: TCP
+          port: 8081</code></div>
+
+        <h3>Audit Logging</h3>
+
+        <div class="code-block"><code>apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: argocd-cm
+data:
+  server.audit.enabled: "true"
+  server.audit.log.format: json</code></div>
 
         <h2>Key Takeaways</h2>
 
         <ol>
-            <li><strong>Git is truth:</strong> Everything in production should be in Git</li>
-            <li><strong>Secure your repos:</strong> Git repos are now production infrastructure</li>
-            <li><strong>Use progressive delivery:</strong> Canary and blue-green reduce risk</li>
-            <li><strong>Monitor sync health:</strong> Out-of-sync apps indicate problems</li>
-            <li><strong>Start simple:</strong> Begin with a single cluster before scaling</li>
+            <li><strong>Git is the source of truth:</strong> Every change must go through Git for auditability</li>
+            <li><strong>Start simple:</strong> Begin with basic sync, add complexity (Rollouts, hooks) as needed</li>
+            <li><strong>Secure secrets:</strong> Never commit plaintext secrets; use Sealed Secrets or External Secrets
+            </li>
+            <li><strong>Use AppProjects:</strong> Isolate teams with proper RBAC boundaries</li>
+            <li><strong>Monitor aggressively:</strong> Set up alerts for sync failures and application health</li>
+            <li><strong>Test rollbacks:</strong> Regularly practice rollback procedures in non-prod environments</li>
         </ol>
 
         <div class="footer">
-            <p>Want to implement GitOps in your organization?</p>
-            <a href="/portfolio/#contact" class="cta">
-                Let's Talk →
-            </a>
+            <p>Ready to implement GitOps in your organization?</p>
+            <a href="/portfolio/#contact" class="cta">Let's Discuss →</a>
         </div>
     </article>
 </body>

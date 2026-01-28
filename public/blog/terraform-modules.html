@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Terraform at Scale: Module Design Patterns | Chandra Koushik Kodali</title>
     <meta name="description"
-        content="Learn how to design reusable Terraform modules, implement state management strategies, and build a scalable infrastructure-as-code foundation.">
+        content="Learn how to design reusable Terraform modules, implement state management strategies, and build scalable infrastructure-as-code for enterprise environments.">
     <meta name="author" content="Chandra Koushik Kodali">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -62,8 +62,9 @@
         h1 {
             font-size: 2.5rem;
             font-weight: 700;
-            background: linear-gradient(to right, #fff, #a7f3d0);
+            background: linear-gradient(to right, #fff, #6ee7b7);
             -webkit-background-clip: text;
+            background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 16px;
             line-height: 1.2;
@@ -92,6 +93,12 @@
             margin: 32px 0 12px;
         }
 
+        h4 {
+            font-size: 1.1rem;
+            color: #d1d5db;
+            margin: 24px 0 10px;
+        }
+
         p {
             margin-bottom: 20px;
             color: #d1d5db;
@@ -105,6 +112,105 @@
 
         li {
             margin-bottom: 8px;
+        }
+
+        .code-block {
+            background: #0d1117;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            overflow-x: auto;
+            font-family: 'Fira Code', monospace;
+            font-size: 14px;
+            color: #c9d1d9;
+        }
+
+        .code-block code {
+            white-space: pre;
+        }
+
+        .highlight {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(6, 182, 212, 0.1));
+            border-left: 3px solid #10b981;
+            padding: 16px 20px;
+            margin: 24px 0;
+            border-radius: 0 12px 12px 0;
+        }
+
+        .warning {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(239, 68, 68, 0.1));
+            border-left: 3px solid #f59e0b;
+            padding: 16px 20px;
+            margin: 24px 0;
+            border-radius: 0 12px 12px 0;
+        }
+
+        .key-point {
+            background: rgba(6, 182, 212, 0.1);
+            border: 1px solid rgba(6, 182, 212, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 24px 0;
+        }
+
+        .key-point h4 {
+            color: #06b6d4;
+            margin-bottom: 8px;
+            font-size: 14px;
+            margin-top: 0;
+        }
+
+        .edge-case {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 24px 0;
+        }
+
+        .edge-case h4 {
+            color: #ef4444;
+            margin-bottom: 8px;
+            font-size: 14px;
+            margin-top: 0;
+        }
+
+        strong {
+            color: #fff;
+        }
+
+        .toc {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 24px;
+            margin: 32px 0;
+        }
+
+        .toc h3 {
+            margin-top: 0;
+            margin-bottom: 16px;
+            color: #fff;
+        }
+
+        .toc ul {
+            margin: 0;
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .toc li {
+            margin-bottom: 8px;
+        }
+
+        .toc a {
+            color: #10b981;
+            text-decoration: none;
+        }
+
+        .toc a:hover {
+            text-decoration: underline;
         }
 
         .diagram {
@@ -124,81 +230,47 @@
             font-weight: 500;
         }
 
-        .diagram svg {
-            display: block;
-            margin: 0 auto;
-            max-width: 100%;
-        }
-
-        .code-block {
-            background: #0d1117;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            padding: 20px;
+        table {
+            width: 100%;
+            border-collapse: collapse;
             margin: 20px 0;
-            overflow-x: auto;
-            font-family: 'Fira Code', monospace;
             font-size: 14px;
-            color: #c9d1d9;
         }
 
-        .code-block code {
-            white-space: pre;
-        }
-
-        .code-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-            padding-bottom: 12px;
+        th,
+        td {
+            padding: 12px;
+            text-align: left;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .code-header .filename {
-            color: #10b981;
-            font-size: 13px;
-            font-weight: 500;
-        }
-
-        .highlight {
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(6, 182, 212, 0.1));
-            border-left: 3px solid #10b981;
-            padding: 16px 20px;
-            margin: 24px 0;
-            border-radius: 0 12px 12px 0;
-        }
-
-        .key-point {
-            background: rgba(6, 182, 212, 0.1);
-            border: 1px solid rgba(6, 182, 212, 0.3);
-            border-radius: 12px;
-            padding: 20px;
-            margin: 24px 0;
-        }
-
-        .key-point h4 {
-            color: #06b6d4;
-            margin-bottom: 8px;
-            font-size: 14px;
-        }
-
-        .warning {
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            border-radius: 12px;
-            padding: 20px;
-            margin: 24px 0;
-        }
-
-        .warning h4 {
-            color: #ef4444;
-            margin-bottom: 8px;
-            font-size: 14px;
-        }
-
-        strong {
+        th {
             color: #fff;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        td {
+            color: #d1d5db;
+        }
+
+        .tree {
+            font-family: 'Fira Code', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #9ca3af;
+            background: #0d1117;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+
+        .tree .folder {
+            color: #10b981;
+        }
+
+        .tree .file {
+            color: #d1d5db;
         }
 
         .footer {
@@ -228,34 +300,12 @@
             transform: translateY(-2px);
             box-shadow: 0 10px 40px rgba(16, 185, 129, 0.3);
         }
-
-        .tree {
-            font-family: 'Fira Code', monospace;
-            font-size: 13px;
-            color: #9ca3af;
-            line-height: 1.6;
-        }
-
-        .tree .dir {
-            color: #10b981;
-        }
-
-        .tree .file {
-            color: #d1d5db;
-        }
-
-        .tree .comment {
-            color: #6b7280;
-            font-style: italic;
-        }
     </style>
 </head>
 
 <body>
     <article class="container">
-        <a href="/portfolio/#blog" class="back-link">
-            ← Back to Portfolio
-        </a>
+        <a href="/portfolio/#blog" class="back-link">← Back to Portfolio</a>
 
         <span class="tag">Infrastructure</span>
         <h1>Terraform at Scale: Module Design Patterns</h1>
@@ -263,443 +313,399 @@
         <div class="meta">
             <span>By Chandra Koushik Kodali</span>
             <span>•</span>
-            <span>10 min read</span>
+            <span>24 min read</span>
             <span>•</span>
             <span>January 2026</span>
         </div>
 
         <p>
-            As organizations grow, so does their infrastructure complexity. What starts as a few Terraform
-            files quickly becomes thousands of lines of code managing hundreds of resources across multiple
-            environments and cloud providers. This article shares the patterns and practices I've developed
-            for managing Terraform at scale.
+            Infrastructure as Code (IaC) with Terraform has become the de facto standard for managing cloud
+            infrastructure. However, as organizations scale, the challenges of maintaining Terraform code across
+            hundreds of projects and dozens of teams become significant. In this comprehensive guide, I'll share proven
+            patterns and practices for designing reusable Terraform modules that scale across enterprise environments.
         </p>
 
+        <div class="toc">
+            <h3>Table of Contents</h3>
+            <ul>
+                <li><a href="#module-principles">1. Module Design Principles</a></li>
+                <li><a href="#module-structure">2. Module Structure and Organization</a></li>
+                <li><a href="#composition-patterns">3. Composition Patterns</a></li>
+                <li><a href="#state-management">4. State Management Strategies</a></li>
+                <li><a href="#testing">5. Testing and Validation</a></li>
+                <li><a href="#cicd">6. CI/CD Pipeline Integration</a></li>
+                <li><a href="#versioning">7. Versioning and Release Management</a></li>
+                <li><a href="#security">8. Security Best Practices</a></li>
+                <li><a href="#cost-optimization">9. Cost Optimization Patterns</a></li>
+                <li><a href="#multi-account">10. Multi-Account and Multi-Region</a></li>
+                <li><a href="#edge-cases">11. Edge Cases and Troubleshooting</a></li>
+                <li><a href="#migration">12. Migration and Upgrade Strategies</a></li>
+            </ul>
+        </div>
+
+        <h2 id="module-principles">1. Module Design Principles</h2>
+
+        <p>Good Terraform modules follow several key principles that make them reusable, maintainable, and safe to use.
+        </p>
+
+        <h3>Single Responsibility</h3>
         <p>
-            We'll cover module design, state management, and organizational patterns that have helped
-            teams manage infrastructure for thousands of resources with confidence.
+            Each module should do one thing well. A VPC module creates networking resources. An EKS module creates
+            Kubernetes clusters. Don't combine unrelated resources just because they're often used together.
         </p>
 
-        <h2>The Challenge of Scale</h2>
-
+        <h3>Sensible Defaults with Overridability</h3>
         <p>
-            Before diving into solutions, let's understand what "scale" means in the context of
-            Infrastructure as Code:
+            Provide reasonable defaults for all optional variables while allowing users to override everything. This
+            balances ease of use with flexibility.
         </p>
 
-        <ul>
-            <li><strong>Code Scale:</strong> Thousands of lines of Terraform across many modules</li>
-            <li><strong>Resource Scale:</strong> Hundreds or thousands of cloud resources</li>
-            <li><strong>Team Scale:</strong> Multiple teams working on infrastructure simultaneously</li>
-            <li><strong>Environment Scale:</strong> Development, staging, production, and more</li>
-        </ul>
+        <div class="code-block"><code>variable "instance_type" {
+  description = "EC2 instance type"
+  type        = string
+  default     = "t3.medium"  # Sensible default
+}
+
+variable "enable_monitoring" {
+  description = "Enable detailed CloudWatch monitoring"
+  type        = bool
+  default     = true  # Safe default
+}
+
+variable "tags" {
+  description = "Additional tags to apply to resources"
+  type        = map(string)
+  default     = {}  # Allow complete customization
+}</code></div>
+
+        <h3>Explicit Over Implicit</h3>
+        <p>
+            Make dependencies and requirements explicit. Don't rely on implicit behavior or provider defaults that might
+            change.
+        </p>
+
+        <div class="code-block"><code># Bad: Implicit dependency on default VPC
+resource "aws_instance" "example" {
+  ami           = var.ami_id
+  instance_type = var.instance_type
+}
+
+# Good: Explicit subnet requirement
+resource "aws_instance" "example" {
+  ami           = var.ami_id
+  instance_type = var.instance_type
+  subnet_id     = var.subnet_id  # Explicit
+  
+  vpc_security_group_ids = var.security_group_ids  # Explicit
+}</code></div>
+
+        <h3>Idempotency and Predictability</h3>
+        <p>
+            Modules should produce the same result when applied multiple times. Avoid resources with random generation,
+            timestamps, or external data sources that change unpredictably.
+        </p>
 
         <div class="highlight">
-            <strong>Core Principle:</strong> The goal is not just to make things work, but to make them
-            maintainable, testable, and understandable for everyone on your team.
+            <strong>Golden Rule:</strong> A user should be able to read your module's variables.tf and outputs.tf and
+            understand exactly what the module does without reading the implementation.
         </div>
 
-        <h2>Module Architecture</h2>
+        <h2 id="module-structure">2. Module Structure and Organization</h2>
 
-        <p>
-            Good module design is the foundation of scalable Terraform. I organize modules into three layers:
-        </p>
+        <h3>Standard Module Layout</h3>
 
-        <div class="diagram">
-            <div class="diagram-title">Figure 1: Three-Layer Module Architecture</div>
-            <svg viewBox="0 0 700 380" xmlns="http://www.w3.org/2000/svg">
-                <!-- Composition Layer -->
-                <rect x="50" y="30" width="600" height="90" rx="12" fill="rgba(139, 92, 246, 0.1)" stroke="#8b5cf6"
-                    stroke-width="2" />
-                <text x="80" y="60" fill="#8b5cf6" font-size="14" font-weight="600">Composition Layer (Root
-                    Modules)</text>
-                <text x="80" y="80" fill="#9ca3af" font-size="12">Environment-specific configurations that compose
-                    infrastructure modules</text>
+        <div class="tree"><span class="folder">terraform-aws-eks/</span>
+            ├── <span class="file">README.md</span> # Documentation with examples
+            ├── <span class="file">main.tf</span> # Primary resource definitions
+            ├── <span class="file">variables.tf</span> # Input variable definitions
+            ├── <span class="file">outputs.tf</span> # Output value definitions
+            ├── <span class="file">versions.tf</span> # Provider and Terraform version constraints
+            ├── <span class="file">locals.tf</span> # Local value definitions
+            ├── <span class="file">data.tf</span> # Data source definitions
+            ├── <span class="folder">modules/</span> # Nested submodules
+            │ ├── <span class="folder">node-group/</span>
+            │ │ ├── <span class="file">main.tf</span>
+            │ │ ├── <span class="file">variables.tf</span>
+            │ │ └── <span class="file">outputs.tf</span>
+            │ └── <span class="folder">addons/</span>
+            │ ├── <span class="file">main.tf</span>
+            │ ├── <span class="file">variables.tf</span>
+            │ └── <span class="file">outputs.tf</span>
+            ├── <span class="folder">examples/</span> # Usage examples
+            │ ├── <span class="folder">complete/</span>
+            │ ├── <span class="folder">minimal/</span>
+            │ └── <span class="folder">with-fargate/</span>
+            └── <span class="folder">test/</span> # Automated tests
+            └── <span class="file">eks_test.go</span></div>
 
-                <rect x="80" y="95" width="140" height="20" rx="4" fill="#0d1117" stroke="#8b5cf6" stroke-width="1" />
-                <text x="150" y="109" fill="#e5e7eb" font-size="10" text-anchor="middle">environments/dev</text>
+        <h3>Variables Best Practices</h3>
 
-                <rect x="240" y="95" width="140" height="20" rx="4" fill="#0d1117" stroke="#8b5cf6" stroke-width="1" />
-                <text x="310" y="109" fill="#e5e7eb" font-size="10" text-anchor="middle">environments/staging</text>
+        <div class="code-block"><code># variables.tf
+variable "cluster_name" {
+  description = "Name of the EKS cluster. Must be unique within the AWS account."
+  type        = string
 
-                <rect x="400" y="95" width="140" height="20" rx="4" fill="#0d1117" stroke="#8b5cf6" stroke-width="1" />
-                <text x="470" y="109" fill="#e5e7eb" font-size="10" text-anchor="middle">environments/prod</text>
-
-                <!-- Arrows down -->
-                <path d="M150 120 L150 145" stroke="#6b7280" stroke-width="1" stroke-dasharray="4" />
-                <path d="M310 120 L310 145" stroke="#6b7280" stroke-width="1" stroke-dasharray="4" />
-                <path d="M470 120 L470 145" stroke="#6b7280" stroke-width="1" stroke-dasharray="4" />
-
-                <!-- Infrastructure Layer -->
-                <rect x="50" y="150" width="600" height="90" rx="12" fill="rgba(16, 185, 129, 0.1)" stroke="#10b981"
-                    stroke-width="2" />
-                <text x="80" y="180" fill="#10b981" font-size="14" font-weight="600">Infrastructure Layer (Business
-                    Logic)</text>
-                <text x="80" y="200" fill="#9ca3af" font-size="12">Composable modules representing infrastructure
-                    stacks</text>
-
-                <rect x="80" y="215" width="100" height="20" rx="4" fill="#0d1117" stroke="#10b981" stroke-width="1" />
-                <text x="130" y="229" fill="#e5e7eb" font-size="10" text-anchor="middle">eks-cluster</text>
-
-                <rect x="200" y="215" width="100" height="20" rx="4" fill="#0d1117" stroke="#10b981" stroke-width="1" />
-                <text x="250" y="229" fill="#e5e7eb" font-size="10" text-anchor="middle">networking</text>
-
-                <rect x="320" y="215" width="100" height="20" rx="4" fill="#0d1117" stroke="#10b981" stroke-width="1" />
-                <text x="370" y="229" fill="#e5e7eb" font-size="10" text-anchor="middle">database</text>
-
-                <rect x="440" y="215" width="100" height="20" rx="4" fill="#0d1117" stroke="#10b981" stroke-width="1" />
-                <text x="490" y="229" fill="#e5e7eb" font-size="10" text-anchor="middle">monitoring</text>
-
-                <!-- Arrows down -->
-                <path d="M130 240 L130 265" stroke="#6b7280" stroke-width="1" stroke-dasharray="4" />
-                <path d="M250 240 L250 265" stroke="#6b7280" stroke-width="1" stroke-dasharray="4" />
-                <path d="M370 240 L370 265" stroke="#6b7280" stroke-width="1" stroke-dasharray="4" />
-                <path d="M490 240 L490 265" stroke="#6b7280" stroke-width="1" stroke-dasharray="4" />
-
-                <!-- Resource Layer -->
-                <rect x="50" y="270" width="600" height="90" rx="12" fill="rgba(6, 182, 212, 0.1)" stroke="#06b6d4"
-                    stroke-width="2" />
-                <text x="80" y="300" fill="#06b6d4" font-size="14" font-weight="600">Resource Layer (Primitives)</text>
-                <text x="80" y="320" fill="#9ca3af" font-size="12">Thin wrappers around cloud provider resources with
-                    sensible defaults</text>
-
-                <rect x="80" y="335" width="80" height="20" rx="4" fill="#0d1117" stroke="#06b6d4" stroke-width="1" />
-                <text x="120" y="349" fill="#e5e7eb" font-size="10" text-anchor="middle">s3-bucket</text>
-
-                <rect x="175" y="335" width="80" height="20" rx="4" fill="#0d1117" stroke="#06b6d4" stroke-width="1" />
-                <text x="215" y="349" fill="#e5e7eb" font-size="10" text-anchor="middle">iam-role</text>
-
-                <rect x="270" y="335" width="80" height="20" rx="4" fill="#0d1117" stroke="#06b6d4" stroke-width="1" />
-                <text x="310" y="349" fill="#e5e7eb" font-size="10" text-anchor="middle">vpc</text>
-
-                <rect x="365" y="335" width="80" height="20" rx="4" fill="#0d1117" stroke="#06b6d4" stroke-width="1" />
-                <text x="405" y="349" fill="#e5e7eb" font-size="10" text-anchor="middle">rds</text>
-
-                <rect x="460" y="335" width="100" height="20" rx="4" fill="#0d1117" stroke="#06b6d4" stroke-width="1" />
-                <text x="510" y="349" fill="#e5e7eb" font-size="10" text-anchor="middle">security-group</text>
-            </svg>
-        </div>
-
-        <h3>Layer 1: Resource Modules (Primitives)</h3>
-
-        <p>
-            These are thin wrappers around individual cloud resources. They encapsulate your organization's
-            best practices and compliance requirements:
-        </p>
-
-        <div class="code-block">
-            <div class="code-header">
-                <span class="filename">modules/s3-bucket/main.tf</span>
-            </div>
-            <code>resource "aws_s3_bucket" "this" {
-  bucket = var.bucket_name
-
-  tags = merge(var.tags, {
-    ManagedBy   = "terraform"
-    Environment = var.environment
-  })
-}
-
-# Always enable versioning (compliance requirement)
-resource "aws_s3_bucket_versioning" "this" {
-  bucket = aws_s3_bucket.this.id
-  versioning_configuration {
-    status = "Enabled"
+  validation {
+    condition     = can(regex("^[a-zA-Z][a-zA-Z0-9-]*$", var.cluster_name))
+    error_message = "Cluster name must start with a letter and contain only alphanumeric characters and hyphens."
   }
 }
 
-# Always enable encryption (security requirement)
-resource "aws_s3_bucket_server_side_encryption_configuration" "this" {
-  bucket = aws_s3_bucket.this.id
-  rule {
-    apply_server_side_encryption_by_default {
-      sse_algorithm = "aws:kms"
-      kms_master_key_id = var.kms_key_id
-    }
+variable "cluster_version" {
+  description = "Kubernetes version for the EKS cluster"
+  type        = string
+  default     = "1.28"
+
+  validation {
+    condition     = contains(["1.27", "1.28", "1.29"], var.cluster_version)
+    error_message = "Cluster version must be one of: 1.27, 1.28, 1.29."
   }
 }
 
-# Block public access by default
-resource "aws_s3_bucket_public_access_block" "this" {
-  bucket = aws_s3_bucket.this.id
+variable "node_groups" {
+  description = "Map of node group configurations"
+  type = map(object({
+    instance_types = list(string)
+    min_size       = number
+    max_size       = number
+    desired_size   = number
+    disk_size      = optional(number, 50)
+    labels         = optional(map(string), {})
+    taints = optional(list(object({
+      key    = string
+      value  = string
+      effect = string
+    })), [])
+  }))
+  default = {}
+}</code></div>
 
-  block_public_acls       = true
-  block_public_policy     = true
-  ignore_public_acls      = true
-  restrict_public_buckets = true
-}</code>
-        </div>
+        <h3>Outputs Design</h3>
 
-        <div class="key-point">
-            <h4>💡 Why Resource Modules?</h4>
-            <p>
-                Every S3 bucket in your organization now has encryption, versioning, and public access blocking
-                by default. Compliance is built-in, not bolted-on.
-            </p>
-        </div>
+        <div class="code-block"><code># outputs.tf
+output "cluster_endpoint" {
+  description = "Endpoint URL for the EKS cluster API server"
+  value       = aws_eks_cluster.this.endpoint
+}
 
-        <h3>Layer 2: Infrastructure Modules (Stacks)</h3>
+output "cluster_certificate_authority_data" {
+  description = "Base64 encoded certificate data for cluster authentication"
+  value       = aws_eks_cluster.this.certificate_authority[0].data
+  sensitive   = true
+}
 
+output "cluster_security_group_id" {
+  description = "Security group ID attached to the EKS cluster"
+  value       = aws_eks_cluster.this.vpc_config[0].cluster_security_group_id
+}
+
+# Provide a complete kubectl config for convenience
+output "kubectl_config" {
+  description = "kubectl configuration for connecting to the cluster"
+  value = {
+    host                   = aws_eks_cluster.this.endpoint
+    cluster_ca_certificate = base64decode(aws_eks_cluster.this.certificate_authority[0].data)
+    token                  = data.aws_eks_cluster_auth.this.token
+  }
+  sensitive = true
+}</code></div>
+
+        <h2 id="composition-patterns">3. Composition Patterns</h2>
+
+        <h3>Module Composition</h3>
         <p>
-            These compose resource modules into functional infrastructure. For example, an EKS cluster
-            module combines VPC, IAM, security groups, and the cluster itself:
+            Complex infrastructure should be composed of smaller, focused modules. Here's how to structure a complete
+            platform:
         </p>
 
-        <div class="code-block">
-            <div class="code-header">
-                <span class="filename">modules/eks-cluster/main.tf</span>
-            </div>
-            <code>module "vpc" {
-  source = "../vpc"
+        <div class="code-block"><code># Root module that composes other modules
+module "vpc" {
+  source  = "terraform-aws-modules/vpc/aws"
+  version = "5.0.0"
 
-  name               = "${var.cluster_name}-vpc"
-  cidr               = var.vpc_cidr
-  availability_zones = var.availability_zones
-  
+  name = "${var.environment}-vpc"
+  cidr = var.vpc_cidr
+
+  azs             = var.availability_zones
+  private_subnets = var.private_subnet_cidrs
+  public_subnets  = var.public_subnet_cidrs
+
   enable_nat_gateway = true
-  enable_dns_support = true
-}
+  single_nat_gateway = var.environment != "prod"
 
-module "cluster_security_group" {
-  source = "../security-group"
-
-  name        = "${var.cluster_name}-cluster-sg"
-  vpc_id      = module.vpc.vpc_id
-  description = "EKS cluster security group"
-  
-  ingress_rules = var.cluster_ingress_rules
+  tags = local.common_tags
 }
 
 module "eks" {
-  source  = "terraform-aws-modules/eks/aws"
-  version = "~> 19.0"
+  source = "./modules/eks"
 
-  cluster_name    = var.cluster_name
+  cluster_name    = "${var.environment}-cluster"
   cluster_version = var.kubernetes_version
+  
+  vpc_id          = module.vpc.vpc_id
+  subnet_ids      = module.vpc.private_subnets
 
-  vpc_id     = module.vpc.vpc_id
-  subnet_ids = module.vpc.private_subnet_ids
+  node_groups = var.node_groups
 
-  cluster_security_group_additional_rules = {
-    cluster_egress = {
-      type        = "egress"
-      from_port   = 0
-      to_port     = 0
-      protocol    = "-1"
-      cidr_blocks = ["0.0.0.0/0"]
-    }
-  }
+  tags = local.common_tags
+}
 
-  eks_managed_node_groups = var.node_groups
-}</code>
-        </div>
+module "rds" {
+  source = "./modules/rds"
 
-        <h3>Layer 3: Composition (Root Modules)</h3>
+  identifier     = "${var.environment}-db"
+  engine_version = var.postgres_version
 
+  vpc_id             = module.vpc.vpc_id
+  subnet_ids         = module.vpc.database_subnets
+  security_group_ids = [module.eks.node_security_group_id]
+
+  tags = local.common_tags
+}</code></div>
+
+        <h3>The Factory Pattern</h3>
         <p>
-            The top layer contains environment-specific configurations. These are your "root"
-            modules — the entry points for terraform apply:
+            For standardized deployments across many environments, use a factory pattern:
         </p>
 
-        <div class="code-block">
-            <div class="code-header">
-                <span class="filename">environments/production/main.tf</span>
-            </div>
-            <code>terraform {
+        <div class="code-block"><code># environments/factory/main.tf
+variable "environments" {
+  type = map(object({
+    vpc_cidr          = string
+    instance_type     = string
+    node_count        = number
+    enable_monitoring = bool
+  }))
+}
+
+module "environment" {
+  source   = "../modules/environment"
+  for_each = var.environments
+
+  environment       = each.key
+  vpc_cidr          = each.value.vpc_cidr
+  instance_type     = each.value.instance_type
+  node_count        = each.value.node_count
+  enable_monitoring = each.value.enable_monitoring
+}
+
+# environments/factory/terraform.tfvars
+environments = {
+  dev = {
+    vpc_cidr          = "10.0.0.0/16"
+    instance_type     = "t3.medium"
+    node_count        = 2
+    enable_monitoring = false
+  }
+  staging = {
+    vpc_cidr          = "10.1.0.0/16"
+    instance_type     = "t3.large"
+    node_count        = 3
+    enable_monitoring = true
+  }
+  prod = {
+    vpc_cidr          = "10.2.0.0/16"
+    instance_type     = "m5.xlarge"
+    node_count        = 5
+    enable_monitoring = true
+  }
+}</code></div>
+
+        <h2 id="state-management">4. State Management Strategies</h2>
+
+        <h3>Remote State Backend</h3>
+
+        <div class="code-block"><code># backend.tf
+terraform {
   backend "s3" {
     bucket         = "company-terraform-state"
-    key            = "production/infrastructure.tfstate"
+    key            = "environments/prod/eks/terraform.tfstate"
     region         = "us-east-1"
     encrypt        = true
-    dynamodb_table = "terraform-locks"
-  }
-}
-
-module "eks_cluster" {
-  source = "../../modules/eks-cluster"
-
-  cluster_name       = "production-cluster"
-  kubernetes_version = "1.28"
-  vpc_cidr           = "10.0.0.0/16"
-  
-  node_groups = {
-    general = {
-      instance_types = ["m5.xlarge"]
-      min_size       = 3
-      max_size       = 20
-      desired_size   = 5
-    }
-    spot = {
-      instance_types = ["m5.large", "m5a.large"]
-      capacity_type  = "SPOT"
-      min_size       = 2
-      max_size       = 10
+    dynamodb_table = "terraform-state-lock"
+    
+    # Use assume_role for cross-account access
+    assume_role {
+      role_arn = "arn:aws:iam::123456789012:role/TerraformStateAccess"
     }
   }
-}
+}</code></div>
 
-module "monitoring" {
-  source = "../../modules/monitoring"
+        <h3>State Isolation Strategies</h3>
 
-  cluster_name = module.eks_cluster.cluster_name
-  
-  enable_prometheus = true
-  enable_grafana    = true
-  retention_days    = 90   # Longer retention for prod
-}</code>
-        </div>
+        <table>
+            <tr>
+                <th>Strategy</th>
+                <th>When to Use</th>
+                <th>Tradeoffs</th>
+            </tr>
+            <tr>
+                <td>Per-environment</td>
+                <td>Complete isolation between dev/staging/prod</td>
+                <td>Cannot share resources easily</td>
+            </tr>
+            <tr>
+                <td>Per-component</td>
+                <td>Independent lifecycle for VPC, EKS, apps</td>
+                <td>Requires data source lookups</td>
+            </tr>
+            <tr>
+                <td>Monolithic</td>
+                <td>Small projects, tight coupling</td>
+                <td>Blast radius, slow plans</td>
+            </tr>
+        </table>
 
-        <h2>State Management Strategies</h2>
+        <h3>Cross-State References</h3>
 
-        <p>
-            At scale, how you manage Terraform state can make or break your workflow.
-            Here's my recommended approach:
-        </p>
-
-        <div class="diagram">
-            <div class="diagram-title">Figure 2: State Architecture</div>
-            <svg viewBox="0 0 700 300" xmlns="http://www.w3.org/2000/svg">
-                <!-- State Backend -->
-                <rect x="250" y="20" width="200" height="80" rx="12" fill="#0d1117" stroke="#f59e0b" stroke-width="2" />
-                <text x="350" y="50" fill="#f59e0b" font-size="14" font-weight="600" text-anchor="middle">S3
-                    Backend</text>
-                <text x="350" y="70" fill="#9ca3af" font-size="11" text-anchor="middle">Encrypted, Versioned</text>
-                <text x="350" y="88" fill="#9ca3af" font-size="11" text-anchor="middle">+ DynamoDB Locking</text>
-
-                <!-- State files -->
-                <rect x="50" y="150" width="180" height="130" rx="12" fill="rgba(6, 182, 212, 0.1)" stroke="#06b6d4"
-                    stroke-width="1" />
-                <text x="140" y="175" fill="#06b6d4" font-size="12" font-weight="600" text-anchor="middle">Networking
-                    State</text>
-                <rect x="65" y="190" width="150" height="25" rx="4" fill="#0d1117" stroke="#06b6d4" stroke-width="1" />
-                <text x="140" y="207" fill="#9ca3af" font-size="10" text-anchor="middle">networking/dev.tfstate</text>
-                <rect x="65" y="220" width="150" height="25" rx="4" fill="#0d1117" stroke="#06b6d4" stroke-width="1" />
-                <text x="140" y="237" fill="#9ca3af" font-size="10" text-anchor="middle">networking/prod.tfstate</text>
-                <rect x="65" y="250" width="150" height="25" rx="4" fill="#0d1117" stroke="#06b6d4" stroke-width="1" />
-                <text x="140" y="267" fill="#9ca3af" font-size="10"
-                    text-anchor="middle">networking/shared.tfstate</text>
-
-                <rect x="260" y="150" width="180" height="130" rx="12" fill="rgba(16, 185, 129, 0.1)" stroke="#10b981"
-                    stroke-width="1" />
-                <text x="350" y="175" fill="#10b981" font-size="12" font-weight="600" text-anchor="middle">Compute
-                    State</text>
-                <rect x="275" y="190" width="150" height="25" rx="4" fill="#0d1117" stroke="#10b981" stroke-width="1" />
-                <text x="350" y="207" fill="#9ca3af" font-size="10" text-anchor="middle">eks/dev.tfstate</text>
-                <rect x="275" y="220" width="150" height="25" rx="4" fill="#0d1117" stroke="#10b981" stroke-width="1" />
-                <text x="350" y="237" fill="#9ca3af" font-size="10" text-anchor="middle">eks/prod.tfstate</text>
-                <rect x="275" y="250" width="150" height="25" rx="4" fill="#0d1117" stroke="#10b981" stroke-width="1" />
-                <text x="350" y="267" fill="#9ca3af" font-size="10" text-anchor="middle">ec2/prod.tfstate</text>
-
-                <rect x="470" y="150" width="180" height="130" rx="12" fill="rgba(139, 92, 246, 0.1)" stroke="#8b5cf6"
-                    stroke-width="1" />
-                <text x="560" y="175" fill="#8b5cf6" font-size="12" font-weight="600" text-anchor="middle">Database
-                    State</text>
-                <rect x="485" y="190" width="150" height="25" rx="4" fill="#0d1117" stroke="#8b5cf6" stroke-width="1" />
-                <text x="560" y="207" fill="#9ca3af" font-size="10" text-anchor="middle">rds/dev.tfstate</text>
-                <rect x="485" y="220" width="150" height="25" rx="4" fill="#0d1117" stroke="#8b5cf6" stroke-width="1" />
-                <text x="560" y="237" fill="#9ca3af" font-size="10" text-anchor="middle">rds/prod.tfstate</text>
-                <rect x="485" y="250" width="150" height="25" rx="4" fill="#0d1117" stroke="#8b5cf6" stroke-width="1" />
-                <text x="560" y="267" fill="#9ca3af" font-size="10" text-anchor="middle">elasticache/prod.tfstate</text>
-
-                <!-- Arrows -->
-                <path d="M350 105 L350 145" stroke="#6b7280" stroke-width="1" stroke-dasharray="4" />
-                <path d="M280 105 L140 145" stroke="#6b7280" stroke-width="1" stroke-dasharray="4" />
-                <path d="M420 105 L560 145" stroke="#6b7280" stroke-width="1" stroke-dasharray="4" />
-            </svg>
-        </div>
-
-        <h3>Key State Management Practices</h3>
-
-        <ol>
-            <li>
-                <strong>Split state by blast radius:</strong> If one state file gets corrupted,
-                you want to limit the impact. Separate networking, compute, and data layers.
-            </li>
-            <li>
-                <strong>Use remote state data sources:</strong> When modules need to reference
-                each other, use <code>terraform_remote_state</code>:
-            </li>
-        </ol>
-
-        <div class="code-block">
-            <code>data "terraform_remote_state" "networking" {
+        <div class="code-block"><code># In the EKS module, reference VPC state
+data "terraform_remote_state" "vpc" {
   backend = "s3"
   config = {
     bucket = "company-terraform-state"
-    key    = "networking/${var.environment}.tfstate"
+    key    = "environments/${var.environment}/vpc/terraform.tfstate"
     region = "us-east-1"
   }
 }
 
-# Use VPC ID from networking state
-module "eks_cluster" {
-  source = "../../modules/eks-cluster"
-  
-  vpc_id     = data.terraform_remote_state.networking.outputs.vpc_id
-  subnet_ids = data.terraform_remote_state.networking.outputs.private_subnets
-}</code>
-        </div>
+# Use outputs from VPC state
+module "eks" {
+  source = "./modules/eks"
+
+  vpc_id     = data.terraform_remote_state.vpc.outputs.vpc_id
+  subnet_ids = data.terraform_remote_state.vpc.outputs.private_subnets
+}</code></div>
 
         <div class="warning">
-            <h4>⚠️ State File Security</h4>
-            <p>
-                Your state files contain sensitive data (passwords, keys, etc). Always encrypt
-                state at rest, enable versioning for recovery, and restrict access via IAM.
-            </p>
+            <strong>⚠️ Warning:</strong> Cross-state references create implicit dependencies. Document these
+            relationships clearly and consider using explicit data sources instead for better discoverability.
         </div>
 
-        <h2>Directory Structure</h2>
+        <h2 id="testing">5. Testing and Validation</h2>
 
-        <p>Here's a battle-tested directory structure for large Terraform projects:</p>
+        <h3>Static Analysis</h3>
 
-        <div class="code-block">
-            <pre class="tree"><span class="dir">terraform/</span>
-├── <span class="dir">modules/</span>                      <span class="comment"># Reusable modules</span>
-│   ├── <span class="dir">resource/</span>                  <span class="comment"># Layer 1: Primitives</span>
-│   │   ├── <span class="dir">s3-bucket/</span>
-│   │   ├── <span class="dir">iam-role/</span>
-│   │   └── <span class="dir">security-group/</span>
-│   └── <span class="dir">infrastructure/</span>            <span class="comment"># Layer 2: Stacks</span>
-│       ├── <span class="dir">eks-cluster/</span>
-│       ├── <span class="dir">vpc-network/</span>
-│       └── <span class="dir">rds-database/</span>
-│
-├── <span class="dir">environments/</span>                  <span class="comment"># Layer 3: Composition</span>
-│   ├── <span class="dir">development/</span>
-│   │   ├── <span class="file">main.tf</span>
-│   │   ├── <span class="file">variables.tf</span>
-│   │   └── <span class="file">terraform.tfvars</span>
-│   ├── <span class="dir">staging/</span>
-│   └── <span class="dir">production/</span>
-│
-├── <span class="dir">global/</span>                         <span class="comment"># Shared across environments</span>
-│   ├── <span class="dir">iam/</span>
-│   ├── <span class="dir">dns/</span>
-│   └── <span class="dir">terraform-state/</span>           <span class="comment"># Bootstrap state backend</span>
-│
-└── <span class="dir">scripts/</span>                        <span class="comment"># Helper scripts</span>
-    ├── <span class="file">init-backend.sh</span>
-    └── <span class="file">plan-all.sh</span></pre>
-        </div>
+        <div class="code-block"><code># .pre-commit-config.yaml
+repos:
+  - repo: https://github.com/antonbabenko/pre-commit-terraform
+    rev: v1.83.0
+    hooks:
+      - id: terraform_fmt
+      - id: terraform_validate
+      - id: terraform_tflint
+        args:
+          - '--args=--config=__GIT_WORKING_DIR__/.tflint.hcl'
+      - id: terraform_docs
+        args:
+          - '--args=--config=.terraform-docs.yml'
+      - id: terraform_checkov
+        args:
+          - '--args=--quiet --framework terraform'</code></div>
 
-        <h2>Testing Terraform Code</h2>
+        <h3>Unit Tests with Terratest</h3>
 
-        <p>Don't deploy untested infrastructure. Here's a testing pyramid for Terraform:</p>
-
-        <ol>
-            <li><strong>Static Analysis:</strong> <code>terraform validate</code>, <code>tflint</code>,
-                <code>checkov</code>
-            </li>
-            <li><strong>Unit Tests:</strong> Test modules in isolation with Terratest</li>
-            <li><strong>Integration Tests:</strong> Deploy to ephemeral environments and verify</li>
-            <li><strong>Policy Tests:</strong> Use Sentinel or OPA for compliance</li>
-        </ol>
-
-        <div class="code-block">
-            <div class="code-header">
-                <span class="filename">test/eks_cluster_test.go</span>
-            </div>
-            <code>package test
+        <div class="code-block"><code>// test/eks_test.go
+package test
 
 import (
     "testing"
@@ -707,39 +713,504 @@ import (
     "github.com/stretchr/testify/assert"
 )
 
-func TestEksCluster(t *testing.T) {
-    terraformOptions := &terraform.Options{
-        TerraformDir: "../modules/eks-cluster",
+func TestEKSModule(t *testing.T) {
+    t.Parallel()
+
+    terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
+        TerraformDir: "../examples/minimal",
         Vars: map[string]interface{}{
-            "cluster_name":       "test-cluster",
-            "kubernetes_version": "1.28",
+            "cluster_name": "test-cluster",
+            "environment":  "test",
         },
-    }
+    })
 
     defer terraform.Destroy(t, terraformOptions)
     terraform.InitAndApply(t, terraformOptions)
 
-    // Verify outputs
-    clusterName := terraform.Output(t, terraformOptions, "cluster_name")
-    assert.Equal(t, "test-cluster", clusterName)
-}</code>
+    // Validate outputs
+    clusterEndpoint := terraform.Output(t, terraformOptions, "cluster_endpoint")
+    assert.Contains(t, clusterEndpoint, "eks.amazonaws.com")
+
+    clusterVersion := terraform.Output(t, terraformOptions, "cluster_version")
+    assert.Equal(t, "1.28", clusterVersion)
+}</code></div>
+
+        <h3>Policy as Code with OPA</h3>
+
+        <div class="code-block"><code># policies/required_tags.rego
+package terraform.policies
+
+deny[msg] {
+    resource := input.planned_values.root_module.resources[_]
+    required_tags := {"Environment", "Owner", "CostCenter"}
+    provided_tags := {tag | resource.values.tags[tag]}
+    missing := required_tags - provided_tags
+    count(missing) > 0
+    msg := sprintf("Resource %s is missing required tags: %v", [resource.address, missing])
+}
+
+deny[msg] {
+    resource := input.planned_values.root_module.resources[_]
+    resource.type == "aws_s3_bucket"
+    not resource.values.versioning[0].enabled
+    msg := sprintf("S3 bucket %s must have versioning enabled", [resource.address])
+}</code></div>
+
+        <h2 id="cicd">6. CI/CD Pipeline Integration</h2>
+
+        <h3>GitHub Actions Workflow</h3>
+
+        <div class="code-block"><code># .github/workflows/terraform.yml
+name: Terraform CI/CD
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+env:
+  TF_VERSION: "1.6.0"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+      
+      - name: Terraform Format Check
+        run: terraform fmt -check -recursive
+      
+      - name: Terraform Init
+        run: terraform init -backend=false
+      
+      - name: Terraform Validate
+        run: terraform validate
+
+  plan:
+    needs: validate
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: us-east-1
+      
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+      
+      - name: Terraform Init
+        run: terraform init
+      
+      - name: Terraform Plan
+        id: plan
+        run: terraform plan -out=tfplan -no-color
+        continue-on-error: true
+      
+      - name: Comment Plan on PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const plan = `${{ steps.plan.outputs.stdout }}`
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '## Terraform Plan\n\`\`\`hcl\n' + plan + '\n\`\`\`'
+            })
+
+  apply:
+    needs: validate
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: us-east-1
+      
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+      
+      - name: Terraform Init
+        run: terraform init
+      
+      - name: Terraform Apply
+        run: terraform apply -auto-approve</code></div>
+
+        <h2 id="versioning">7. Versioning and Release Management</h2>
+
+        <h3>Semantic Versioning for Modules</h3>
+
+        <div class="code-block"><code># versions.tf
+terraform {
+  required_version = ">= 1.5.0"  # Minimum Terraform version
+
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = ">= 5.0, < 6.0"  # Compatible provider versions
+    }
+  }
+}
+
+# In calling code, pin module versions
+module "eks" {
+  source  = "git::https://github.com/company/terraform-aws-eks.git?ref=v3.2.1"
+  # OR using registry
+  source  = "company/eks/aws"
+  version = "~> 3.2"  # Allow patch updates only
+}</code></div>
+
+        <h3>Changelog and Migration Guides</h3>
+
+        <div class="code-block"><code># CHANGELOG.md
+## [3.0.0] - 2026-01-15
+
+### BREAKING CHANGES
+- Renamed `worker_groups` to `node_groups` for consistency
+- Removed deprecated `create_eks` variable
+- Minimum Terraform version increased to 1.5.0
+
+### Migration Guide
+```hcl
+# Before (v2.x)
+module "eks" {
+  worker_groups = {
+    default = { ... }
+  }
+}
+
+# After (v3.x)
+module "eks" {
+  node_groups = {
+    default = { ... }
+  }
+}
+```
+
+### Added
+- Support for EKS managed node groups with Bottlerocket
+- Karpenter provisioner integration
+
+### Fixed
+- IAM role trust policy for IRSA</code></div>
+
+        <h2 id="security">8. Security Best Practices</h2>
+
+        <h3>Least Privilege IAM</h3>
+
+        <div class="code-block"><code># Create minimal IAM policies for Terraform
+data "aws_iam_policy_document" "terraform" {
+  # Only allow specific actions
+  statement {
+    effect = "Allow"
+    actions = [
+      "eks:*",
+      "ec2:Describe*",
+      "ec2:CreateSecurityGroup",
+      "ec2:DeleteSecurityGroup",
+      "ec2:AuthorizeSecurityGroupIngress",
+      "ec2:RevokeSecurityGroupIngress",
+    ]
+    resources = ["*"]
+    condition {
+      test     = "StringEquals"
+      variable = "aws:RequestedRegion"
+      values   = ["us-east-1", "us-west-2"]
+    }
+  }
+
+  # Restrict state bucket access
+  statement {
+    effect = "Allow"
+    actions = [
+      "s3:GetObject",
+      "s3:PutObject",
+      "s3:DeleteObject",
+    ]
+    resources = [
+      "arn:aws:s3:::company-terraform-state/*"
+    ]
+  }
+}</code></div>
+
+        <h3>Secrets Handling</h3>
+
+        <div class="code-block"><code># Never store secrets in variables or state
+# Instead, use data sources to fetch at apply time
+
+data "aws_secretsmanager_secret_version" "db_password" {
+  secret_id = "prod/database/master-password"
+}
+
+resource "aws_db_instance" "main" {
+  # ...
+  password = data.aws_secretsmanager_secret_version.db_password.secret_string
+}
+
+# For sensitive outputs, mark them appropriately
+output "database_password" {
+  value     = data.aws_secretsmanager_secret_version.db_password.secret_string
+  sensitive = true
+}</code></div>
+
+        <h2 id="cost-optimization">9. Cost Optimization Patterns</h2>
+
+        <h3>Resource Tagging for Cost Allocation</h3>
+
+        <div class="code-block"><code># locals.tf
+locals {
+  required_tags = {
+    Environment = var.environment
+    Project     = var.project_name
+    Owner       = var.owner_email
+    CostCenter  = var.cost_center
+    ManagedBy   = "terraform"
+    Repository  = var.repository_url
+  }
+
+  common_tags = merge(local.required_tags, var.additional_tags)
+}
+
+# Apply to all resources via default_tags
+provider "aws" {
+  region = var.region
+
+  default_tags {
+    tags = local.common_tags
+  }
+}</code></div>
+
+        <h3>Right-Sizing with Variables</h3>
+
+        <div class="code-block"><code># Environment-specific sizing
+variable "environment_config" {
+  type = map(object({
+    instance_type = string
+    min_capacity  = number
+    max_capacity  = number
+  }))
+  default = {
+    dev = {
+      instance_type = "t3.small"
+      min_capacity  = 1
+      max_capacity  = 3
+    }
+    staging = {
+      instance_type = "t3.medium"
+      min_capacity  = 2
+      max_capacity  = 5
+    }
+    prod = {
+      instance_type = "m5.large"
+      min_capacity  = 3
+      max_capacity  = 20
+    }
+  }
+}
+
+resource "aws_autoscaling_group" "main" {
+  min_size = var.environment_config[var.environment].min_capacity
+  max_size = var.environment_config[var.environment].max_capacity
+  # ...
+}</code></div>
+
+        <h2 id="multi-account">10. Multi-Account and Multi-Region</h2>
+
+        <h3>Provider Aliases</h3>
+
+        <div class="code-block"><code># providers.tf
+provider "aws" {
+  region = "us-east-1"
+  alias  = "us_east"
+}
+
+provider "aws" {
+  region = "eu-west-1"
+  alias  = "eu_west"
+}
+
+provider "aws" {
+  alias  = "prod_account"
+  region = "us-east-1"
+  
+  assume_role {
+    role_arn = "arn:aws:iam::111111111111:role/TerraformRole"
+  }
+}
+
+# Use specific provider for resources
+resource "aws_s3_bucket" "us_primary" {
+  provider = aws.us_east
+  bucket   = "my-bucket-us"
+}
+
+resource "aws_s3_bucket" "eu_replica" {
+  provider = aws.eu_west
+  bucket   = "my-bucket-eu"
+}</code></div>
+
+        <h3>Multi-Region Module</h3>
+
+        <div class="code-block"><code># modules/global-s3/main.tf
+terraform {
+  required_providers {
+    aws = {
+      source                = "hashicorp/aws"
+      version               = ">= 5.0"
+      configuration_aliases = [aws.primary, aws.replica]
+    }
+  }
+}
+
+resource "aws_s3_bucket" "primary" {
+  provider = aws.primary
+  bucket   = var.bucket_name
+}
+
+resource "aws_s3_bucket" "replica" {
+  provider = aws.replica
+  bucket   = "${var.bucket_name}-replica"
+}
+
+resource "aws_s3_bucket_replication_configuration" "primary" {
+  provider = aws.primary
+  bucket   = aws_s3_bucket.primary.id
+  role     = aws_iam_role.replication.arn
+
+  rule {
+    status = "Enabled"
+    destination {
+      bucket        = aws_s3_bucket.replica.arn
+      storage_class = "STANDARD_IA"
+    }
+  }
+}</code></div>
+
+        <h2 id="edge-cases">11. Edge Cases and Troubleshooting</h2>
+
+        <div class="edge-case">
+            <h4>⚠️ State Lock Stuck</h4>
+            <p>State lock not released after failed apply:</p>
+            <div class="code-block"><code># Force unlock (use with caution!)
+terraform force-unlock LOCK_ID
+
+# Check DynamoDB for stuck locks
+aws dynamodb scan --table-name terraform-state-lock</code></div>
         </div>
+
+        <div class="edge-case">
+            <h4>⚠️ Resource Already Exists</h4>
+            <p>Trying to create a resource that already exists outside Terraform:</p>
+            <div class="code-block"><code># Import existing resource into state
+terraform import aws_s3_bucket.example my-existing-bucket
+
+# Verify with plan
+terraform plan</code></div>
+        </div>
+
+        <div class="edge-case">
+            <h4>⚠️ Provider Version Mismatch</h4>
+            <p>Different team members using different provider versions:</p>
+            <div class="code-block"><code># Use .terraform.lock.hcl and commit it
+terraform providers lock -platform=darwin_amd64 -platform=linux_amd64
+
+# Upgrade providers consistently
+terraform init -upgrade</code></div>
+        </div>
+
+        <div class="edge-case">
+            <h4>⚠️ Circular Dependencies</h4>
+            <p>Resources that depend on each other:</p>
+            <div class="code-block"><code># Use depends_on for explicit ordering
+resource "aws_security_group" "a" {
+  name = "sg-a"
+}
+
+resource "aws_security_group" "b" {
+  name = "sg-b"
+  depends_on = [aws_security_group.a]
+}
+
+# Or break the cycle with data sources
+resource "aws_security_group_rule" "a_to_b" {
+  security_group_id        = aws_security_group.a.id
+  source_security_group_id = aws_security_group.b.id
+  # ...
+}</code></div>
+        </div>
+
+        <h2 id="migration">12. Migration and Upgrade Strategies</h2>
+
+        <h3>State Migration with moved Blocks</h3>
+
+        <div class="code-block"><code># Rename a resource without destroy/recreate
+moved {
+  from = aws_instance.web_server
+  to   = aws_instance.application_server
+}
+
+# Move into a module
+moved {
+  from = aws_instance.web
+  to   = module.web_servers.aws_instance.this
+}
+
+# Move from count to for_each
+moved {
+  from = aws_instance.web[0]
+  to   = aws_instance.web["primary"]
+}</code></div>
+
+        <h3>Blue-Green Infrastructure Deployment</h3>
+
+        <div class="code-block"><code># Use create_before_destroy for zero-downtime
+resource "aws_launch_template" "app" {
+  name_prefix = "app-"
+  
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+# Or use workspaces for parallel environments
+terraform workspace new blue
+terraform apply -var="color=blue"
+
+terraform workspace new green  
+terraform apply -var="color=green"
+
+# Switch traffic at load balancer level</code></div>
 
         <h2>Key Takeaways</h2>
 
         <ol>
-            <li><strong>Layer your modules:</strong> Resources → Infrastructure → Composition</li>
-            <li><strong>Split state by blast radius:</strong> Limit the impact of issues</li>
-            <li><strong>Bake in compliance:</strong> Use resource modules to enforce standards</li>
-            <li><strong>Test everything:</strong> Static analysis, unit tests, integration tests</li>
-            <li><strong>Document thoroughly:</strong> Every module needs a README with examples</li>
+            <li><strong>Design for reuse:</strong> Build modules with clear interfaces and sensible defaults</li>
+            <li><strong>Isolate state:</strong> Use separate state files per environment and component</li>
+            <li><strong>Test everything:</strong> Static analysis, unit tests, and policy checks before apply</li>
+            <li><strong>Version carefully:</strong> Use semantic versioning and provide migration guides</li>
+            <li><strong>Secure by default:</strong> Least privilege IAM, encrypted state, no secrets in code</li>
+            <li><strong>Plan for scale:</strong> Multi-account, multi-region patterns from the start</li>
         </ol>
 
         <div class="footer">
             <p>Need help scaling your Terraform infrastructure?</p>
-            <a href="/portfolio/#contact" class="cta">
-                Let's Connect →
-            </a>
+            <a href="/portfolio/#contact" class="cta">Get in Touch →</a>
         </div>
     </article>
 </body>
