@@ -10,510 +10,357 @@
     <meta name="author" content="Chandra Koushik Kodali">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg-primary: #0a0a0a;
-            --bg-secondary: #111111;
-            --bg-tertiary: #1a1a1a;
-            --text-primary: #ffffff;
-            --text-secondary: #a3a3a3;
-            --text-muted: #737373;
-            --accent-cyan: #06b6d4;
-            --accent-purple: #8b5cf6;
-            --accent-green: #10b981;
-            --accent-orange: #f59e0b;
-            --accent-red: #ef4444;
-            --border-color: #262626;
-        }
-
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
-        html {
-            scroll-behavior: smooth;
-        }
-
         body {
-            font-family: 'Inter', -apple-system, sans-serif;
-            background: var(--bg-primary);
-            color: var(--text-secondary);
-            line-height: 1.7;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #030014 0%, #0a0a1f 100%);
+            color: #e5e7eb;
+            line-height: 1.8;
             min-height: 100vh;
         }
 
-        .article-header {
-            background: var(--bg-secondary);
-            border-bottom: 1px solid var(--border-color);
-            padding: 24px 0;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .header-content {
-            max-width: 1400px;
+        .container {
+            max-width: 800px;
             margin: 0 auto;
-            padding: 0 32px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            padding: 60px 24px;
         }
 
         .back-link {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            color: var(--text-secondary);
+            color: #10b981;
             text-decoration: none;
             font-size: 14px;
-            font-weight: 500;
+            margin-bottom: 40px;
             transition: color 0.2s;
         }
 
         .back-link:hover {
-            color: var(--accent-green);
-        }
-
-        .header-meta {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            font-size: 13px;
-            color: var(--text-muted);
-        }
-
-        .article-layout {
-            max-width: 1400px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: 1fr 400px;
-            gap: 48px;
-            padding: 48px 32px;
-        }
-
-        @media (max-width: 1200px) {
-            .article-layout {
-                grid-template-columns: 1fr;
-            }
-
-            .architecture-sidebar {
-                display: none;
-            }
-
-            .architecture-inline {
-                display: block !important;
-            }
-        }
-
-        .article-content {
-            max-width: 720px;
-        }
-
-        .article-title {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: var(--text-primary);
-            line-height: 1.2;
-            margin-bottom: 16px;
-        }
-
-        .article-subtitle {
-            font-size: 1.25rem;
-            color: var(--text-secondary);
-            margin-bottom: 32px;
-            line-height: 1.6;
+            color: #34d399;
         }
 
         .tag {
             display: inline-block;
             padding: 4px 12px;
-            background: rgba(16, 185, 129, 0.1);
+            background: rgba(16, 185, 129, 0.15);
             border: 1px solid rgba(16, 185, 129, 0.3);
-            border-radius: 4px;
-            color: var(--accent-green);
+            border-radius: 9999px;
+            color: #10b981;
             font-size: 12px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            font-weight: 500;
             margin-bottom: 16px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #fff, #6ee7b7);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 16px;
+            line-height: 1.2;
+        }
+
+        .meta {
+            color: #6b7280;
+            font-size: 14px;
+            margin-bottom: 40px;
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
         }
 
         h2 {
             font-size: 1.5rem;
-            color: var(--text-primary);
-            margin: 56px 0 20px;
-            padding-top: 24px;
-            border-top: 1px solid var(--border-color);
-        }
-
-        h2:first-of-type {
-            margin-top: 32px;
-            padding-top: 0;
-            border-top: none;
+            color: #fff;
+            margin: 48px 0 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         h3 {
-            font-size: 1.2rem;
-            color: var(--text-primary);
+            font-size: 1.25rem;
+            color: #e5e7eb;
             margin: 32px 0 12px;
         }
 
         h4 {
-            font-size: 1rem;
-            color: var(--text-secondary);
-            margin: 24px 0 8px;
+            font-size: 1.1rem;
+            color: #d1d5db;
+            margin: 24px 0 10px;
         }
 
         p {
             margin-bottom: 20px;
+            color: #d1d5db;
         }
 
         ul,
         ol {
-            margin: 0 0 24px 20px;
+            margin: 0 0 20px 24px;
+            color: #d1d5db;
         }
 
         li {
             margin-bottom: 8px;
         }
 
-        strong {
-            color: var(--text-primary);
-            font-weight: 600;
-        }
-
         .code-block {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
+            background: #0d1117;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
             padding: 20px;
             margin: 20px 0;
             overflow-x: auto;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 13px;
-            line-height: 1.6;
-            color: #e5e7eb;
+            font-family: 'Fira Code', monospace;
+            font-size: 14px;
+            color: #c9d1d9;
         }
 
         .code-block code {
             white-space: pre;
         }
 
-        .callout {
-            border-radius: 8px;
+        .highlight {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(6, 182, 212, 0.1));
+            border-left: 3px solid #10b981;
             padding: 16px 20px;
+            margin: 24px 0;
+            border-radius: 0 12px 12px 0;
+        }
+
+        .warning {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(239, 68, 68, 0.1));
+            border-left: 3px solid #f59e0b;
+            padding: 16px 20px;
+            margin: 24px 0;
+            border-radius: 0 12px 12px 0;
+        }
+
+        .key-point {
+            background: rgba(6, 182, 212, 0.1);
+            border: 1px solid rgba(6, 182, 212, 0.3);
+            border-radius: 12px;
+            padding: 20px;
             margin: 24px 0;
         }
 
-        .callout-info {
-            background: rgba(16, 185, 129, 0.1);
-            border-left: 3px solid var(--accent-green);
-        }
-
-        .callout-warning {
-            background: rgba(245, 158, 11, 0.1);
-            border-left: 3px solid var(--accent-orange);
-        }
-
-        .callout-danger {
-            background: rgba(239, 68, 68, 0.1);
-            border-left: 3px solid var(--accent-red);
-        }
-
-        .callout-success {
-            background: rgba(6, 182, 212, 0.1);
-            border-left: 3px solid var(--accent-cyan);
-        }
-
-        .callout-title {
-            font-weight: 600;
-            color: var(--text-primary);
+        .key-point h4 {
+            color: #06b6d4;
             margin-bottom: 8px;
             font-size: 14px;
+            margin-top: 0;
+        }
+
+        .edge-case {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 24px 0;
+        }
+
+        .edge-case h4 {
+            color: #ef4444;
+            margin-bottom: 8px;
+            font-size: 14px;
+            margin-top: 0;
+        }
+
+        strong {
+            color: #fff;
+        }
+
+        .toc {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 24px;
+            margin: 32px 0;
+        }
+
+        .toc h3 {
+            margin-top: 0;
+            margin-bottom: 16px;
+            color: #fff;
+        }
+
+        .toc ul {
+            margin: 0;
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .toc li {
+            margin-bottom: 8px;
+        }
+
+        .toc a {
+            color: #10b981;
+            text-decoration: none;
+        }
+
+        .toc a:hover {
+            text-decoration: underline;
+        }
+
+        .diagram {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 32px;
+            margin: 32px 0;
+            overflow-x: auto;
+        }
+
+        .diagram-title {
+            font-size: 14px;
+            color: #9ca3af;
+            text-align: center;
+            margin-bottom: 24px;
+            font-weight: 500;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            margin: 24px 0;
+            margin: 20px 0;
             font-size: 14px;
         }
 
         th,
         td {
-            padding: 12px 16px;
+            padding: 12px;
             text-align: left;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         th {
-            background: var(--bg-secondary);
-            color: var(--text-primary);
-            font-weight: 600;
+            color: #fff;
+            background: rgba(255, 255, 255, 0.05);
         }
 
-        .architecture-sidebar {
-            position: sticky;
-            top: 100px;
-            height: fit-content;
-            max-height: calc(100vh - 140px);
-            overflow-y: auto;
-        }
-
-        .architecture-card {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 24px;
-            margin-bottom: 24px;
-        }
-
-        .architecture-card-title {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .architecture-card-title::before {
-            content: '';
-            width: 8px;
-            height: 8px;
-            background: var(--accent-green);
-            border-radius: 50%;
-        }
-
-        .arch-diagram {
-            background: var(--bg-tertiary);
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 16px;
-        }
-
-        .arch-diagram svg {
-            width: 100%;
-            height: auto;
-        }
-
-        .architecture-inline {
-            display: none;
-            margin: 32px 0;
-        }
-
-        .toc-sidebar {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 24px;
-        }
-
-        .toc-title {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 16px;
-        }
-
-        .toc-list {
-            list-style: none;
-            margin: 0;
-            padding: 0;
-        }
-
-        .toc-list li {
-            margin-bottom: 8px;
-        }
-
-        .toc-list a {
-            font-size: 13px;
-            color: var(--text-muted);
-            text-decoration: none;
-            transition: color 0.2s;
-            display: block;
-            padding: 4px 0;
-        }
-
-        .toc-list a:hover {
-            color: var(--accent-green);
+        td {
+            color: #d1d5db;
         }
 
         .tree {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 20px;
-            margin: 20px 0;
-            font-family: 'JetBrains Mono', monospace;
+            font-family: 'Fira Code', monospace;
             font-size: 13px;
             line-height: 1.6;
+            color: #9ca3af;
+            background: #0d1117;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
             overflow-x: auto;
         }
 
-        .tree pre {
-            margin: 0;
-            color: var(--text-muted);
-        }
-
         .tree .folder {
-            color: var(--accent-green);
+            color: #10b981;
         }
 
         .tree .file {
-            color: var(--text-secondary);
+            color: #d1d5db;
         }
 
-        .article-footer {
-            max-width: 720px;
-            margin: 64px 0;
-            padding-top: 32px;
-            border-top: 1px solid var(--border-color);
-        }
-
-        .cta-section {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 32px;
+        .footer {
+            margin-top: 60px;
+            padding-top: 40px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
             text-align: center;
+            color: #6b7280;
+            font-size: 14px;
         }
 
-        .cta-title {
-            font-size: 1.25rem;
-            color: var(--text-primary);
-            margin-bottom: 8px;
-        }
-
-        .cta-text {
-            color: var(--text-secondary);
-            margin-bottom: 20px;
-        }
-
-        .cta-button {
+        .cta {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            background: var(--accent-green);
-            color: white;
+            background: linear-gradient(135deg, #10b981, #06b6d4);
+            color: #fff;
             padding: 12px 24px;
-            border-radius: 8px;
+            border-radius: 12px;
             text-decoration: none;
-            font-weight: 600;
-            font-size: 14px;
+            font-weight: 500;
+            margin-top: 20px;
             transition: transform 0.2s, box-shadow 0.2s;
         }
 
-        .cta-button:hover {
+        .cta:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3);
-        }
-
-        .key-takeaways {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 24px;
-            margin: 32px 0;
-        }
-
-        .key-takeaways h3 {
-            margin-top: 0;
-            color: var(--accent-cyan);
-        }
-
-        .key-takeaways ol {
-            margin-bottom: 0;
+            box-shadow: 0 10px 40px rgba(16, 185, 129, 0.3);
         }
     </style>
 </head>
 
 <body>
-    <header class="article-header">
-        <div class="header-content">
-            <a href="/portfolio/#blog" class="back-link">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M19 12H5M12 19l-7-7 7-7" />
-                </svg>
-                Back to Portfolio
-            </a>
-            <div class="header-meta">
-                <span>24 min read</span>
-                <span>•</span>
-                <span>Infrastructure</span>
-            </div>
+    <article class="container">
+        <a href="/portfolio/#blog" class="back-link">← Back to Portfolio</a>
+
+        <span class="tag">Infrastructure</span>
+        <h1>Terraform at Scale: Module Design Patterns</h1>
+
+        <div class="meta">
+            <span>By Chandra Koushik Kodali</span>
+            <span>•</span>
+            <span>24 min read</span>
+            <span>•</span>
+            <span>January 2026</span>
         </div>
-    </header>
 
-    <main class="article-layout">
-        <article class="article-content">
-            <span class="tag">Infrastructure</span>
-            <h1 class="article-title">Terraform at Scale: Module Design Patterns</h1>
-            <p class="article-subtitle">Learn how to design reusable Terraform modules, implement state management
-                strategies, and build scalable infrastructure-as-code for enterprise environments.</p>
+        <p>
+            Infrastructure as Code (IaC) with Terraform has become the de facto standard for managing cloud
+            infrastructure. However, as organizations scale, the challenges of maintaining Terraform code across
+            hundreds of projects and dozens of teams become significant. In this comprehensive guide, I'll share proven
+            patterns and practices for designing reusable Terraform modules that scale across enterprise environments.
+        </p>
 
-            <h2 id="introduction">Why Module Design Matters</h2>
-            <p>
-                Infrastructure as Code (IaC) with Terraform has become the standard for managing cloud infrastructure.
-                However, as organizations scale from a handful of resources to thousands across multiple teams and
-                environments, the challenges of maintainability, consistency, and collaboration become critical.
-            </p>
+        <div class="toc">
+            <h3>Table of Contents</h3>
+            <ul>
+                <li><a href="#module-principles">1. Module Design Principles</a></li>
+                <li><a href="#module-structure">2. Module Structure and Organization</a></li>
+                <li><a href="#composition-patterns">3. Composition Patterns</a></li>
+                <li><a href="#state-management">4. State Management Strategies</a></li>
+                <li><a href="#testing">5. Testing and Validation</a></li>
+                <li><a href="#cicd">6. CI/CD Pipeline Integration</a></li>
+                <li><a href="#versioning">7. Versioning and Release Management</a></li>
+                <li><a href="#security">8. Security Best Practices</a></li>
+                <li><a href="#cost-optimization">9. Cost Optimization Patterns</a></li>
+                <li><a href="#multi-account">10. Multi-Account and Multi-Region</a></li>
+                <li><a href="#edge-cases">11. Edge Cases and Troubleshooting</a></li>
+                <li><a href="#migration">12. Migration and Upgrade Strategies</a></li>
+            </ul>
+        </div>
 
-            <div class="callout callout-info">
-                <div class="callout-title">💡 The Module Philosophy</div>
-                <p>A well-designed module is like a good API: it hides complexity, provides sensible defaults, and is
-                    impossible to misuse. Users should understand what it does just by reading variables.tf and
-                    outputs.tf.</p>
-            </div>
+        <h2 id="module-principles">1. Module Design Principles</h2>
 
-            <!-- Mobile Architecture -->
-            <div class="architecture-inline">
-                <div class="architecture-card">
-                    <div class="architecture-card-title">Module Composition</div>
-                    <div class="arch-diagram">
-                        <svg viewBox="0 0 350 200" xmlns="http://www.w3.org/2000/svg">
-                            <rect x="100" y="10" width="150" height="40" rx="6" fill="#1a1a1a" stroke="#10b981"
-                                stroke-width="2" />
-                            <text x="175" y="35" fill="#10b981" font-size="11" text-anchor="middle"
-                                font-weight="600">Root Module</text>
+        <p>Good Terraform modules follow several key principles that make them reusable, maintainable, and safe to use.
+        </p>
 
-                            <rect x="20" y="80" width="100" height="35" rx="4" fill="#1a1a1a" stroke="#06b6d4"
-                                stroke-width="1.5" />
-                            <text x="70" y="102" fill="#06b6d4" font-size="10" text-anchor="middle">VPC Module</text>
+        <h3>Single Responsibility</h3>
+        <p>
+            Each module should do one thing well. A VPC module creates networking resources. An EKS module creates
+            Kubernetes clusters. Don't combine unrelated resources just because they're often used together.
+        </p>
 
-                            <rect x="130" y="80" width="100" height="35" rx="4" fill="#1a1a1a" stroke="#8b5cf6"
-                                stroke-width="1.5" />
-                            <text x="180" y="102" fill="#8b5cf6" font-size="10" text-anchor="middle">EKS Module</text>
+        <h3>Sensible Defaults with Overridability</h3>
+        <p>
+            Provide reasonable defaults for all optional variables while allowing users to override everything. This
+            balances ease of use with flexibility.
+        </p>
 
-                            <rect x="240" y="80" width="100" height="35" rx="4" fill="#1a1a1a" stroke="#f59e0b"
-                                stroke-width="1.5" />
-                            <text x="290" y="102" fill="#f59e0b" font-size="10" text-anchor="middle">RDS Module</text>
-
-                            <path d="M150 50 L70 80" stroke="#525252" stroke-width="1.5" />
-                            <path d="M175 50 L180 80" stroke="#525252" stroke-width="1.5" />
-                            <path d="M200 50 L290 80" stroke="#525252" stroke-width="1.5" />
-                        </svg>
-                    </div>
-                </div>
-            </div>
-
-            <h2 id="design-principles">Module Design Principles</h2>
-
-            <h3>Single Responsibility</h3>
-            <p>Each module should do one thing well. A VPC module creates networking. An EKS module creates Kubernetes
-                clusters. Don't combine unrelated resources.</p>
-
-            <h3>Sensible Defaults</h3>
-            <p>Provide reasonable defaults while allowing complete customization:</p>
-
-            <div class="code-block"><code>variable "instance_type" {
+        <div class="code-block"><code>variable "instance_type" {
   description = "EC2 instance type"
   type        = string
   default     = "t3.medium"  # Sensible default
@@ -531,10 +378,13 @@ variable "tags" {
   default     = {}  # Allow complete customization
 }</code></div>
 
-            <h3>Explicit Over Implicit</h3>
-            <p>Make dependencies and requirements explicit:</p>
+        <h3>Explicit Over Implicit</h3>
+        <p>
+            Make dependencies and requirements explicit. Don't rely on implicit behavior or provider defaults that might
+            change.
+        </p>
 
-            <div class="code-block"><code># Bad: Implicit dependency on default VPC
+        <div class="code-block"><code># Bad: Implicit dependency on default VPC
 resource "aws_instance" "example" {
   ami           = var.ami_id
   instance_type = var.instance_type
@@ -542,61 +392,134 @@ resource "aws_instance" "example" {
 
 # Good: Explicit subnet requirement
 resource "aws_instance" "example" {
-  ami                    = var.ami_id
-  instance_type          = var.instance_type
-  subnet_id              = var.subnet_id  # Explicit
-  vpc_security_group_ids = var.security_group_ids
+  ami           = var.ami_id
+  instance_type = var.instance_type
+  subnet_id     = var.subnet_id  # Explicit
+  
+  vpc_security_group_ids = var.security_group_ids  # Explicit
 }</code></div>
 
-            <h2 id="module-structure">Standard Module Structure</h2>
+        <h3>Idempotency and Predictability</h3>
+        <p>
+            Modules should produce the same result when applied multiple times. Avoid resources with random generation,
+            timestamps, or external data sources that change unpredictably.
+        </p>
 
-            <div class="tree">
-                <pre><span class="folder">terraform-aws-eks/</span>
-├── <span class="file">README.md</span>           # Documentation with examples
-├── <span class="file">main.tf</span>             # Primary resource definitions
-├── <span class="file">variables.tf</span>        # Input variable definitions
-├── <span class="file">outputs.tf</span>          # Output value definitions
-├── <span class="file">versions.tf</span>         # Provider version constraints
-├── <span class="file">locals.tf</span>           # Local value definitions
-├── <span class="folder">modules/</span>            # Nested submodules
-│   ├── <span class="folder">node-group/</span>
-│   └── <span class="folder">addons/</span>
-├── <span class="folder">examples/</span>           # Usage examples
-│   ├── <span class="folder">complete/</span>
-│   └── <span class="folder">minimal/</span>
-└── <span class="folder">test/</span>               # Automated tests
-    └── <span class="file">eks_test.go</span></pre>
-            </div>
+        <div class="highlight">
+            <strong>Golden Rule:</strong> A user should be able to read your module's variables.tf and outputs.tf and
+            understand exactly what the module does without reading the implementation.
+        </div>
 
-            <h3>Variables with Validation</h3>
+        <h2 id="module-structure">2. Module Structure and Organization</h2>
 
-            <div class="code-block"><code>variable "cluster_name" {
-  description = "Name of the EKS cluster"
+        <h3>Standard Module Layout</h3>
+
+        <div class="tree"><span class="folder">terraform-aws-eks/</span>
+            ├── <span class="file">README.md</span> # Documentation with examples
+            ├── <span class="file">main.tf</span> # Primary resource definitions
+            ├── <span class="file">variables.tf</span> # Input variable definitions
+            ├── <span class="file">outputs.tf</span> # Output value definitions
+            ├── <span class="file">versions.tf</span> # Provider and Terraform version constraints
+            ├── <span class="file">locals.tf</span> # Local value definitions
+            ├── <span class="file">data.tf</span> # Data source definitions
+            ├── <span class="folder">modules/</span> # Nested submodules
+            │ ├── <span class="folder">node-group/</span>
+            │ │ ├── <span class="file">main.tf</span>
+            │ │ ├── <span class="file">variables.tf</span>
+            │ │ └── <span class="file">outputs.tf</span>
+            │ └── <span class="folder">addons/</span>
+            │ ├── <span class="file">main.tf</span>
+            │ ├── <span class="file">variables.tf</span>
+            │ └── <span class="file">outputs.tf</span>
+            ├── <span class="folder">examples/</span> # Usage examples
+            │ ├── <span class="folder">complete/</span>
+            │ ├── <span class="folder">minimal/</span>
+            │ └── <span class="folder">with-fargate/</span>
+            └── <span class="folder">test/</span> # Automated tests
+            └── <span class="file">eks_test.go</span></div>
+
+        <h3>Variables Best Practices</h3>
+
+        <div class="code-block"><code># variables.tf
+variable "cluster_name" {
+  description = "Name of the EKS cluster. Must be unique within the AWS account."
   type        = string
 
   validation {
     condition     = can(regex("^[a-zA-Z][a-zA-Z0-9-]*$", var.cluster_name))
-    error_message = "Cluster name must start with a letter."
+    error_message = "Cluster name must start with a letter and contain only alphanumeric characters and hyphens."
   }
 }
 
 variable "cluster_version" {
-  description = "Kubernetes version"
+  description = "Kubernetes version for the EKS cluster"
   type        = string
   default     = "1.28"
 
   validation {
     condition     = contains(["1.27", "1.28", "1.29"], var.cluster_version)
-    error_message = "Version must be 1.27, 1.28, or 1.29."
+    error_message = "Cluster version must be one of: 1.27, 1.28, 1.29."
   }
+}
+
+variable "node_groups" {
+  description = "Map of node group configurations"
+  type = map(object({
+    instance_types = list(string)
+    min_size       = number
+    max_size       = number
+    desired_size   = number
+    disk_size      = optional(number, 50)
+    labels         = optional(map(string), {})
+    taints = optional(list(object({
+      key    = string
+      value  = string
+      effect = string
+    })), [])
+  }))
+  default = {}
 }</code></div>
 
-            <h2 id="composition-patterns">Composition Patterns</h2>
+        <h3>Outputs Design</h3>
 
-            <h3>Module Composition</h3>
-            <p>Build complex infrastructure from focused modules:</p>
+        <div class="code-block"><code># outputs.tf
+output "cluster_endpoint" {
+  description = "Endpoint URL for the EKS cluster API server"
+  value       = aws_eks_cluster.this.endpoint
+}
 
-            <div class="code-block"><code>module "vpc" {
+output "cluster_certificate_authority_data" {
+  description = "Base64 encoded certificate data for cluster authentication"
+  value       = aws_eks_cluster.this.certificate_authority[0].data
+  sensitive   = true
+}
+
+output "cluster_security_group_id" {
+  description = "Security group ID attached to the EKS cluster"
+  value       = aws_eks_cluster.this.vpc_config[0].cluster_security_group_id
+}
+
+# Provide a complete kubectl config for convenience
+output "kubectl_config" {
+  description = "kubectl configuration for connecting to the cluster"
+  value = {
+    host                   = aws_eks_cluster.this.endpoint
+    cluster_ca_certificate = base64decode(aws_eks_cluster.this.certificate_authority[0].data)
+    token                  = data.aws_eks_cluster_auth.this.token
+  }
+  sensitive = true
+}</code></div>
+
+        <h2 id="composition-patterns">3. Composition Patterns</h2>
+
+        <h3>Module Composition</h3>
+        <p>
+            Complex infrastructure should be composed of smaller, focused modules. Here's how to structure a complete
+            platform:
+        </p>
+
+        <div class="code-block"><code># Root module that composes other modules
+module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "5.0.0"
 
@@ -616,21 +539,42 @@ variable "cluster_version" {
 module "eks" {
   source = "./modules/eks"
 
-  cluster_name = "${var.environment}-cluster"
-  vpc_id       = module.vpc.vpc_id
-  subnet_ids   = module.vpc.private_subnets
+  cluster_name    = "${var.environment}-cluster"
+  cluster_version = var.kubernetes_version
+  
+  vpc_id          = module.vpc.vpc_id
+  subnet_ids      = module.vpc.private_subnets
+
+  node_groups = var.node_groups
+
+  tags = local.common_tags
+}
+
+module "rds" {
+  source = "./modules/rds"
+
+  identifier     = "${var.environment}-db"
+  engine_version = var.postgres_version
+
+  vpc_id             = module.vpc.vpc_id
+  subnet_ids         = module.vpc.database_subnets
+  security_group_ids = [module.eks.node_security_group_id]
 
   tags = local.common_tags
 }</code></div>
 
-            <h3>Factory Pattern</h3>
-            <p>For standardized deployments across many environments:</p>
+        <h3>The Factory Pattern</h3>
+        <p>
+            For standardized deployments across many environments, use a factory pattern:
+        </p>
 
-            <div class="code-block"><code>variable "environments" {
+        <div class="code-block"><code># environments/factory/main.tf
+variable "environments" {
   type = map(object({
-    vpc_cidr      = string
-    instance_type = string
-    node_count    = number
+    vpc_cidr          = string
+    instance_type     = string
+    node_count        = number
+    enable_monitoring = bool
   }))
 }
 
@@ -638,97 +582,186 @@ module "environment" {
   source   = "../modules/environment"
   for_each = var.environments
 
-  environment   = each.key
-  vpc_cidr      = each.value.vpc_cidr
-  instance_type = each.value.instance_type
-  node_count    = each.value.node_count
+  environment       = each.key
+  vpc_cidr          = each.value.vpc_cidr
+  instance_type     = each.value.instance_type
+  node_count        = each.value.node_count
+  enable_monitoring = each.value.enable_monitoring
 }
 
-# terraform.tfvars
+# environments/factory/terraform.tfvars
 environments = {
-  dev     = { vpc_cidr = "10.0.0.0/16", instance_type = "t3.medium", node_count = 2 }
-  staging = { vpc_cidr = "10.1.0.0/16", instance_type = "t3.large",  node_count = 3 }
-  prod    = { vpc_cidr = "10.2.0.0/16", instance_type = "m5.xlarge", node_count = 5 }
+  dev = {
+    vpc_cidr          = "10.0.0.0/16"
+    instance_type     = "t3.medium"
+    node_count        = 2
+    enable_monitoring = false
+  }
+  staging = {
+    vpc_cidr          = "10.1.0.0/16"
+    instance_type     = "t3.large"
+    node_count        = 3
+    enable_monitoring = true
+  }
+  prod = {
+    vpc_cidr          = "10.2.0.0/16"
+    instance_type     = "m5.xlarge"
+    node_count        = 5
+    enable_monitoring = true
+  }
 }</code></div>
 
-            <h2 id="state-management">State Management</h2>
+        <h2 id="state-management">4. State Management Strategies</h2>
 
-            <h3>Remote State Backend</h3>
+        <h3>Remote State Backend</h3>
 
-            <div class="code-block"><code>terraform {
+        <div class="code-block"><code># backend.tf
+terraform {
   backend "s3" {
     bucket         = "company-terraform-state"
     key            = "environments/prod/eks/terraform.tfstate"
     region         = "us-east-1"
     encrypt        = true
     dynamodb_table = "terraform-state-lock"
+    
+    # Use assume_role for cross-account access
+    assume_role {
+      role_arn = "arn:aws:iam::123456789012:role/TerraformStateAccess"
+    }
   }
 }</code></div>
 
-            <h3>State Isolation Strategies</h3>
-            <table>
-                <tr>
-                    <th>Strategy</th>
-                    <th>When to Use</th>
-                    <th>Tradeoffs</th>
-                </tr>
-                <tr>
-                    <td>Per-environment</td>
-                    <td>Complete isolation</td>
-                    <td>Cannot share resources</td>
-                </tr>
-                <tr>
-                    <td>Per-component</td>
-                    <td>Independent lifecycles</td>
-                    <td>Requires data sources</td>
-                </tr>
-                <tr>
-                    <td>Monolithic</td>
-                    <td>Small projects</td>
-                    <td>Large blast radius</td>
-                </tr>
-            </table>
+        <h3>State Isolation Strategies</h3>
 
-            <div class="callout callout-warning">
-                <div class="callout-title">⚠️ Cross-State Dependencies</div>
-                <p>When referencing other state files, document these relationships clearly. Consider using explicit
-                    data sources instead for better discoverability.</p>
-            </div>
+        <table>
+            <tr>
+                <th>Strategy</th>
+                <th>When to Use</th>
+                <th>Tradeoffs</th>
+            </tr>
+            <tr>
+                <td>Per-environment</td>
+                <td>Complete isolation between dev/staging/prod</td>
+                <td>Cannot share resources easily</td>
+            </tr>
+            <tr>
+                <td>Per-component</td>
+                <td>Independent lifecycle for VPC, EKS, apps</td>
+                <td>Requires data source lookups</td>
+            </tr>
+            <tr>
+                <td>Monolithic</td>
+                <td>Small projects, tight coupling</td>
+                <td>Blast radius, slow plans</td>
+            </tr>
+        </table>
 
-            <h2 id="testing">Testing Strategies</h2>
+        <h3>Cross-State References</h3>
 
-            <h3>Static Analysis</h3>
-            <div class="code-block"><code># .pre-commit-config.yaml
+        <div class="code-block"><code># In the EKS module, reference VPC state
+data "terraform_remote_state" "vpc" {
+  backend = "s3"
+  config = {
+    bucket = "company-terraform-state"
+    key    = "environments/${var.environment}/vpc/terraform.tfstate"
+    region = "us-east-1"
+  }
+}
+
+# Use outputs from VPC state
+module "eks" {
+  source = "./modules/eks"
+
+  vpc_id     = data.terraform_remote_state.vpc.outputs.vpc_id
+  subnet_ids = data.terraform_remote_state.vpc.outputs.private_subnets
+}</code></div>
+
+        <div class="warning">
+            <strong>⚠️ Warning:</strong> Cross-state references create implicit dependencies. Document these
+            relationships clearly and consider using explicit data sources instead for better discoverability.
+        </div>
+
+        <h2 id="testing">5. Testing and Validation</h2>
+
+        <h3>Static Analysis</h3>
+
+        <div class="code-block"><code># .pre-commit-config.yaml
 repos:
   - repo: https://github.com/antonbabenko/pre-commit-terraform
+    rev: v1.83.0
     hooks:
       - id: terraform_fmt
       - id: terraform_validate
       - id: terraform_tflint
-      - id: terraform_checkov</code></div>
+        args:
+          - '--args=--config=__GIT_WORKING_DIR__/.tflint.hcl'
+      - id: terraform_docs
+        args:
+          - '--args=--config=.terraform-docs.yml'
+      - id: terraform_checkov
+        args:
+          - '--args=--quiet --framework terraform'</code></div>
 
-            <h3>Unit Tests with Terratest</h3>
-            <div class="code-block"><code>func TestEKSModule(t *testing.T) {
+        <h3>Unit Tests with Terratest</h3>
+
+        <div class="code-block"><code>// test/eks_test.go
+package test
+
+import (
+    "testing"
+    "github.com/gruntwork-io/terratest/modules/terraform"
+    "github.com/stretchr/testify/assert"
+)
+
+func TestEKSModule(t *testing.T) {
     t.Parallel()
 
-    terraformOptions := &terraform.Options{
+    terraformOptions := terraform.WithDefaultRetryableErrors(t, &terraform.Options{
         TerraformDir: "../examples/minimal",
         Vars: map[string]interface{}{
             "cluster_name": "test-cluster",
+            "environment":  "test",
         },
-    }
+    })
 
     defer terraform.Destroy(t, terraformOptions)
     terraform.InitAndApply(t, terraformOptions)
 
-    endpoint := terraform.Output(t, terraformOptions, "cluster_endpoint")
-    assert.Contains(t, endpoint, "eks.amazonaws.com")
+    // Validate outputs
+    clusterEndpoint := terraform.Output(t, terraformOptions, "cluster_endpoint")
+    assert.Contains(t, clusterEndpoint, "eks.amazonaws.com")
+
+    clusterVersion := terraform.Output(t, terraformOptions, "cluster_version")
+    assert.Equal(t, "1.28", clusterVersion)
 }</code></div>
 
-            <h2 id="cicd">CI/CD Integration</h2>
+        <h3>Policy as Code with OPA</h3>
 
-            <div class="code-block"><code># .github/workflows/terraform.yml
-name: Terraform
+        <div class="code-block"><code># policies/required_tags.rego
+package terraform.policies
+
+deny[msg] {
+    resource := input.planned_values.root_module.resources[_]
+    required_tags := {"Environment", "Owner", "CostCenter"}
+    provided_tags := {tag | resource.values.tags[tag]}
+    missing := required_tags - provided_tags
+    count(missing) > 0
+    msg := sprintf("Resource %s is missing required tags: %v", [resource.address, missing])
+}
+
+deny[msg] {
+    resource := input.planned_values.root_module.resources[_]
+    resource.type == "aws_s3_bucket"
+    not resource.values.versioning[0].enabled
+    msg := sprintf("S3 bucket %s must have versioning enabled", [resource.address])
+}</code></div>
+
+        <h2 id="cicd">6. CI/CD Pipeline Integration</h2>
+
+        <h3>GitHub Actions Workflow</h3>
+
+        <div class="code-block"><code># .github/workflows/terraform.yml
+name: Terraform CI/CD
 
 on:
   pull_request:
@@ -736,241 +769,450 @@ on:
   push:
     branches: [main]
 
+env:
+  TF_VERSION: "1.6.0"
+
 jobs:
-  plan:
+  validate:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       
       - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
       
-      - name: Terraform Format
+      - name: Terraform Format Check
         run: terraform fmt -check -recursive
+      
+      - name: Terraform Init
+        run: terraform init -backend=false
+      
+      - name: Terraform Validate
+        run: terraform validate
+
+  plan:
+    needs: validate
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: us-east-1
+      
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
       
       - name: Terraform Init
         run: terraform init
       
       - name: Terraform Plan
-        run: terraform plan -out=tfplan
+        id: plan
+        run: terraform plan -out=tfplan -no-color
+        continue-on-error: true
+      
+      - name: Comment Plan on PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const plan = `${{ steps.plan.outputs.stdout }}`
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '## Terraform Plan\n\`\`\`hcl\n' + plan + '\n\`\`\`'
+            })
 
   apply:
-    needs: plan
-    if: github.ref == 'refs/heads/main'
+    needs: validate
     runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
     environment: production
     steps:
+      - uses: actions/checkout@v4
+      
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: us-east-1
+      
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: ${{ env.TF_VERSION }}
+      
+      - name: Terraform Init
+        run: terraform init
+      
       - name: Terraform Apply
         run: terraform apply -auto-approve</code></div>
 
-            <h2 id="security">Security Best Practices</h2>
+        <h2 id="versioning">7. Versioning and Release Management</h2>
 
-            <h3>Least Privilege IAM</h3>
-            <div class="code-block"><code>data "aws_iam_policy_document" "terraform" {
+        <h3>Semantic Versioning for Modules</h3>
+
+        <div class="code-block"><code># versions.tf
+terraform {
+  required_version = ">= 1.5.0"  # Minimum Terraform version
+
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = ">= 5.0, < 6.0"  # Compatible provider versions
+    }
+  }
+}
+
+# In calling code, pin module versions
+module "eks" {
+  source  = "git::https://github.com/company/terraform-aws-eks.git?ref=v3.2.1"
+  # OR using registry
+  source  = "company/eks/aws"
+  version = "~> 3.2"  # Allow patch updates only
+}</code></div>
+
+        <h3>Changelog and Migration Guides</h3>
+
+        <div class="code-block"><code># CHANGELOG.md
+## [3.0.0] - 2026-01-15
+
+### BREAKING CHANGES
+- Renamed `worker_groups` to `node_groups` for consistency
+- Removed deprecated `create_eks` variable
+- Minimum Terraform version increased to 1.5.0
+
+### Migration Guide
+```hcl
+# Before (v2.x)
+module "eks" {
+  worker_groups = {
+    default = { ... }
+  }
+}
+
+# After (v3.x)
+module "eks" {
+  node_groups = {
+    default = { ... }
+  }
+}
+```
+
+### Added
+- Support for EKS managed node groups with Bottlerocket
+- Karpenter provisioner integration
+
+### Fixed
+- IAM role trust policy for IRSA</code></div>
+
+        <h2 id="security">8. Security Best Practices</h2>
+
+        <h3>Least Privilege IAM</h3>
+
+        <div class="code-block"><code># Create minimal IAM policies for Terraform
+data "aws_iam_policy_document" "terraform" {
+  # Only allow specific actions
   statement {
     effect = "Allow"
     actions = [
       "eks:*",
       "ec2:Describe*",
       "ec2:CreateSecurityGroup",
+      "ec2:DeleteSecurityGroup",
+      "ec2:AuthorizeSecurityGroupIngress",
+      "ec2:RevokeSecurityGroupIngress",
     ]
     resources = ["*"]
     condition {
       test     = "StringEquals"
       variable = "aws:RequestedRegion"
-      values   = ["us-east-1"]
+      values   = ["us-east-1", "us-west-2"]
     }
+  }
+
+  # Restrict state bucket access
+  statement {
+    effect = "Allow"
+    actions = [
+      "s3:GetObject",
+      "s3:PutObject",
+      "s3:DeleteObject",
+    ]
+    resources = [
+      "arn:aws:s3:::company-terraform-state/*"
+    ]
   }
 }</code></div>
 
-            <h3>Secrets Handling</h3>
-            <div class="code-block"><code># Never store secrets in variables
-# Use data sources to fetch at apply time
+        <h3>Secrets Handling</h3>
+
+        <div class="code-block"><code># Never store secrets in variables or state
+# Instead, use data sources to fetch at apply time
 
 data "aws_secretsmanager_secret_version" "db_password" {
   secret_id = "prod/database/master-password"
 }
 
 resource "aws_db_instance" "main" {
+  # ...
   password = data.aws_secretsmanager_secret_version.db_password.secret_string
+}
+
+# For sensitive outputs, mark them appropriately
+output "database_password" {
+  value     = data.aws_secretsmanager_secret_version.db_password.secret_string
+  sensitive = true
 }</code></div>
 
-            <h2 id="troubleshooting">Common Issues</h2>
+        <h2 id="cost-optimization">9. Cost Optimization Patterns</h2>
 
-            <div class="callout callout-danger">
-                <div class="callout-title">🔧 State Lock Stuck</div>
-                <p>If state lock isn't released after a failed apply:</p>
-            </div>
+        <h3>Resource Tagging for Cost Allocation</h3>
 
+        <div class="code-block"><code># locals.tf
+locals {
+  required_tags = {
+    Environment = var.environment
+    Project     = var.project_name
+    Owner       = var.owner_email
+    CostCenter  = var.cost_center
+    ManagedBy   = "terraform"
+    Repository  = var.repository_url
+  }
+
+  common_tags = merge(local.required_tags, var.additional_tags)
+}
+
+# Apply to all resources via default_tags
+provider "aws" {
+  region = var.region
+
+  default_tags {
+    tags = local.common_tags
+  }
+}</code></div>
+
+        <h3>Right-Sizing with Variables</h3>
+
+        <div class="code-block"><code># Environment-specific sizing
+variable "environment_config" {
+  type = map(object({
+    instance_type = string
+    min_capacity  = number
+    max_capacity  = number
+  }))
+  default = {
+    dev = {
+      instance_type = "t3.small"
+      min_capacity  = 1
+      max_capacity  = 3
+    }
+    staging = {
+      instance_type = "t3.medium"
+      min_capacity  = 2
+      max_capacity  = 5
+    }
+    prod = {
+      instance_type = "m5.large"
+      min_capacity  = 3
+      max_capacity  = 20
+    }
+  }
+}
+
+resource "aws_autoscaling_group" "main" {
+  min_size = var.environment_config[var.environment].min_capacity
+  max_size = var.environment_config[var.environment].max_capacity
+  # ...
+}</code></div>
+
+        <h2 id="multi-account">10. Multi-Account and Multi-Region</h2>
+
+        <h3>Provider Aliases</h3>
+
+        <div class="code-block"><code># providers.tf
+provider "aws" {
+  region = "us-east-1"
+  alias  = "us_east"
+}
+
+provider "aws" {
+  region = "eu-west-1"
+  alias  = "eu_west"
+}
+
+provider "aws" {
+  alias  = "prod_account"
+  region = "us-east-1"
+  
+  assume_role {
+    role_arn = "arn:aws:iam::111111111111:role/TerraformRole"
+  }
+}
+
+# Use specific provider for resources
+resource "aws_s3_bucket" "us_primary" {
+  provider = aws.us_east
+  bucket   = "my-bucket-us"
+}
+
+resource "aws_s3_bucket" "eu_replica" {
+  provider = aws.eu_west
+  bucket   = "my-bucket-eu"
+}</code></div>
+
+        <h3>Multi-Region Module</h3>
+
+        <div class="code-block"><code># modules/global-s3/main.tf
+terraform {
+  required_providers {
+    aws = {
+      source                = "hashicorp/aws"
+      version               = ">= 5.0"
+      configuration_aliases = [aws.primary, aws.replica]
+    }
+  }
+}
+
+resource "aws_s3_bucket" "primary" {
+  provider = aws.primary
+  bucket   = var.bucket_name
+}
+
+resource "aws_s3_bucket" "replica" {
+  provider = aws.replica
+  bucket   = "${var.bucket_name}-replica"
+}
+
+resource "aws_s3_bucket_replication_configuration" "primary" {
+  provider = aws.primary
+  bucket   = aws_s3_bucket.primary.id
+  role     = aws_iam_role.replication.arn
+
+  rule {
+    status = "Enabled"
+    destination {
+      bucket        = aws_s3_bucket.replica.arn
+      storage_class = "STANDARD_IA"
+    }
+  }
+}</code></div>
+
+        <h2 id="edge-cases">11. Edge Cases and Troubleshooting</h2>
+
+        <div class="edge-case">
+            <h4>⚠️ State Lock Stuck</h4>
+            <p>State lock not released after failed apply:</p>
             <div class="code-block"><code># Force unlock (use with caution!)
 terraform force-unlock LOCK_ID
 
 # Check DynamoDB for stuck locks
 aws dynamodb scan --table-name terraform-state-lock</code></div>
+        </div>
 
-            <div class="callout callout-warning">
-                <div class="callout-title">⚠️ Resource Already Exists</div>
-                <p>Import existing resources into state:</p>
-            </div>
+        <div class="edge-case">
+            <h4>⚠️ Resource Already Exists</h4>
+            <p>Trying to create a resource that already exists outside Terraform:</p>
+            <div class="code-block"><code># Import existing resource into state
+terraform import aws_s3_bucket.example my-existing-bucket
 
-            <div class="code-block"><code>terraform import aws_s3_bucket.example my-existing-bucket
-terraform plan  # Verify state matches</code></div>
+# Verify with plan
+terraform plan</code></div>
+        </div>
 
-            <div class="key-takeaways">
-                <h3>🎯 Key Takeaways</h3>
-                <ol>
-                    <li><strong>Design for reuse:</strong> Build modules with clear interfaces and sensible defaults
-                    </li>
-                    <li><strong>Isolate state:</strong> Separate state files per environment and component</li>
-                    <li><strong>Test everything:</strong> Static analysis, unit tests, and policy checks</li>
-                    <li><strong>Version carefully:</strong> Use semantic versioning with migration guides</li>
-                    <li><strong>Secure by default:</strong> Least privilege IAM, encrypted state, no secrets in code
-                    </li>
-                    <li><strong>Plan for scale:</strong> Multi-account, multi-region patterns from the start</li>
-                </ol>
-            </div>
+        <div class="edge-case">
+            <h4>⚠️ Provider Version Mismatch</h4>
+            <p>Different team members using different provider versions:</p>
+            <div class="code-block"><code># Use .terraform.lock.hcl and commit it
+terraform providers lock -platform=darwin_amd64 -platform=linux_amd64
 
-            <div class="article-footer">
-                <div class="cta-section">
-                    <h3 class="cta-title">Need help scaling your Terraform?</h3>
-                    <p class="cta-text">Let's discuss module design patterns for your organization.</p>
-                    <a href="/portfolio/#contact" class="cta-button">
-                        Get in Touch
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2">
-                            <path d="M5 12h14M12 5l7 7-7 7" />
-                        </svg>
-                    </a>
-                </div>
-            </div>
-        </article>
+# Upgrade providers consistently
+terraform init -upgrade</code></div>
+        </div>
 
-        <!-- Architecture Sidebar -->
-        <aside class="architecture-sidebar">
-            <div class="architecture-card">
-                <div class="architecture-card-title">Module Composition</div>
-                <div class="arch-diagram">
-                    <svg viewBox="0 0 350 260" xmlns="http://www.w3.org/2000/svg">
-                        <!-- Root Module -->
-                        <rect x="100" y="10" width="150" height="50" rx="8" fill="#0a0a0a" stroke="#10b981"
-                            stroke-width="2" />
-                        <text x="175" y="32" fill="#10b981" font-size="11" text-anchor="middle" font-weight="600">Root
-                            Module</text>
-                        <text x="175" y="48" fill="#737373" font-size="9" text-anchor="middle">environments/prod</text>
+        <div class="edge-case">
+            <h4>⚠️ Circular Dependencies</h4>
+            <p>Resources that depend on each other:</p>
+            <div class="code-block"><code># Use depends_on for explicit ordering
+resource "aws_security_group" "a" {
+  name = "sg-a"
+}
 
-                        <!-- Child Modules -->
-                        <rect x="15" y="100" width="100" height="45" rx="6" fill="#0a0a0a" stroke="#06b6d4"
-                            stroke-width="1.5" />
-                        <text x="65" y="120" fill="#06b6d4" font-size="10" text-anchor="middle" font-weight="500">VPC
-                            Module</text>
-                        <text x="65" y="135" fill="#737373" font-size="8" text-anchor="middle">Networking</text>
+resource "aws_security_group" "b" {
+  name = "sg-b"
+  depends_on = [aws_security_group.a]
+}
 
-                        <rect x="125" y="100" width="100" height="45" rx="6" fill="#0a0a0a" stroke="#8b5cf6"
-                            stroke-width="1.5" />
-                        <text x="175" y="120" fill="#8b5cf6" font-size="10" text-anchor="middle" font-weight="500">EKS
-                            Module</text>
-                        <text x="175" y="135" fill="#737373" font-size="8" text-anchor="middle">Kubernetes</text>
+# Or break the cycle with data sources
+resource "aws_security_group_rule" "a_to_b" {
+  security_group_id        = aws_security_group.a.id
+  source_security_group_id = aws_security_group.b.id
+  # ...
+}</code></div>
+        </div>
 
-                        <rect x="235" y="100" width="100" height="45" rx="6" fill="#0a0a0a" stroke="#f59e0b"
-                            stroke-width="1.5" />
-                        <text x="285" y="120" fill="#f59e0b" font-size="10" text-anchor="middle" font-weight="500">RDS
-                            Module</text>
-                        <text x="285" y="135" fill="#737373" font-size="8" text-anchor="middle">Database</text>
+        <h2 id="migration">12. Migration and Upgrade Strategies</h2>
 
-                        <!-- Sub-modules -->
-                        <rect x="100" y="180" width="70" height="30" rx="4" fill="#1a1a1a" />
-                        <text x="135" y="200" fill="#a3a3a3" font-size="8" text-anchor="middle">node-group</text>
+        <h3>State Migration with moved Blocks</h3>
 
-                        <rect x="180" y="180" width="70" height="30" rx="4" fill="#1a1a1a" />
-                        <text x="215" y="200" fill="#a3a3a3" font-size="8" text-anchor="middle">addons</text>
+        <div class="code-block"><code># Rename a resource without destroy/recreate
+moved {
+  from = aws_instance.web_server
+  to   = aws_instance.application_server
+}
 
-                        <!-- Cloud -->
-                        <rect x="35" y="225" width="280" height="30" rx="4" fill="#0a0a0a" stroke="#525252"
-                            stroke-width="1" />
-                        <text x="175" y="245" fill="#737373" font-size="10" text-anchor="middle">AWS / GCP /
-                            Azure</text>
+# Move into a module
+moved {
+  from = aws_instance.web
+  to   = module.web_servers.aws_instance.this
+}
 
-                        <!-- Arrows -->
-                        <path d="M145 60 L65 100" stroke="#525252" stroke-width="1.5" />
-                        <path d="M175 60 L175 100" stroke="#525252" stroke-width="1.5" />
-                        <path d="M205 60 L285 100" stroke="#525252" stroke-width="1.5" />
-                        <path d="M155 145 L135 180" stroke="#525252" stroke-width="1" />
-                        <path d="M195 145 L215 180" stroke="#525252" stroke-width="1" />
-                    </svg>
-                </div>
-                <p style="font-size: 12px; color: var(--text-muted); margin: 0;">
-                    Root modules compose child modules, which may have nested sub-modules for specific features.
-                </p>
-            </div>
+# Move from count to for_each
+moved {
+  from = aws_instance.web[0]
+  to   = aws_instance.web["primary"]
+}</code></div>
 
-            <div class="architecture-card">
-                <div class="architecture-card-title">State Management</div>
-                <div class="arch-diagram">
-                    <svg viewBox="0 0 350 200" xmlns="http://www.w3.org/2000/svg">
-                        <!-- Terraform -->
-                        <rect x="10" y="75" width="80" height="50" rx="6" fill="#0a0a0a" stroke="#8b5cf6"
-                            stroke-width="2" />
-                        <text x="50" y="100" fill="#8b5cf6" font-size="10" text-anchor="middle"
-                            font-weight="600">Terraform</text>
-                        <text x="50" y="115" fill="#737373" font-size="8" text-anchor="middle">CLI/CI</text>
+        <h3>Blue-Green Infrastructure Deployment</h3>
 
-                        <!-- S3 Bucket -->
-                        <rect x="135" y="20" width="80" height="40" rx="4" fill="#0a0a0a" stroke="#f59e0b"
-                            stroke-width="1.5" />
-                        <text x="175" y="45" fill="#f59e0b" font-size="9" text-anchor="middle" font-weight="500">S3
-                            Bucket</text>
+        <div class="code-block"><code># Use create_before_destroy for zero-downtime
+resource "aws_launch_template" "app" {
+  name_prefix = "app-"
+  
+  lifecycle {
+    create_before_destroy = true
+  }
+}
 
-                        <!-- DynamoDB -->
-                        <rect x="135" y="80" width="80" height="40" rx="4" fill="#0a0a0a" stroke="#06b6d4"
-                            stroke-width="1.5" />
-                        <text x="175" y="100" fill="#06b6d4" font-size="9" text-anchor="middle"
-                            font-weight="500">DynamoDB</text>
-                        <text x="175" y="112" fill="#737373" font-size="7" text-anchor="middle">Locking</text>
+# Or use workspaces for parallel environments
+terraform workspace new blue
+terraform apply -var="color=blue"
 
-                        <!-- State Files -->
-                        <rect x="260" y="10" width="80" height="25" rx="3" fill="#1a1a1a" />
-                        <text x="300" y="27" fill="#a3a3a3" font-size="7" text-anchor="middle">dev.tfstate</text>
+terraform workspace new green  
+terraform apply -var="color=green"
 
-                        <rect x="260" y="45" width="80" height="25" rx="3" fill="#1a1a1a" />
-                        <text x="300" y="62" fill="#a3a3a3" font-size="7" text-anchor="middle">staging.tfstate</text>
+# Switch traffic at load balancer level</code></div>
 
-                        <rect x="260" y="80" width="80" height="25" rx="3" fill="#1a1a1a" />
-                        <text x="300" y="97" fill="#a3a3a3" font-size="7" text-anchor="middle">prod.tfstate</text>
+        <h2>Key Takeaways</h2>
 
-                        <!-- Arrows -->
-                        <path d="M90 90 L135 45" stroke="#525252" stroke-width="1.5" />
-                        <path d="M90 100 L135 100" stroke="#525252" stroke-width="1.5" />
-                        <path d="M215 40 L260 30" stroke="#525252" stroke-width="1" />
-                        <path d="M215 40 L260 55" stroke="#525252" stroke-width="1" />
-                        <path d="M215 40 L260 90" stroke="#525252" stroke-width="1" />
+        <ol>
+            <li><strong>Design for reuse:</strong> Build modules with clear interfaces and sensible defaults</li>
+            <li><strong>Isolate state:</strong> Use separate state files per environment and component</li>
+            <li><strong>Test everything:</strong> Static analysis, unit tests, and policy checks before apply</li>
+            <li><strong>Version carefully:</strong> Use semantic versioning and provide migration guides</li>
+            <li><strong>Secure by default:</strong> Least privilege IAM, encrypted state, no secrets in code</li>
+            <li><strong>Plan for scale:</strong> Multi-account, multi-region patterns from the start</li>
+        </ol>
 
-                        <!-- Legend -->
-                        <text x="175" y="150" fill="#737373" font-size="9" text-anchor="middle">Encrypted state with
-                            locking</text>
-                        <text x="175" y="165" fill="#737373" font-size="9" text-anchor="middle">prevents concurrent
-                            modifications</text>
-                    </svg>
-                </div>
-                <p style="font-size: 12px; color: var(--text-muted); margin: 0;">
-                    Remote state with S3 and DynamoDB ensures consistency across team members.
-                </p>
-            </div>
-
-            <div class="toc-sidebar">
-                <div class="toc-title">On This Page</div>
-                <ul class="toc-list">
-                    <li><a href="#introduction">Why Module Design Matters</a></li>
-                    <li><a href="#design-principles">Design Principles</a></li>
-                    <li><a href="#module-structure">Module Structure</a></li>
-                    <li><a href="#composition-patterns">Composition Patterns</a></li>
-                    <li><a href="#state-management">State Management</a></li>
-                    <li><a href="#testing">Testing Strategies</a></li>
-                    <li><a href="#cicd">CI/CD Integration</a></li>
-                    <li><a href="#security">Security</a></li>
-                    <li><a href="#troubleshooting">Troubleshooting</a></li>
-                </ul>
-            </div>
-        </aside>
-    </main>
+        <div class="footer">
+            <p>Need help scaling your Terraform infrastructure?</p>
+            <a href="/portfolio/#contact" class="cta">Get in Touch →</a>
+        </div>
+    </article>
 </body>
 
 </html>
