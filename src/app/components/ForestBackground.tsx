@@ -1,30 +1,31 @@
 import { useEffect, useRef, useState } from 'react';
 
-interface Firefly {
+interface Particle {
     x: number;
     y: number;
     size: number;
     opacity: number;
-    speed: number;
-    angle: number;
-    pulse: number;
-    pulseSpeed: number;
+    speedX: number;
+    speedY: number;
     color: string;
+    type: 'circle' | 'hexagon' | 'square';
 }
 
-interface Tree {
+interface FloatingShape {
     x: number;
-    height: number;
-    width: number;
-    layer: number; // 0 = front, 1 = mid, 2 = back
-    hasGlow: boolean;
-    glowPoints: { y: number; intensity: number }[];
+    y: number;
+    size: number;
+    rotation: number;
+    rotationSpeed: number;
+    opacity: number;
+    color: string;
+    type: 'ring' | 'dottedCircle' | 'gradient';
 }
 
 // Check for reduced motion preference
 function prefersReducedMotion(): boolean {
     if (typeof window === 'undefined') return false;
-    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    return window.matchMedia('(prefers-color-scheme: reduce)').matches;
 }
 
 export function ForestBackground() {
@@ -40,10 +41,9 @@ export function ForestBackground() {
 
         // Skip for reduced motion
         if (prefersReducedMotion()) {
-            // Draw static version
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
-            drawStaticForest(ctx, canvas.width, canvas.height);
+            drawStaticBackground(ctx, canvas.width, canvas.height);
             return;
         }
 
@@ -52,45 +52,46 @@ export function ForestBackground() {
         canvas.width = width;
         canvas.height = height;
 
-        // Generate trees
-        const trees: Tree[] = [];
-        const treeCount = Math.floor(width / 40);
+        // Color palette - Modern tech/professional look
+        const colors = {
+            primary: 'rgba(6, 182, 212, ', // Cyan
+            secondary: 'rgba(139, 92, 246, ', // Violet
+            accent: 'rgba(16, 185, 129, ', // Emerald
+            soft: 'rgba(148, 163, 184, ', // Slate
+        };
 
-        for (let i = 0; i < treeCount; i++) {
-            const layer = Math.floor(Math.random() * 3);
-            const baseHeight = height * (0.3 + layer * 0.15);
-            trees.push({
-                x: (i / treeCount) * width + (Math.random() - 0.5) * 60,
-                height: baseHeight + Math.random() * height * 0.2,
-                width: 15 + Math.random() * 25 - layer * 5,
-                layer,
-                hasGlow: Math.random() > 0.6,
-                glowPoints: Array.from({ length: Math.floor(Math.random() * 5) + 2 }, () => ({
-                    y: Math.random(),
-                    intensity: Math.random(),
-                })),
+        // Generate floating particles
+        const particles: Particle[] = [];
+        const particleCount = Math.floor(width / 25);
+        const particleColors = [colors.primary, colors.secondary, colors.accent, colors.soft];
+        const particleTypes: Particle['type'][] = ['circle', 'hexagon', 'square'];
+
+        for (let i = 0; i < particleCount; i++) {
+            particles.push({
+                x: Math.random() * width,
+                y: Math.random() * height,
+                size: Math.random() * 3 + 1,
+                opacity: Math.random() * 0.3 + 0.1,
+                speedX: (Math.random() - 0.5) * 0.3,
+                speedY: -Math.random() * 0.2 - 0.05,
+                color: particleColors[Math.floor(Math.random() * particleColors.length)],
+                type: particleTypes[Math.floor(Math.random() * particleTypes.length)],
             });
         }
 
-        // Sort trees by layer (back to front)
-        trees.sort((a, b) => b.layer - a.layer);
-
-        // Generate fireflies
-        const fireflies: Firefly[] = [];
-        const fireflyCount = Math.floor(width / 30);
-        const colors = ['rgba(0, 229, 255, ', 'rgba(139, 92, 246, ', 'rgba(34, 211, 238, '];
-
-        for (let i = 0; i < fireflyCount; i++) {
-            fireflies.push({
+        // Generate large floating shapes
+        const shapes: FloatingShape[] = [];
+        const shapeCount = 8;
+        for (let i = 0; i < shapeCount; i++) {
+            shapes.push({
                 x: Math.random() * width,
-                y: height * 0.3 + Math.random() * height * 0.6,
-                size: Math.random() * 3 + 1,
-                opacity: Math.random() * 0.5 + 0.2,
-                speed: Math.random() * 0.3 + 0.1,
-                angle: Math.random() * Math.PI * 2,
-                pulse: Math.random() * Math.PI * 2,
-                pulseSpeed: Math.random() * 0.02 + 0.01,
-                color: colors[Math.floor(Math.random() * colors.length)],
+                y: Math.random() * height,
+                size: Math.random() * 150 + 80,
+                rotation: Math.random() * Math.PI * 2,
+                rotationSpeed: (Math.random() - 0.5) * 0.002,
+                opacity: Math.random() * 0.08 + 0.02,
+                color: particleColors[Math.floor(Math.random() * particleColors.length)],
+                type: ['ring', 'dottedCircle', 'gradient'][Math.floor(Math.random() * 3)] as FloatingShape['type'],
             });
         }
 
@@ -122,135 +123,149 @@ export function ForestBackground() {
             lastTime = currentTime - (elapsed % frameInterval);
             time += 0.016;
 
-            // Clear canvas
-            ctx.fillStyle = '#030014';
+            // Draw gradient background - Light theme
+            const gradient = ctx.createLinearGradient(0, 0, width, height);
+            gradient.addColorStop(0, '#0f172a'); // Slate 900
+            gradient.addColorStop(0.3, '#1e1b4b'); // Indigo 950
+            gradient.addColorStop(0.6, '#0f172a'); // Slate 900
+            gradient.addColorStop(1, '#042f2e'); // Teal 950
+            ctx.fillStyle = gradient;
             ctx.fillRect(0, 0, width, height);
 
-            // Draw gradient sky
-            const skyGradient = ctx.createLinearGradient(0, 0, 0, height);
-            skyGradient.addColorStop(0, '#030014');
-            skyGradient.addColorStop(0.4, '#050520');
-            skyGradient.addColorStop(0.7, '#0a1628');
-            skyGradient.addColorStop(1, '#0d1f1a');
-            ctx.fillStyle = skyGradient;
+            // Draw mesh gradient overlay
+            const meshGradient = ctx.createRadialGradient(
+                width * 0.2, height * 0.3, 0,
+                width * 0.2, height * 0.3, width * 0.5
+            );
+            meshGradient.addColorStop(0, 'rgba(139, 92, 246, 0.1)');
+            meshGradient.addColorStop(1, 'transparent');
+            ctx.fillStyle = meshGradient;
             ctx.fillRect(0, 0, width, height);
 
-            // Draw subtle stars
-            ctx.fillStyle = 'rgba(255, 255, 255, 0.3)';
-            for (let i = 0; i < 50; i++) {
-                const starX = (i * 137.5) % width;
-                const starY = (i * 73.1) % (height * 0.4);
-                const twinkle = Math.sin(time * 2 + i) * 0.3 + 0.7;
-                ctx.globalAlpha = twinkle * 0.4;
-                ctx.beginPath();
-                ctx.arc(starX, starY, 1, 0, Math.PI * 2);
-                ctx.fill();
-            }
-            ctx.globalAlpha = 1;
+            const meshGradient2 = ctx.createRadialGradient(
+                width * 0.8, height * 0.7, 0,
+                width * 0.8, height * 0.7, width * 0.4
+            );
+            meshGradient2.addColorStop(0, 'rgba(6, 182, 212, 0.08)');
+            meshGradient2.addColorStop(1, 'transparent');
+            ctx.fillStyle = meshGradient2;
+            ctx.fillRect(0, 0, width, height);
 
-            // Draw trees by layer
-            trees.forEach((tree) => {
-                const layerOpacity = 1 - tree.layer * 0.25;
-                const layerColor = tree.layer === 0 ? '#050810' : tree.layer === 1 ? '#070d12' : '#091015';
+            // Draw floating shapes
+            shapes.forEach((shape) => {
+                shape.rotation += shape.rotationSpeed;
 
-                // Tree trunk
-                ctx.fillStyle = layerColor;
-                ctx.beginPath();
-                ctx.moveTo(tree.x - tree.width / 2, height);
-                ctx.lineTo(tree.x - tree.width / 4, height - tree.height * 0.3);
-                ctx.lineTo(tree.x, height - tree.height);
-                ctx.lineTo(tree.x + tree.width / 4, height - tree.height * 0.3);
-                ctx.lineTo(tree.x + tree.width / 2, height);
-                ctx.closePath();
-                ctx.fill();
+                ctx.save();
+                ctx.translate(shape.x, shape.y);
+                ctx.rotate(shape.rotation);
 
-                // Pine branches (triangular sections)
-                const sections = 4;
-                for (let s = 0; s < sections; s++) {
-                    const sectionY = height - tree.height * ((s + 1) / (sections + 1));
-                    const sectionWidth = tree.width * (1 + s * 0.5);
-
+                if (shape.type === 'ring') {
+                    ctx.strokeStyle = shape.color + shape.opacity + ')';
+                    ctx.lineWidth = 2;
                     ctx.beginPath();
-                    ctx.moveTo(tree.x, sectionY - tree.height * 0.15);
-                    ctx.lineTo(tree.x - sectionWidth, sectionY + tree.height * 0.08);
-                    ctx.lineTo(tree.x + sectionWidth, sectionY + tree.height * 0.08);
-                    ctx.closePath();
+                    ctx.arc(0, 0, shape.size, 0, Math.PI * 2);
+                    ctx.stroke();
+
+                    // Inner ring
+                    ctx.beginPath();
+                    ctx.arc(0, 0, shape.size * 0.7, 0, Math.PI * 2);
+                    ctx.stroke();
+                } else if (shape.type === 'dottedCircle') {
+                    ctx.fillStyle = shape.color + shape.opacity + ')';
+                    const dotCount = 20;
+                    for (let i = 0; i < dotCount; i++) {
+                        const angle = (i / dotCount) * Math.PI * 2;
+                        const x = Math.cos(angle) * shape.size;
+                        const y = Math.sin(angle) * shape.size;
+                        ctx.beginPath();
+                        ctx.arc(x, y, 3, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                } else if (shape.type === 'gradient') {
+                    const gradientShape = ctx.createRadialGradient(0, 0, 0, 0, 0, shape.size);
+                    gradientShape.addColorStop(0, shape.color + (shape.opacity * 1.5) + ')');
+                    gradientShape.addColorStop(0.5, shape.color + (shape.opacity * 0.5) + ')');
+                    gradientShape.addColorStop(1, 'transparent');
+                    ctx.fillStyle = gradientShape;
+                    ctx.beginPath();
+                    ctx.arc(0, 0, shape.size, 0, Math.PI * 2);
                     ctx.fill();
                 }
 
-                // Glowing veins on trees (only front layer)
-                if (tree.hasGlow && tree.layer === 0) {
-                    tree.glowPoints.forEach((point, i) => {
-                        const glowY = height - tree.height * point.y;
-                        const pulse = Math.sin(time * 1.5 + i) * 0.3 + 0.7;
-
-                        ctx.strokeStyle = `rgba(0, 229, 255, ${point.intensity * pulse * 0.4})`;
-                        ctx.lineWidth = 1.5;
-                        ctx.beginPath();
-                        ctx.moveTo(tree.x - 2, glowY);
-                        ctx.lineTo(tree.x - 2, glowY + 30 + Math.random() * 20);
-                        ctx.stroke();
-
-                        // Glow effect
-                        ctx.shadowColor = 'rgba(0, 229, 255, 0.5)';
-                        ctx.shadowBlur = 8;
-                        ctx.strokeStyle = `rgba(139, 92, 246, ${point.intensity * pulse * 0.3})`;
-                        ctx.beginPath();
-                        ctx.moveTo(tree.x + 2, glowY + 10);
-                        ctx.lineTo(tree.x + 2, glowY + 40);
-                        ctx.stroke();
-                        ctx.shadowBlur = 0;
-                    });
-                }
+                ctx.restore();
             });
 
-            // Draw ground mist
-            const mistGradient = ctx.createLinearGradient(0, height - 150, 0, height);
-            mistGradient.addColorStop(0, 'rgba(139, 92, 246, 0)');
-            mistGradient.addColorStop(0.5, 'rgba(139, 92, 246, 0.05)');
-            mistGradient.addColorStop(1, 'rgba(88, 28, 135, 0.15)');
-            ctx.fillStyle = mistGradient;
-            ctx.fillRect(0, height - 150, width, 150);
-
-            // Animated mist waves
-            ctx.fillStyle = 'rgba(139, 92, 246, 0.03)';
-            for (let i = 0; i < 3; i++) {
-                ctx.beginPath();
-                ctx.moveTo(0, height);
-                for (let x = 0; x <= width; x += 50) {
-                    const waveY = height - 50 - i * 30 + Math.sin(x * 0.01 + time + i) * 20;
-                    ctx.lineTo(x, waveY);
-                }
-                ctx.lineTo(width, height);
-                ctx.closePath();
-                ctx.fill();
-            }
-
-            // Draw and update fireflies
-            fireflies.forEach((firefly) => {
+            // Draw and update particles
+            particles.forEach((particle) => {
                 // Update position
-                firefly.angle += (Math.random() - 0.5) * 0.1;
-                firefly.x += Math.cos(firefly.angle) * firefly.speed;
-                firefly.y += Math.sin(firefly.angle) * firefly.speed * 0.5;
-                firefly.pulse += firefly.pulseSpeed;
+                particle.x += particle.speedX;
+                particle.y += particle.speedY;
 
                 // Wrap around
-                if (firefly.x < -10) firefly.x = width + 10;
-                if (firefly.x > width + 10) firefly.x = -10;
-                if (firefly.y < height * 0.3) firefly.y = height * 0.9;
-                if (firefly.y > height) firefly.y = height * 0.3;
+                if (particle.x < -10) particle.x = width + 10;
+                if (particle.x > width + 10) particle.x = -10;
+                if (particle.y < -10) particle.y = height + 10;
 
-                // Draw firefly with glow
-                const pulseOpacity = (Math.sin(firefly.pulse) * 0.5 + 0.5) * firefly.opacity;
+                // Pulse opacity
+                const pulseOpacity = particle.opacity * (0.7 + Math.sin(time * 2 + particle.x * 0.01) * 0.3);
 
-                ctx.shadowColor = firefly.color + '0.8)';
-                ctx.shadowBlur = 15;
-                ctx.fillStyle = firefly.color + pulseOpacity + ')';
+                ctx.fillStyle = particle.color + pulseOpacity + ')';
                 ctx.beginPath();
-                ctx.arc(firefly.x, firefly.y, firefly.size, 0, Math.PI * 2);
+
+                if (particle.type === 'circle') {
+                    ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+                } else if (particle.type === 'hexagon') {
+                    drawHexagon(ctx, particle.x, particle.y, particle.size);
+                } else {
+                    ctx.rect(particle.x - particle.size / 2, particle.y - particle.size / 2, particle.size, particle.size);
+                }
                 ctx.fill();
-                ctx.shadowBlur = 0;
+
+                // Add glow effect for some particles
+                if (particle.size > 2) {
+                    ctx.shadowColor = particle.color + '0.5)';
+                    ctx.shadowBlur = 10;
+                    ctx.fill();
+                    ctx.shadowBlur = 0;
+                }
             });
+
+            // Draw grid lines (subtle)
+            ctx.strokeStyle = 'rgba(148, 163, 184, 0.03)';
+            ctx.lineWidth = 1;
+            const gridSpacing = 100;
+            for (let x = 0; x < width; x += gridSpacing) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, height);
+                ctx.stroke();
+            }
+            for (let y = 0; y < height; y += gridSpacing) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(width, y);
+                ctx.stroke();
+            }
+
+            // Draw connection lines between nearby particles
+            ctx.strokeStyle = 'rgba(6, 182, 212, 0.05)';
+            ctx.lineWidth = 0.5;
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < 150) {
+                        ctx.globalAlpha = (1 - distance / 150) * 0.3;
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+            ctx.globalAlpha = 1;
         };
 
         animationId = requestAnimationFrame(animate);
@@ -286,37 +301,57 @@ export function ForestBackground() {
     );
 }
 
+// Helper function to draw hexagon
+function drawHexagon(ctx: CanvasRenderingContext2D, x: number, y: number, size: number) {
+    ctx.beginPath();
+    for (let i = 0; i < 6; i++) {
+        const angle = (i / 6) * Math.PI * 2 - Math.PI / 6;
+        const px = x + Math.cos(angle) * size;
+        const py = y + Math.sin(angle) * size;
+        if (i === 0) {
+            ctx.moveTo(px, py);
+        } else {
+            ctx.lineTo(px, py);
+        }
+    }
+    ctx.closePath();
+}
+
 // Static version for reduced motion
-function drawStaticForest(ctx: CanvasRenderingContext2D, width: number, height: number) {
-    // Draw gradient sky
-    const skyGradient = ctx.createLinearGradient(0, 0, 0, height);
-    skyGradient.addColorStop(0, '#030014');
-    skyGradient.addColorStop(0.4, '#050520');
-    skyGradient.addColorStop(0.7, '#0a1628');
-    skyGradient.addColorStop(1, '#0d1f1a');
-    ctx.fillStyle = skyGradient;
+function drawStaticBackground(ctx: CanvasRenderingContext2D, width: number, height: number) {
+    // Draw gradient background
+    const gradient = ctx.createLinearGradient(0, 0, width, height);
+    gradient.addColorStop(0, '#0f172a');
+    gradient.addColorStop(0.5, '#1e1b4b');
+    gradient.addColorStop(1, '#042f2e');
+    ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, width, height);
 
-    // Draw static trees
-    const treeCount = Math.floor(width / 50);
-    for (let i = 0; i < treeCount; i++) {
-        const x = (i / treeCount) * width + (Math.random() - 0.5) * 40;
-        const treeHeight = height * 0.4 + Math.random() * height * 0.3;
-        const treeWidth = 20 + Math.random() * 20;
+    // Draw some static shapes
+    ctx.fillStyle = 'rgba(6, 182, 212, 0.05)';
+    ctx.beginPath();
+    ctx.arc(width * 0.2, height * 0.3, 200, 0, Math.PI * 2);
+    ctx.fill();
 
-        ctx.fillStyle = '#050810';
+    ctx.fillStyle = 'rgba(139, 92, 246, 0.05)';
+    ctx.beginPath();
+    ctx.arc(width * 0.8, height * 0.7, 150, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Draw grid
+    ctx.strokeStyle = 'rgba(148, 163, 184, 0.03)';
+    ctx.lineWidth = 1;
+    const gridSpacing = 100;
+    for (let x = 0; x < width; x += gridSpacing) {
         ctx.beginPath();
-        ctx.moveTo(x, height);
-        ctx.lineTo(x, height - treeHeight);
-        ctx.lineTo(x + treeWidth, height);
-        ctx.closePath();
-        ctx.fill();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, height);
+        ctx.stroke();
     }
-
-    // Draw ground mist
-    const mistGradient = ctx.createLinearGradient(0, height - 100, 0, height);
-    mistGradient.addColorStop(0, 'rgba(139, 92, 246, 0)');
-    mistGradient.addColorStop(1, 'rgba(88, 28, 135, 0.1)');
-    ctx.fillStyle = mistGradient;
-    ctx.fillRect(0, height - 100, width, 100);
+    for (let y = 0; y < height; y += gridSpacing) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(width, y);
+        ctx.stroke();
+    }
 }

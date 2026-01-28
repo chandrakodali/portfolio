@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terraform at Scale: Module Design Patterns | Chandra Koushik Kodali</title>
+    <meta name="description"
+        content="Learn how to design reusable Terraform modules, implement state management strategies, and build a scalable infrastructure-as-code foundation.">
+    <meta name="author" content="Chandra Koushik Kodali">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #030014 0%, #0a0a1f 100%);
+            color: #e5e7eb;
+            line-height: 1.8;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 60px 24px;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #10b981;
+            text-decoration: none;
+            font-size: 14px;
+            margin-bottom: 40px;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: #34d399;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 4px 12px;
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 9999px;
+            color: #10b981;
+            font-size: 12px;
+            font-weight: 500;
+            margin-bottom: 16px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #fff, #a7f3d0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 16px;
+            line-height: 1.2;
+        }
+
+        .meta {
+            color: #6b7280;
+            font-size: 14px;
+            margin-bottom: 40px;
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            color: #fff;
+            margin: 48px 0 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        h3 {
+            font-size: 1.25rem;
+            color: #e5e7eb;
+            margin: 32px 0 12px;
+        }
+
+        p {
+            margin-bottom: 20px;
+            color: #d1d5db;
+        }
+
+        ul,
+        ol {
+            margin: 0 0 20px 24px;
+            color: #d1d5db;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .diagram {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 32px;
+            margin: 32px 0;
+            overflow-x: auto;
+        }
+
+        .diagram-title {
+            font-size: 14px;
+            color: #9ca3af;
+            text-align: center;
+            margin-bottom: 24px;
+            font-weight: 500;
+        }
+
+        .diagram svg {
+            display: block;
+            margin: 0 auto;
+            max-width: 100%;
+        }
+
+        .code-block {
+            background: #0d1117;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            overflow-x: auto;
+            font-family: 'Fira Code', monospace;
+            font-size: 14px;
+            color: #c9d1d9;
+        }
+
+        .code-block code {
+            white-space: pre;
+        }
+
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .code-header .filename {
+            color: #10b981;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .highlight {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(6, 182, 212, 0.1));
+            border-left: 3px solid #10b981;
+            padding: 16px 20px;
+            margin: 24px 0;
+            border-radius: 0 12px 12px 0;
+        }
+
+        .key-point {
+            background: rgba(6, 182, 212, 0.1);
+            border: 1px solid rgba(6, 182, 212, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 24px 0;
+        }
+
+        .key-point h4 {
+            color: #06b6d4;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .warning {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 24px 0;
+        }
+
+        .warning h4 {
+            color: #ef4444;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        strong {
+            color: #fff;
+        }
+
+        .footer {
+            margin-top: 60px;
+            padding-top: 40px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #10b981, #06b6d4);
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 500;
+            margin-top: 20px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px rgba(16, 185, 129, 0.3);
+        }
+
+        .tree {
+            font-family: 'Fira Code', monospace;
+            font-size: 13px;
+            color: #9ca3af;
+            line-height: 1.6;
+        }
+
+        .tree .dir {
+            color: #10b981;
+        }
+
+        .tree .file {
+            color: #d1d5db;
+        }
+
+        .tree .comment {
+            color: #6b7280;
+            font-style: italic;
+        }
+    </style>
+</head>
+
+<body>
+    <article class="container">
+        <a href="/portfolio/#blog" class="back-link">
+            ← Back to Portfolio
+        </a>
+
+        <span class="tag">Infrastructure</span>
+        <h1>Terraform at Scale: Module Design Patterns</h1>
+
+        <div class="meta">
+            <span>By Chandra Koushik Kodali</span>
+            <span>•</span>
+            <span>10 min read</span>
+            <span>•</span>
+            <span>January 2026</span>
+        </div>
+
+        <p>
+            As organizations grow, so does their infrastructure complexity. What starts as a few Terraform
+            files quickly becomes thousands of lines of code managing hundreds of resources across multiple
+            environments and cloud providers. This article shares the patterns and practices I've developed
+            for managing Terraform at scale.
+        </p>
+
+        <p>
+            We'll cover module design, state management, and organizational patterns that have helped
+            teams manage infrastructure for thousands of resources with confidence.
+        </p>
+
+        <h2>The Challenge of Scale</h2>
+
+        <p>
+            Before diving into solutions, let's understand what "scale" means in the context of
+            Infrastructure as Code:
+        </p>
+
+        <ul>
+            <li><strong>Code Scale:</strong> Thousands of lines of Terraform across many modules</li>
+            <li><strong>Resource Scale:</strong> Hundreds or thousands of cloud resources</li>
+            <li><strong>Team Scale:</strong> Multiple teams working on infrastructure simultaneously</li>
+            <li><strong>Environment Scale:</strong> Development, staging, production, and more</li>
+        </ul>
+
+        <div class="highlight">
+            <strong>Core Principle:</strong> The goal is not just to make things work, but to make them
+            maintainable, testable, and understandable for everyone on your team.
+        </div>
+
+        <h2>Module Architecture</h2>
+
+        <p>
+            Good module design is the foundation of scalable Terraform. I organize modules into three layers:
+        </p>
+
+        <div class="diagram">
+            <div class="diagram-title">Figure 1: Three-Layer Module Architecture</div>
+            <svg viewBox="0 0 700 380" xmlns="http://www.w3.org/2000/svg">
+                <!-- Composition Layer -->
+                <rect x="50" y="30" width="600" height="90" rx="12" fill="rgba(139, 92, 246, 0.1)" stroke="#8b5cf6"
+                    stroke-width="2" />
+                <text x="80" y="60" fill="#8b5cf6" font-size="14" font-weight="600">Composition Layer (Root
+                    Modules)</text>
+                <text x="80" y="80" fill="#9ca3af" font-size="12">Environment-specific configurations that compose
+                    infrastructure modules</text>
+
+                <rect x="80" y="95" width="140" height="20" rx="4" fill="#0d1117" stroke="#8b5cf6" stroke-width="1" />
+                <text x="150" y="109" fill="#e5e7eb" font-size="10" text-anchor="middle">environments/dev</text>
+
+                <rect x="240" y="95" width="140" height="20" rx="4" fill="#0d1117" stroke="#8b5cf6" stroke-width="1" />
+                <text x="310" y="109" fill="#e5e7eb" font-size="10" text-anchor="middle">environments/staging</text>
+
+                <rect x="400" y="95" width="140" height="20" rx="4" fill="#0d1117" stroke="#8b5cf6" stroke-width="1" />
+                <text x="470" y="109" fill="#e5e7eb" font-size="10" text-anchor="middle">environments/prod</text>
+
+                <!-- Arrows down -->
+                <path d="M150 120 L150 145" stroke="#6b7280" stroke-width="1" stroke-dasharray="4" />
+                <path d="M310 120 L310 145" stroke="#6b7280" stroke-width="1" stroke-dasharray="4" />
+                <path d="M470 120 L470 145" stroke="#6b7280" stroke-width="1" stroke-dasharray="4" />
+
+                <!-- Infrastructure Layer -->
+                <rect x="50" y="150" width="600" height="90" rx="12" fill="rgba(16, 185, 129, 0.1)" stroke="#10b981"
+                    stroke-width="2" />
+                <text x="80" y="180" fill="#10b981" font-size="14" font-weight="600">Infrastructure Layer (Business
+                    Logic)</text>
+                <text x="80" y="200" fill="#9ca3af" font-size="12">Composable modules representing infrastructure
+                    stacks</text>
+
+                <rect x="80" y="215" width="100" height="20" rx="4" fill="#0d1117" stroke="#10b981" stroke-width="1" />
+                <text x="130" y="229" fill="#e5e7eb" font-size="10" text-anchor="middle">eks-cluster</text>
+
+                <rect x="200" y="215" width="100" height="20" rx="4" fill="#0d1117" stroke="#10b981" stroke-width="1" />
+                <text x="250" y="229" fill="#e5e7eb" font-size="10" text-anchor="middle">networking</text>
+
+                <rect x="320" y="215" width="100" height="20" rx="4" fill="#0d1117" stroke="#10b981" stroke-width="1" />
+                <text x="370" y="229" fill="#e5e7eb" font-size="10" text-anchor="middle">database</text>
+
+                <rect x="440" y="215" width="100" height="20" rx="4" fill="#0d1117" stroke="#10b981" stroke-width="1" />
+                <text x="490" y="229" fill="#e5e7eb" font-size="10" text-anchor="middle">monitoring</text>
+
+                <!-- Arrows down -->
+                <path d="M130 240 L130 265" stroke="#6b7280" stroke-width="1" stroke-dasharray="4" />
+                <path d="M250 240 L250 265" stroke="#6b7280" stroke-width="1" stroke-dasharray="4" />
+                <path d="M370 240 L370 265" stroke="#6b7280" stroke-width="1" stroke-dasharray="4" />
+                <path d="M490 240 L490 265" stroke="#6b7280" stroke-width="1" stroke-dasharray="4" />
+
+                <!-- Resource Layer -->
+                <rect x="50" y="270" width="600" height="90" rx="12" fill="rgba(6, 182, 212, 0.1)" stroke="#06b6d4"
+                    stroke-width="2" />
+                <text x="80" y="300" fill="#06b6d4" font-size="14" font-weight="600">Resource Layer (Primitives)</text>
+                <text x="80" y="320" fill="#9ca3af" font-size="12">Thin wrappers around cloud provider resources with
+                    sensible defaults</text>
+
+                <rect x="80" y="335" width="80" height="20" rx="4" fill="#0d1117" stroke="#06b6d4" stroke-width="1" />
+                <text x="120" y="349" fill="#e5e7eb" font-size="10" text-anchor="middle">s3-bucket</text>
+
+                <rect x="175" y="335" width="80" height="20" rx="4" fill="#0d1117" stroke="#06b6d4" stroke-width="1" />
+                <text x="215" y="349" fill="#e5e7eb" font-size="10" text-anchor="middle">iam-role</text>
+
+                <rect x="270" y="335" width="80" height="20" rx="4" fill="#0d1117" stroke="#06b6d4" stroke-width="1" />
+                <text x="310" y="349" fill="#e5e7eb" font-size="10" text-anchor="middle">vpc</text>
+
+                <rect x="365" y="335" width="80" height="20" rx="4" fill="#0d1117" stroke="#06b6d4" stroke-width="1" />
+                <text x="405" y="349" fill="#e5e7eb" font-size="10" text-anchor="middle">rds</text>
+
+                <rect x="460" y="335" width="100" height="20" rx="4" fill="#0d1117" stroke="#06b6d4" stroke-width="1" />
+                <text x="510" y="349" fill="#e5e7eb" font-size="10" text-anchor="middle">security-group</text>
+            </svg>
+        </div>
+
+        <h3>Layer 1: Resource Modules (Primitives)</h3>
+
+        <p>
+            These are thin wrappers around individual cloud resources. They encapsulate your organization's
+            best practices and compliance requirements:
+        </p>
+
+        <div class="code-block">
+            <div class="code-header">
+                <span class="filename">modules/s3-bucket/main.tf</span>
+            </div>
+            <code>resource "aws_s3_bucket" "this" {
+  bucket = var.bucket_name
+
+  tags = merge(var.tags, {
+    ManagedBy   = "terraform"
+    Environment = var.environment
+  })
+}
+
+# Always enable versioning (compliance requirement)
+resource "aws_s3_bucket_versioning" "this" {
+  bucket = aws_s3_bucket.this.id
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
+# Always enable encryption (security requirement)
+resource "aws_s3_bucket_server_side_encryption_configuration" "this" {
+  bucket = aws_s3_bucket.this.id
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "aws:kms"
+      kms_master_key_id = var.kms_key_id
+    }
+  }
+}
+
+# Block public access by default
+resource "aws_s3_bucket_public_access_block" "this" {
+  bucket = aws_s3_bucket.this.id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}</code>
+        </div>
+
+        <div class="key-point">
+            <h4>💡 Why Resource Modules?</h4>
+            <p>
+                Every S3 bucket in your organization now has encryption, versioning, and public access blocking
+                by default. Compliance is built-in, not bolted-on.
+            </p>
+        </div>
+
+        <h3>Layer 2: Infrastructure Modules (Stacks)</h3>
+
+        <p>
+            These compose resource modules into functional infrastructure. For example, an EKS cluster
+            module combines VPC, IAM, security groups, and the cluster itself:
+        </p>
+
+        <div class="code-block">
+            <div class="code-header">
+                <span class="filename">modules/eks-cluster/main.tf</span>
+            </div>
+            <code>module "vpc" {
+  source = "../vpc"
+
+  name               = "${var.cluster_name}-vpc"
+  cidr               = var.vpc_cidr
+  availability_zones = var.availability_zones
+  
+  enable_nat_gateway = true
+  enable_dns_support = true
+}
+
+module "cluster_security_group" {
+  source = "../security-group"
+
+  name        = "${var.cluster_name}-cluster-sg"
+  vpc_id      = module.vpc.vpc_id
+  description = "EKS cluster security group"
+  
+  ingress_rules = var.cluster_ingress_rules
+}
+
+module "eks" {
+  source  = "terraform-aws-modules/eks/aws"
+  version = "~> 19.0"
+
+  cluster_name    = var.cluster_name
+  cluster_version = var.kubernetes_version
+
+  vpc_id     = module.vpc.vpc_id
+  subnet_ids = module.vpc.private_subnet_ids
+
+  cluster_security_group_additional_rules = {
+    cluster_egress = {
+      type        = "egress"
+      from_port   = 0
+      to_port     = 0
+      protocol    = "-1"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
+  }
+
+  eks_managed_node_groups = var.node_groups
+}</code>
+        </div>
+
+        <h3>Layer 3: Composition (Root Modules)</h3>
+
+        <p>
+            The top layer contains environment-specific configurations. These are your "root"
+            modules — the entry points for terraform apply:
+        </p>
+
+        <div class="code-block">
+            <div class="code-header">
+                <span class="filename">environments/production/main.tf</span>
+            </div>
+            <code>terraform {
+  backend "s3" {
+    bucket         = "company-terraform-state"
+    key            = "production/infrastructure.tfstate"
+    region         = "us-east-1"
+    encrypt        = true
+    dynamodb_table = "terraform-locks"
+  }
+}
+
+module "eks_cluster" {
+  source = "../../modules/eks-cluster"
+
+  cluster_name       = "production-cluster"
+  kubernetes_version = "1.28"
+  vpc_cidr           = "10.0.0.0/16"
+  
+  node_groups = {
+    general = {
+      instance_types = ["m5.xlarge"]
+      min_size       = 3
+      max_size       = 20
+      desired_size   = 5
+    }
+    spot = {
+      instance_types = ["m5.large", "m5a.large"]
+      capacity_type  = "SPOT"
+      min_size       = 2
+      max_size       = 10
+    }
+  }
+}
+
+module "monitoring" {
+  source = "../../modules/monitoring"
+
+  cluster_name = module.eks_cluster.cluster_name
+  
+  enable_prometheus = true
+  enable_grafana    = true
+  retention_days    = 90   # Longer retention for prod
+}</code>
+        </div>
+
+        <h2>State Management Strategies</h2>
+
+        <p>
+            At scale, how you manage Terraform state can make or break your workflow.
+            Here's my recommended approach:
+        </p>
+
+        <div class="diagram">
+            <div class="diagram-title">Figure 2: State Architecture</div>
+            <svg viewBox="0 0 700 300" xmlns="http://www.w3.org/2000/svg">
+                <!-- State Backend -->
+                <rect x="250" y="20" width="200" height="80" rx="12" fill="#0d1117" stroke="#f59e0b" stroke-width="2" />
+                <text x="350" y="50" fill="#f59e0b" font-size="14" font-weight="600" text-anchor="middle">S3
+                    Backend</text>
+                <text x="350" y="70" fill="#9ca3af" font-size="11" text-anchor="middle">Encrypted, Versioned</text>
+                <text x="350" y="88" fill="#9ca3af" font-size="11" text-anchor="middle">+ DynamoDB Locking</text>
+
+                <!-- State files -->
+                <rect x="50" y="150" width="180" height="130" rx="12" fill="rgba(6, 182, 212, 0.1)" stroke="#06b6d4"
+                    stroke-width="1" />
+                <text x="140" y="175" fill="#06b6d4" font-size="12" font-weight="600" text-anchor="middle">Networking
+                    State</text>
+                <rect x="65" y="190" width="150" height="25" rx="4" fill="#0d1117" stroke="#06b6d4" stroke-width="1" />
+                <text x="140" y="207" fill="#9ca3af" font-size="10" text-anchor="middle">networking/dev.tfstate</text>
+                <rect x="65" y="220" width="150" height="25" rx="4" fill="#0d1117" stroke="#06b6d4" stroke-width="1" />
+                <text x="140" y="237" fill="#9ca3af" font-size="10" text-anchor="middle">networking/prod.tfstate</text>
+                <rect x="65" y="250" width="150" height="25" rx="4" fill="#0d1117" stroke="#06b6d4" stroke-width="1" />
+                <text x="140" y="267" fill="#9ca3af" font-size="10"
+                    text-anchor="middle">networking/shared.tfstate</text>
+
+                <rect x="260" y="150" width="180" height="130" rx="12" fill="rgba(16, 185, 129, 0.1)" stroke="#10b981"
+                    stroke-width="1" />
+                <text x="350" y="175" fill="#10b981" font-size="12" font-weight="600" text-anchor="middle">Compute
+                    State</text>
+                <rect x="275" y="190" width="150" height="25" rx="4" fill="#0d1117" stroke="#10b981" stroke-width="1" />
+                <text x="350" y="207" fill="#9ca3af" font-size="10" text-anchor="middle">eks/dev.tfstate</text>
+                <rect x="275" y="220" width="150" height="25" rx="4" fill="#0d1117" stroke="#10b981" stroke-width="1" />
+                <text x="350" y="237" fill="#9ca3af" font-size="10" text-anchor="middle">eks/prod.tfstate</text>
+                <rect x="275" y="250" width="150" height="25" rx="4" fill="#0d1117" stroke="#10b981" stroke-width="1" />
+                <text x="350" y="267" fill="#9ca3af" font-size="10" text-anchor="middle">ec2/prod.tfstate</text>
+
+                <rect x="470" y="150" width="180" height="130" rx="12" fill="rgba(139, 92, 246, 0.1)" stroke="#8b5cf6"
+                    stroke-width="1" />
+                <text x="560" y="175" fill="#8b5cf6" font-size="12" font-weight="600" text-anchor="middle">Database
+                    State</text>
+                <rect x="485" y="190" width="150" height="25" rx="4" fill="#0d1117" stroke="#8b5cf6" stroke-width="1" />
+                <text x="560" y="207" fill="#9ca3af" font-size="10" text-anchor="middle">rds/dev.tfstate</text>
+                <rect x="485" y="220" width="150" height="25" rx="4" fill="#0d1117" stroke="#8b5cf6" stroke-width="1" />
+                <text x="560" y="237" fill="#9ca3af" font-size="10" text-anchor="middle">rds/prod.tfstate</text>
+                <rect x="485" y="250" width="150" height="25" rx="4" fill="#0d1117" stroke="#8b5cf6" stroke-width="1" />
+                <text x="560" y="267" fill="#9ca3af" font-size="10" text-anchor="middle">elasticache/prod.tfstate</text>
+
+                <!-- Arrows -->
+                <path d="M350 105 L350 145" stroke="#6b7280" stroke-width="1" stroke-dasharray="4" />
+                <path d="M280 105 L140 145" stroke="#6b7280" stroke-width="1" stroke-dasharray="4" />
+                <path d="M420 105 L560 145" stroke="#6b7280" stroke-width="1" stroke-dasharray="4" />
+            </svg>
+        </div>
+
+        <h3>Key State Management Practices</h3>
+
+        <ol>
+            <li>
+                <strong>Split state by blast radius:</strong> If one state file gets corrupted,
+                you want to limit the impact. Separate networking, compute, and data layers.
+            </li>
+            <li>
+                <strong>Use remote state data sources:</strong> When modules need to reference
+                each other, use <code>terraform_remote_state</code>:
+            </li>
+        </ol>
+
+        <div class="code-block">
+            <code>data "terraform_remote_state" "networking" {
+  backend = "s3"
+  config = {
+    bucket = "company-terraform-state"
+    key    = "networking/${var.environment}.tfstate"
+    region = "us-east-1"
+  }
+}
+
+# Use VPC ID from networking state
+module "eks_cluster" {
+  source = "../../modules/eks-cluster"
+  
+  vpc_id     = data.terraform_remote_state.networking.outputs.vpc_id
+  subnet_ids = data.terraform_remote_state.networking.outputs.private_subnets
+}</code>
+        </div>
+
+        <div class="warning">
+            <h4>⚠️ State File Security</h4>
+            <p>
+                Your state files contain sensitive data (passwords, keys, etc). Always encrypt
+                state at rest, enable versioning for recovery, and restrict access via IAM.
+            </p>
+        </div>
+
+        <h2>Directory Structure</h2>
+
+        <p>Here's a battle-tested directory structure for large Terraform projects:</p>
+
+        <div class="code-block">
+            <pre class="tree"><span class="dir">terraform/</span>
+├── <span class="dir">modules/</span>                      <span class="comment"># Reusable modules</span>
+│   ├── <span class="dir">resource/</span>                  <span class="comment"># Layer 1: Primitives</span>
+│   │   ├── <span class="dir">s3-bucket/</span>
+│   │   ├── <span class="dir">iam-role/</span>
+│   │   └── <span class="dir">security-group/</span>
+│   └── <span class="dir">infrastructure/</span>            <span class="comment"># Layer 2: Stacks</span>
+│       ├── <span class="dir">eks-cluster/</span>
+│       ├── <span class="dir">vpc-network/</span>
+│       └── <span class="dir">rds-database/</span>
+│
+├── <span class="dir">environments/</span>                  <span class="comment"># Layer 3: Composition</span>
+│   ├── <span class="dir">development/</span>
+│   │   ├── <span class="file">main.tf</span>
+│   │   ├── <span class="file">variables.tf</span>
+│   │   └── <span class="file">terraform.tfvars</span>
+│   ├── <span class="dir">staging/</span>
+│   └── <span class="dir">production/</span>
+│
+├── <span class="dir">global/</span>                         <span class="comment"># Shared across environments</span>
+│   ├── <span class="dir">iam/</span>
+│   ├── <span class="dir">dns/</span>
+│   └── <span class="dir">terraform-state/</span>           <span class="comment"># Bootstrap state backend</span>
+│
+└── <span class="dir">scripts/</span>                        <span class="comment"># Helper scripts</span>
+    ├── <span class="file">init-backend.sh</span>
+    └── <span class="file">plan-all.sh</span></pre>
+        </div>
+
+        <h2>Testing Terraform Code</h2>
+
+        <p>Don't deploy untested infrastructure. Here's a testing pyramid for Terraform:</p>
+
+        <ol>
+            <li><strong>Static Analysis:</strong> <code>terraform validate</code>, <code>tflint</code>,
+                <code>checkov</code>
+            </li>
+            <li><strong>Unit Tests:</strong> Test modules in isolation with Terratest</li>
+            <li><strong>Integration Tests:</strong> Deploy to ephemeral environments and verify</li>
+            <li><strong>Policy Tests:</strong> Use Sentinel or OPA for compliance</li>
+        </ol>
+
+        <div class="code-block">
+            <div class="code-header">
+                <span class="filename">test/eks_cluster_test.go</span>
+            </div>
+            <code>package test
+
+import (
+    "testing"
+    "github.com/gruntwork-io/terratest/modules/terraform"
+    "github.com/stretchr/testify/assert"
+)
+
+func TestEksCluster(t *testing.T) {
+    terraformOptions := &terraform.Options{
+        TerraformDir: "../modules/eks-cluster",
+        Vars: map[string]interface{}{
+            "cluster_name":       "test-cluster",
+            "kubernetes_version": "1.28",
+        },
+    }
+
+    defer terraform.Destroy(t, terraformOptions)
+    terraform.InitAndApply(t, terraformOptions)
+
+    // Verify outputs
+    clusterName := terraform.Output(t, terraformOptions, "cluster_name")
+    assert.Equal(t, "test-cluster", clusterName)
+}</code>
+        </div>
+
+        <h2>Key Takeaways</h2>
+
+        <ol>
+            <li><strong>Layer your modules:</strong> Resources → Infrastructure → Composition</li>
+            <li><strong>Split state by blast radius:</strong> Limit the impact of issues</li>
+            <li><strong>Bake in compliance:</strong> Use resource modules to enforce standards</li>
+            <li><strong>Test everything:</strong> Static analysis, unit tests, integration tests</li>
+            <li><strong>Document thoroughly:</strong> Every module needs a README with examples</li>
+        </ol>
+
+        <div class="footer">
+            <p>Need help scaling your Terraform infrastructure?</p>
+            <a href="/portfolio/#contact" class="cta">
+                Let's Connect →
+            </a>
+        </div>
+    </article>
+</body>
+
+</html>

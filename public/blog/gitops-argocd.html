@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitOps Best Practices with ArgoCD | Chandra Koushik Kodali</title>
+    <meta name="description"
+        content="A comprehensive guide to implementing GitOps workflows for Kubernetes deployments with zero-downtime strategies using ArgoCD.">
+    <meta name="author" content="Chandra Koushik Kodali">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #030014 0%, #0a0a1f 100%);
+            color: #e5e7eb;
+            line-height: 1.8;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 60px 24px;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: #8b5cf6;
+            text-decoration: none;
+            font-size: 14px;
+            margin-bottom: 40px;
+            transition: color 0.2s;
+        }
+
+        .back-link:hover {
+            color: #a78bfa;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 4px 12px;
+            background: rgba(139, 92, 246, 0.15);
+            border: 1px solid rgba(139, 92, 246, 0.3);
+            border-radius: 9999px;
+            color: #8b5cf6;
+            font-size: 12px;
+            font-weight: 500;
+            margin-bottom: 16px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #fff, #c4b5fd);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 16px;
+            line-height: 1.2;
+        }
+
+        .meta {
+            color: #6b7280;
+            font-size: 14px;
+            margin-bottom: 40px;
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            color: #fff;
+            margin: 48px 0 16px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        h3 {
+            font-size: 1.25rem;
+            color: #e5e7eb;
+            margin: 32px 0 12px;
+        }
+
+        p {
+            margin-bottom: 20px;
+            color: #d1d5db;
+        }
+
+        ul,
+        ol {
+            margin: 0 0 20px 24px;
+            color: #d1d5db;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .diagram {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 32px;
+            margin: 32px 0;
+            overflow-x: auto;
+        }
+
+        .diagram-title {
+            font-size: 14px;
+            color: #9ca3af;
+            text-align: center;
+            margin-bottom: 24px;
+            font-weight: 500;
+        }
+
+        .diagram svg {
+            display: block;
+            margin: 0 auto;
+            max-width: 100%;
+        }
+
+        .code-block {
+            background: #0d1117;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+            overflow-x: auto;
+            font-family: 'Fira Code', monospace;
+            font-size: 14px;
+            color: #c9d1d9;
+        }
+
+        .code-block code {
+            white-space: pre;
+        }
+
+        .highlight {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(236, 72, 153, 0.1));
+            border-left: 3px solid #8b5cf6;
+            padding: 16px 20px;
+            margin: 24px 0;
+            border-radius: 0 12px 12px 0;
+        }
+
+        .key-point {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 24px 0;
+        }
+
+        .key-point h4 {
+            color: #10b981;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .warning {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 24px 0;
+        }
+
+        .warning h4 {
+            color: #f59e0b;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        strong {
+            color: #fff;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 24px 0;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .comparison-table th {
+            color: #8b5cf6;
+            font-weight: 600;
+            background: rgba(139, 92, 246, 0.1);
+        }
+
+        .comparison-table td {
+            color: #d1d5db;
+        }
+
+        .footer {
+            margin-top: 60px;
+            padding-top: 40px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #8b5cf6, #ec4899);
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 500;
+            margin-top: 20px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px rgba(139, 92, 246, 0.3);
+        }
+    </style>
+</head>
+
+<body>
+    <article class="container">
+        <a href="/portfolio/#blog" class="back-link">
+            ← Back to Portfolio
+        </a>
+
+        <span class="tag">DevOps</span>
+        <h1>GitOps Best Practices with ArgoCD</h1>
+
+        <div class="meta">
+            <span>By Chandra Koushik Kodali</span>
+            <span>•</span>
+            <span>6 min read</span>
+            <span>•</span>
+            <span>January 2026</span>
+        </div>
+
+        <p>
+            GitOps is a paradigm that has transformed how we manage Kubernetes deployments. Instead of
+            pushing changes to clusters, we <strong>declare the desired state in Git</strong> and let
+            automated controllers pull and apply those changes. This article covers the best practices
+            I've learned from implementing GitOps at scale.
+        </p>
+
+        <p>
+            Whether you're just starting with GitOps or looking to optimize your existing workflows,
+            this guide will help you build a robust, scalable, and auditable deployment pipeline.
+        </p>
+
+        <h2>What is GitOps?</h2>
+
+        <p>
+            GitOps is an operational framework that uses Git as the single source of truth for
+            declarative infrastructure and applications. The core principles are:
+        </p>
+
+        <ol>
+            <li><strong>Declarative:</strong> The entire system is described declaratively</li>
+            <li><strong>Versioned and Immutable:</strong> The desired state is stored in Git</li>
+            <li><strong>Pulled Automatically:</strong> Approved changes are automatically applied</li>
+            <li><strong>Continuously Reconciled:</strong> The system self-heals to match the desired state</li>
+        </ol>
+
+        <div class="highlight">
+            <strong>Core Concept:</strong> With GitOps, if you want to know what's running in production,
+            you look at Git. If you want to change production, you change Git.
+        </div>
+
+        <h2>Push vs Pull: Understanding the Difference</h2>
+
+        <p>
+            Traditional CI/CD pipelines <em>push</em> changes to clusters. GitOps tools <em>pull</em> the
+            desired state from Git and apply it. This subtle difference has significant implications:
+        </p>
+
+        <table class="comparison-table">
+            <thead>
+                <tr>
+                    <th>Aspect</th>
+                    <th>Push-based (Traditional)</th>
+                    <th>Pull-based (GitOps)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Credential access</td>
+                    <td>CI has cluster credentials</td>
+                    <td>Only the controller has credentials</td>
+                </tr>
+                <tr>
+                    <td>Drift detection</td>
+                    <td>Manual or none</td>
+                    <td>Automatic and continuous</td>
+                </tr>
+                <tr>
+                    <td>Rollback</td>
+                    <td>Re-run pipeline or script</td>
+                    <td>Revert the Git commit</td>
+                </tr>
+                <tr>
+                    <td>Audit trail</td>
+                    <td>CI logs</td>
+                    <td>Git history</td>
+                </tr>
+                <tr>
+                    <td>Security</td>
+                    <td>Cluster credentials in CI</td>
+                    <td>Cluster never exposed externally</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>ArgoCD Architecture</h2>
+
+        <p>
+            ArgoCD is a declarative, GitOps continuous delivery tool for Kubernetes. Here's how it works:
+        </p>
+
+        <div class="diagram">
+            <div class="diagram-title">Figure 1: ArgoCD Architecture</div>
+            <svg viewBox="0 0 700 400" xmlns="http://www.w3.org/2000/svg">
+                <!-- Git Repos -->
+                <rect x="30" y="30" width="150" height="120" rx="12" fill="#0d1117" stroke="#f59e0b" stroke-width="2" />
+                <text x="105" y="60" fill="#f59e0b" font-size="14" font-weight="600" text-anchor="middle">Git
+                    Repositories</text>
+                <rect x="45" y="75" width="120" height="30" rx="6" fill="rgba(245, 158, 11, 0.1)" stroke="#f59e0b"
+                    stroke-width="1" />
+                <text x="105" y="95" fill="#d1d5db" font-size="11" text-anchor="middle">App Manifests</text>
+                <rect x="45" y="110" width="120" height="30" rx="6" fill="rgba(245, 158, 11, 0.1)" stroke="#f59e0b"
+                    stroke-width="1" />
+                <text x="105" y="130" fill="#d1d5db" font-size="11" text-anchor="middle">Helm Charts</text>
+
+                <!-- ArgoCD Box -->
+                <rect x="240" y="30" width="220" height="340" rx="12" fill="rgba(16, 185, 129, 0.05)" stroke="#10b981"
+                    stroke-width="2" />
+                <text x="350" y="55" fill="#10b981" font-size="14" font-weight="600" text-anchor="middle">ArgoCD
+                    (Control Plane)</text>
+
+                <!-- ArgoCD Components -->
+                <rect x="260" y="75" width="180" height="45" rx="8" fill="#0d1117" stroke="#10b981" stroke-width="1" />
+                <text x="350" y="95" fill="#e5e7eb" font-size="12" text-anchor="middle">API Server</text>
+                <text x="350" y="110" fill="#6b7280" font-size="10" text-anchor="middle">REST/gRPC interface</text>
+
+                <rect x="260" y="135" width="180" height="45" rx="8" fill="#0d1117" stroke="#10b981" stroke-width="1" />
+                <text x="350" y="155" fill="#e5e7eb" font-size="12" text-anchor="middle">Repo Server</text>
+                <text x="350" y="170" fill="#6b7280" font-size="10" text-anchor="middle">Fetches manifests from
+                    Git</text>
+
+                <rect x="260" y="195" width="180" height="45" rx="8" fill="#0d1117" stroke="#10b981" stroke-width="1" />
+                <text x="350" y="215" fill="#e5e7eb" font-size="12" text-anchor="middle">Application Controller</text>
+                <text x="350" y="230" fill="#6b7280" font-size="10" text-anchor="middle">Monitors & syncs apps</text>
+
+                <rect x="260" y="255" width="180" height="45" rx="8" fill="#0d1117" stroke="#10b981" stroke-width="1" />
+                <text x="350" y="275" fill="#e5e7eb" font-size="12" text-anchor="middle">Redis</text>
+                <text x="350" y="290" fill="#6b7280" font-size="10" text-anchor="middle">Caching layer</text>
+
+                <rect x="260" y="315" width="180" height="45" rx="8" fill="#0d1117" stroke="#10b981" stroke-width="1" />
+                <text x="350" y="335" fill="#e5e7eb" font-size="12" text-anchor="middle">Dex</text>
+                <text x="350" y="350" fill="#6b7280" font-size="10" text-anchor="middle">SSO / OIDC auth</text>
+
+                <!-- Kubernetes Clusters -->
+                <rect x="520" y="30" width="150" height="180" rx="12" fill="#0d1117" stroke="#3b82f6"
+                    stroke-width="2" />
+                <text x="595" y="55" fill="#3b82f6" font-size="14" font-weight="600" text-anchor="middle">Target
+                    Clusters</text>
+
+                <rect x="535" y="75" width="120" height="40" rx="6" fill="rgba(59, 130, 246, 0.1)" stroke="#3b82f6"
+                    stroke-width="1" />
+                <text x="595" y="100" fill="#d1d5db" font-size="11" text-anchor="middle">Production</text>
+
+                <rect x="535" y="125" width="120" height="40" rx="6" fill="rgba(59, 130, 246, 0.1)" stroke="#3b82f6"
+                    stroke-width="1" />
+                <text x="595" y="150" fill="#d1d5db" font-size="11" text-anchor="middle">Staging</text>
+
+                <rect x="535" y="175" width="120" height="40" rx="6" fill="rgba(59, 130, 246, 0.1)" stroke="#3b82f6"
+                    stroke-width="1" />
+                <text x="595" y="200" fill="#d1d5db" font-size="11" text-anchor="middle">Development</text>
+
+                <!-- Users -->
+                <rect x="520" y="250" width="150" height="70" rx="12" fill="#0d1117" stroke="#8b5cf6"
+                    stroke-width="2" />
+                <text x="595" y="280" fill="#8b5cf6" font-size="14" font-weight="600" text-anchor="middle">Users</text>
+                <text x="595" y="300" fill="#6b7280" font-size="10" text-anchor="middle">UI / CLI / API</text>
+
+                <!-- Arrows -->
+                <!-- Git to ArgoCD -->
+                <path d="M185 90 L235 150" stroke="#6b7280" stroke-width="2" />
+                <polygon points="240,155 228,150 233,140" fill="#6b7280" />
+                <text x="195" y="115" fill="#6b7280" font-size="10">pull</text>
+
+                <!-- ArgoCD to Clusters -->
+                <path d="M465 160 L515 120" stroke="#6b7280" stroke-width="2" />
+                <polygon points="520,115 508,115 512,125" fill="#6b7280" />
+                <text x="480" y="125" fill="#6b7280" font-size="10">sync</text>
+
+                <!-- Users to ArgoCD -->
+                <path d="M515 280 L465 220" stroke="#6b7280" stroke-width="2" />
+                <polygon points="460,215 468,225 472,215" fill="#6b7280" />
+            </svg>
+        </div>
+
+        <h2>Repository Structure Best Practices</h2>
+
+        <p>
+            How you organize your GitOps repositories significantly impacts maintainability.
+            Here are the two main patterns:
+        </p>
+
+        <h3>Pattern 1: Mono-repo (Recommended for small teams)</h3>
+
+        <p>All applications in a single repository, organized by environment:</p>
+
+        <div class="code-block">
+            <code>gitops-repo/
+├── apps/
+│   ├── base/                    # Base configurations
+│   │   ├── frontend/
+│   │   │   ├── deployment.yaml
+│   │   │   ├── service.yaml
+│   │   │   └── kustomization.yaml
+│   │   └── backend/
+│   │       └── ...
+│   ├── overlays/
+│   │   ├── development/
+│   │   │   ├── frontend/
+│   │   │   │   ├── kustomization.yaml
+│   │   │   │   └── replica-patch.yaml
+│   │   │   └── ...
+│   │   ├── staging/
+│   │   │   └── ...
+│   │   └── production/
+│   │       └── ...
+├── infrastructure/
+│   ├── argocd/
+│   ├── cert-manager/
+│   └── ingress-nginx/
+└── projects/                    # ArgoCD AppProjects
+    └── ...</code>
+        </div>
+
+        <h3>Pattern 2: Multi-repo (Recommended for large organizations)</h3>
+
+        <p>Separate repositories per application or team:</p>
+
+        <div class="code-block">
+            <code># App Team A's repo
+app-team-a-gitops/
+├── development/
+├── staging/
+└── production/
+
+# App Team B's repo
+app-team-b-gitops/
+├── development/
+├── staging/
+└── production/
+
+# Platform team's repo (manages ArgoCD itself)
+platform-gitops/
+├── argocd-config/
+├── cluster-addons/
+└── app-of-apps.yaml</code>
+        </div>
+
+        <div class="key-point">
+            <h4>💡 App of Apps Pattern</h4>
+            <p>
+                Use the "App of Apps" pattern to bootstrap your entire cluster. One ArgoCD Application
+                points to a directory containing other Application manifests. This creates a hierarchy
+                that's easy to manage.
+            </p>
+        </div>
+
+        <h2>Zero-Downtime Deployment Strategies</h2>
+
+        <p>
+            ArgoCD supports multiple sync strategies. Here's how to configure each for zero-downtime:
+        </p>
+
+        <h3>Rolling Updates (Default)</h3>
+
+        <div class="code-block">
+            <code>apiVersion: apps/v1
+kind: Deployment
+spec:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 25%        # Allow 25% more pods during update
+      maxUnavailable: 0    # Never remove old pods before new ones are ready</code>
+        </div>
+
+        <h3>Blue-Green with ArgoCD Rollouts</h3>
+
+        <div class="diagram">
+            <div class="diagram-title">Figure 2: Blue-Green Deployment Flow</div>
+            <svg viewBox="0 0 700 200" xmlns="http://www.w3.org/2000/svg">
+                <!-- Load Balancer -->
+                <rect x="300" y="20" width="100" height="50" rx="8" fill="#0d1117" stroke="#f59e0b" stroke-width="2" />
+                <text x="350" y="50" fill="#f59e0b" font-size="12" text-anchor="middle">Load Balancer</text>
+
+                <!-- Blue (Active) -->
+                <rect x="50" y="120" width="200" height="60" rx="8" fill="#0d1117" stroke="#3b82f6" stroke-width="2" />
+                <text x="150" y="145" fill="#3b82f6" font-size="14" font-weight="600" text-anchor="middle">Blue (v1) -
+                    Active</text>
+                <text x="150" y="165" fill="#6b7280" font-size="10" text-anchor="middle">Receiving 100% traffic</text>
+
+                <!-- Green (Preview) -->
+                <rect x="450" y="120" width="200" height="60" rx="8" fill="#0d1117" stroke="#10b981" stroke-width="2" />
+                <text x="550" y="145" fill="#10b981" font-size="14" font-weight="600" text-anchor="middle">Green (v2) -
+                    Preview</text>
+                <text x="550" y="165" fill="#6b7280" font-size="10" text-anchor="middle">Ready for promotion</text>
+
+                <!-- Arrows -->
+                <path d="M320 75 L150 115" stroke="#3b82f6" stroke-width="2" />
+                <polygon points="150,120 155,108 145,107" fill="#3b82f6" />
+
+                <path d="M380 75 L550 115" stroke="#10b981" stroke-width="1" stroke-dasharray="5" />
+                <polygon points="550,120 555,108 545,107" fill="#10b981" />
+
+                <text x="425" y="100" fill="#6b7280" font-size="10">switch on promote</text>
+            </svg>
+        </div>
+
+        <div class="code-block">
+            <code>apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: my-app
+spec:
+  strategy:
+    blueGreen:
+      activeService: my-app-active       # Service pointing to live version
+      previewService: my-app-preview     # Service for testing new version
+      autoPromotionEnabled: false        # Require manual promotion
+      scaleDownDelaySeconds: 30          # Keep old pods for 30s after switch</code>
+        </div>
+
+        <h3>Canary Deployments</h3>
+
+        <p>Gradually shift traffic from old to new version:</p>
+
+        <div class="code-block">
+            <code>apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+spec:
+  strategy:
+    canary:
+      steps:
+      - setWeight: 10          # Send 10% traffic to new version
+      - pause: {duration: 5m}  # Wait and monitor
+      - setWeight: 30
+      - pause: {duration: 5m}
+      - setWeight: 60
+      - pause: {duration: 5m}
+      - setWeight: 100         # Full rollout
+      
+      # Automatic rollback on failure
+      analysis:
+        successfulRunHistoryLimit: 3
+        templates:
+        - templateName: success-rate</code>
+        </div>
+
+        <h2>Security Best Practices</h2>
+
+        <ol>
+            <li>
+                <strong>RBAC for Applications:</strong> Use ArgoCD Projects to restrict which
+                repos and clusters each team can deploy to
+            </li>
+            <li>
+                <strong>Sealed Secrets:</strong> Never store plain secrets in Git — use Sealed
+                Secrets or External Secrets Operator
+            </li>
+            <li>
+                <strong>GPG Signed Commits:</strong> Require signed commits for production branches
+            </li>
+            <li>
+                <strong>Branch Protection:</strong> Enforce PR reviews for production configurations
+            </li>
+        </ol>
+
+        <div class="warning">
+            <h4>⚠️ Common Mistake</h4>
+            <p>
+                Never enable <code>automated sync</code> with <code>prune: true</code> on production
+                without proper safeguards. A misconfigured sync could delete critical resources.
+            </p>
+        </div>
+
+        <h2>Monitoring GitOps Health</h2>
+
+        <p>Track these key metrics to ensure your GitOps pipeline is healthy:</p>
+
+        <ul>
+            <li><strong>Sync Status:</strong> Number of applications in/out of sync</li>
+            <li><strong>Sync Duration:</strong> Time from commit to deployment</li>
+            <li><strong>Drift Occurrences:</strong> How often clusters drift from desired state</li>
+            <li><strong>Rollback Frequency:</strong> How often you need to revert changes</li>
+        </ul>
+
+        <h2>Key Takeaways</h2>
+
+        <ol>
+            <li><strong>Git is truth:</strong> Everything in production should be in Git</li>
+            <li><strong>Secure your repos:</strong> Git repos are now production infrastructure</li>
+            <li><strong>Use progressive delivery:</strong> Canary and blue-green reduce risk</li>
+            <li><strong>Monitor sync health:</strong> Out-of-sync apps indicate problems</li>
+            <li><strong>Start simple:</strong> Begin with a single cluster before scaling</li>
+        </ol>
+
+        <div class="footer">
+            <p>Want to implement GitOps in your organization?</p>
+            <a href="/portfolio/#contact" class="cta">
+                Let's Talk →
+            </a>
+        </div>
+    </article>
+</body>
+
+</html>

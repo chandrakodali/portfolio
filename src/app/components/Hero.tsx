@@ -2,6 +2,7 @@ import { motion, useScroll, useTransform, useMotionValue, useSpring } from 'moti
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Github, Linkedin, Mail, ArrowDown, Sparkles } from 'lucide-react';
 import { useReducedMotion } from '@/app/hooks/useReducedMotion';
+import { HeroScene } from './HeroScene';
 
 const roles = ['Platform Engineer', 'Cloud Architect', 'DevOps Expert', 'Kubernetes Specialist'];
 
@@ -196,6 +197,9 @@ export function Hero() {
           transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
         />
       </div>
+
+      {/* 3D Floating tech icons */}
+      <HeroScene />
 
       {/* Content */}
       <motion.div style={{ opacity, scale, y }} className="relative z-10 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full py-20">

@@ -2,12 +2,15 @@ import { motion, useScroll, useMotionValueEvent } from 'motion/react';
 import { useState, useEffect, useCallback } from 'react';
 import { Menu, X, Terminal, Zap } from 'lucide-react';
 
+
 const navLinks = [
   { name: 'Home', href: '#hero' },
   { name: 'About', href: '#about' },
   { name: 'Skills', href: '#skills' },
   { name: 'Experience', href: '#experience' },
   { name: 'Projects', href: '#projects' },
+  { name: 'Testimonials', href: '#testimonials' },
+  { name: 'Blog', href: '#blog' },
   { name: 'Contact', href: '#contact' },
 ];
 
@@ -111,8 +114,8 @@ export function Navbar() {
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.6, delay: 0.3 }}
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled
-            ? 'bg-[#030014]/90 backdrop-blur-xl border-b border-white/5'
-            : 'bg-transparent'
+          ? 'bg-[#030014]/90 backdrop-blur-xl border-b border-white/5'
+          : 'bg-transparent'
           }`}
         role="navigation"
         aria-label="Main navigation"
@@ -162,8 +165,8 @@ export function Navbar() {
                   role="menuitem"
                   aria-current={isActiveLink(link.href) ? 'page' : undefined}
                   className={`px-3 lg:px-4 py-2 text-sm transition-colors rounded-lg relative ${isActiveLink(link.href)
-                      ? 'text-white'
-                      : 'text-gray-400 hover:text-white hover:bg-white/5'
+                    ? 'text-white'
+                    : 'text-gray-400 hover:text-white hover:bg-white/5'
                     }`}
                 >
                   {link.name}
@@ -179,14 +182,16 @@ export function Navbar() {
             </div>
 
             {/* CTA Button - Desktop */}
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => scrollToSection('#contact')}
-              className="hidden md:flex items-center gap-2 px-4 lg:px-5 py-2 bg-gradient-to-r from-cyan-500 to-violet-600 rounded-lg text-white font-medium text-sm"
-            >
-              <span>Let's Talk</span>
-            </motion.button>
+            <div className="hidden md:flex items-center gap-3">
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => scrollToSection('#contact')}
+                className="flex items-center gap-2 px-4 lg:px-5 py-2 bg-gradient-to-r from-cyan-500 to-violet-600 rounded-lg text-white font-medium text-sm"
+              >
+                <span>Let's Talk</span>
+              </motion.button>
+            </div>
 
             {/* Mobile Menu Button */}
             <button
@@ -239,8 +244,8 @@ export function Navbar() {
                 role="menuitem"
                 aria-current={isActiveLink(link.href) ? 'page' : undefined}
                 className={`text-left px-4 py-3 text-base rounded-lg transition-all ${isActiveLink(link.href)
-                    ? 'text-white bg-white/10'
-                    : 'text-gray-300 hover:text-white hover:bg-white/5'
+                  ? 'text-white bg-white/10'
+                  : 'text-gray-300 hover:text-white hover:bg-white/5'
                   }`}
               >
                 {link.name}

@@ -9,6 +9,8 @@ import { About } from '@/app/components/About';
 import { TechStack } from '@/app/components/TechStack';
 import { Timeline } from '@/app/components/Timeline';
 import { Projects } from '@/app/components/Projects';
+import { Testimonials } from '@/app/components/Testimonials';
+import { Blog } from '@/app/components/Blog';
 import { Contact } from '@/app/components/Contact';
 import { Footer } from '@/app/components/Footer';
 import { ErrorBoundary, SectionErrorBoundary } from '@/app/components/ErrorBoundary';
@@ -65,6 +67,12 @@ export default function App() {
           </SectionErrorBoundary>
           <SectionErrorBoundary>
             <Projects />
+          </SectionErrorBoundary>
+          <SectionErrorBoundary>
+            <Testimonials />
+          </SectionErrorBoundary>
+          <SectionErrorBoundary>
+            <Blog />
           </SectionErrorBoundary>
           <SectionErrorBoundary>
             <Contact />

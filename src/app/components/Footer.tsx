@@ -1,5 +1,5 @@
 import { motion } from 'motion/react';
-import { Github, Linkedin, Mail, Heart, Terminal, ArrowUp } from 'lucide-react';
+import { Github, Linkedin, Mail, Heart, Terminal, ArrowUp, BookOpen, Quote } from 'lucide-react';
 
 const socialLinks = [
   { icon: Github, href: 'https://github.com/chandrakodali', label: 'GitHub' },
@@ -12,13 +12,22 @@ const quickLinks = [
   { name: 'Skills', href: '#skills' },
   { name: 'Experience', href: '#experience' },
   { name: 'Projects', href: '#projects' },
+  { name: 'Testimonials', href: '#testimonials' },
+  { name: 'Blog', href: '#blog' },
   { name: 'Contact', href: '#contact' },
+];
+
+const resourceLinks = [
+  { name: 'Articles', href: '#blog', icon: BookOpen },
+  { name: 'Testimonials', href: '#testimonials', icon: Quote },
 ];
 
 export function Footer() {
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+  const currentYear = new Date().getFullYear();
 
   return (
     <footer className="relative py-16 px-4 sm:px-6 lg:px-8 border-t border-white/[0.06]">
@@ -27,16 +36,16 @@ export function Footer() {
 
       <div className="max-w-6xl mx-auto relative z-10">
         {/* Main footer content */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
           {/* Brand */}
-          <div>
+          <div className="md:col-span-1">
             <motion.a
               href="#hero"
               onClick={(e) => { e.preventDefault(); scrollToTop(); }}
               className="flex items-center gap-3 mb-4 group"
               whileHover={{ scale: 1.02 }}
             >
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500 to-violet-600 flex items-center justify-center">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500 to-violet-600 flex items-center justify-center group-hover:shadow-lg group-hover:shadow-violet-500/25 transition-shadow">
                 <Terminal className="w-6 h-6 text-white" />
               </div>
               <div>
@@ -56,6 +65,7 @@ export function Footer() {
                   rel="noopener noreferrer"
                   whileHover={{ scale: 1.1, y: -2 }}
                   className="w-10 h-10 rounded-lg bg-white/[0.03] border border-white/[0.06] flex items-center justify-center text-gray-500 hover:text-white hover:border-white/[0.12] transition-all"
+                  aria-label={social.label}
                 >
                   <social.icon className="w-4 h-4" />
                 </motion.a>
@@ -65,14 +75,32 @@ export function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h4 className="text-white font-semibold mb-4">Quick Links</h4>
+            <h4 className="text-white font-semibold mb-4">Navigation</h4>
             <ul className="space-y-3">
               {quickLinks.map((link) => (
                 <li key={link.name}>
                   <a
                     href={link.href}
-                    className="text-gray-500 hover:text-white transition-colors text-sm"
+                    className="text-gray-500 hover:text-white transition-colors text-sm hover:translate-x-1 inline-block"
                   >
+                    {link.name}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Resources */}
+          <div>
+            <h4 className="text-white font-semibold mb-4">Resources</h4>
+            <ul className="space-y-3">
+              {resourceLinks.map((link) => (
+                <li key={link.name}>
+                  <a
+                    href={link.href}
+                    className="text-gray-500 hover:text-white transition-colors text-sm flex items-center gap-2 group"
+                  >
+                    <link.icon className="w-4 h-4 opacity-50 group-hover:opacity-100 transition-opacity" />
                     {link.name}
                   </a>
                 </li>
@@ -113,7 +141,7 @@ export function Footer() {
         {/* Bottom */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-gray-600 text-sm text-center sm:text-left">
-            © 2026 Chandra Koushik Kodali. All rights reserved.
+            © {currentYear} Chandra Koushik Kodali. All rights reserved.
           </p>
           <p className="text-gray-600 text-sm flex items-center gap-1.5">
             Crafted with
@@ -130,3 +158,4 @@ export function Footer() {
     </footer>
   );
 }
+

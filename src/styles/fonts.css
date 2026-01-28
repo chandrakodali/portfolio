@@ -26,11 +26,18 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: var(--font-heading);
 }
 
-code, pre, .font-mono {
+code,
+pre,
+.font-mono {
   font-family: var(--font-mono);
 }
 
@@ -49,4 +56,175 @@ code, pre, .font-mono {
   .bg-clip-text {
     color: white;
   }
+}
+
+/* Theme transition for smooth dark/light mode switching */
+.theme-transition,
+.theme-transition *,
+.theme-transition *::before,
+.theme-transition *::after {
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease !important;
+}
+
+/* App Background - Main page container */
+.app-background {
+  background: #030014;
+  transition: background 0.3s ease;
+}
+
+.light .app-background {
+  background: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 50%, #f0f9ff 100%) !important;
+  color: #0f172a !important;
+}
+
+/* ========================================
+   LIGHT MODE OVERRIDES
+   These apply when the .light class is on html
+   ======================================== */
+
+/* Main background - gradient to white/light blue */
+html.light body,
+html.light {
+  background: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 50%, #f0f9ff 100%) !important;
+}
+
+/* Override the hero section background */
+.light section {
+  background: transparent !important;
+}
+
+/* Override dark backgrounds on cards and containers */
+.light .bg-\[rgb\(3\,2\,19\)\],
+.light .bg-\[\#030014\],
+.light .bg-\[\#030213\],
+.light [class*="from-white/"][class*="to-white/"],
+.light .bg-gradient-to-br.from-white\/\[0\.06\] {
+  background: rgba(255, 255, 255, 0.8) !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Navbar in light mode */
+.light nav,
+.light header {
+  background: rgba(255, 255, 255, 0.9) !important;
+  backdrop-filter: blur(20px);
+  border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+.light nav a,
+.light header a {
+  color: #1e293b !important;
+}
+
+.light nav a:hover,
+.light header a:hover {
+  color: #0891b2 !important;
+}
+
+/* Text colors for light mode */
+.light .text-white {
+  color: #0f172a !important;
+}
+
+.light .text-gray-400,
+.light .text-gray-500 {
+  color: #64748b !important;
+}
+
+.light .text-gray-300 {
+  color: #475569 !important;
+}
+
+/* Keep gradient text visible */
+.light .bg-gradient-to-r.from-white {
+  background: linear-gradient(to right, #0f172a, #334155) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+}
+
+/* Cards and glass effects in light mode */
+.light .backdrop-blur-xl,
+.light .backdrop-blur-md,
+.light .backdrop-blur-sm {
+  background: rgba(255, 255, 255, 0.7) !important;
+  backdrop-filter: blur(20px);
+}
+
+/* Border colors */
+.light .border-white\/\[0\.08\],
+.light .border-white\/\[0\.1\],
+.light .border-white\/\[0\.05\],
+.light [class*="border-white/"] {
+  border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+/* Testimonial and blog cards */
+.light article,
+.light .rounded-3xl,
+.light .rounded-2xl,
+.light .rounded-xl {
+  background: rgba(255, 255, 255, 0.8) !important;
+  border-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Input fields */
+.light input,
+.light textarea {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border-color: rgba(0, 0, 0, 0.15) !important;
+  color: #1e293b !important;
+}
+
+.light input::placeholder,
+.light textarea::placeholder {
+  color: #94a3b8 !important;
+}
+
+/* Buttons - keep gradients but adjust */
+.light .bg-gradient-to-r.from-cyan-500 {
+  box-shadow: 0 4px 20px rgba(6, 182, 212, 0.3);
+}
+
+/* Footer */
+.light footer {
+  background: rgba(15, 23, 42, 0.95) !important;
+}
+
+/* Keep some elements with their original styling */
+.light .text-cyan-400,
+.light .text-cyan-500,
+.light .text-violet-400,
+.light .text-emerald-400 {
+  /* Keep accent colors */
+}
+
+/* Hero floating orbs - make them lighter */
+.light .bg-cyan-500\/30,
+.light .bg-violet-500\/20,
+.light .bg-emerald-500\/20 {
+  opacity: 0.3 !important;
+}
+
+/* Skills progress bars - keep colorful */
+.light .bg-gradient-to-r {
+  /* Keep gradient backgrounds for skill bars */
+}
+
+/* Tags and badges in light mode */
+.light .bg-cyan-500\/10,
+.light .bg-violet-500\/10,
+.light .bg-emerald-500\/10 {
+  background: rgba(6, 182, 212, 0.15) !important;
+}
+
+/* Timeline dots and lines */
+.light .bg-gray-800 {
+  background: #e2e8f0 !important;
+}
+
+/* Code blocks - keep dark */
+.light pre,
+.light code {
+  background: #1e293b !important;
+  color: #e2e8f0 !important;
 }
