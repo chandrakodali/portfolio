@@ -1,5 +1,5 @@
 import { motion } from 'motion/react';
-import { Github, Linkedin, Mail, Heart, Terminal, ArrowUp, BookOpen, Quote } from 'lucide-react';
+import { Github, Linkedin, Mail, Heart, Terminal, ArrowUp, BookOpen } from 'lucide-react';
 
 const socialLinks = [
   { icon: Github, href: 'https://github.com/chandrakodali', label: 'GitHub' },
@@ -12,14 +12,12 @@ const quickLinks = [
   { name: 'Skills', href: '#skills' },
   { name: 'Experience', href: '#experience' },
   { name: 'Projects', href: '#projects' },
-  { name: 'Testimonials', href: '#testimonials' },
   { name: 'Blog', href: '#blog' },
   { name: 'Contact', href: '#contact' },
 ];
 
 const resourceLinks = [
   { name: 'Articles', href: '#blog', icon: BookOpen },
-  { name: 'Testimonials', href: '#testimonials', icon: Quote },
 ];
 
 export function Footer() {
