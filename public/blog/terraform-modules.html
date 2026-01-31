@@ -2,461 +2,462 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Terraform at Scale: Module Design Patterns | Chandra Koushik Kodali</title>
-    <meta name="description"
-        content="Learn how to design reusable Terraform modules, implement state management strategies, and build scalable infrastructure-as-code for enterprise environments.">
-    <meta name="author" content="Chandra Koushik Kodali">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            /* Dark Theme (Default) */
-            --bg-primary: #030014;
-            --bg-gradient-start: #030014;
-            --bg-gradient-end: #0a0a1f;
-            --text-primary: #e5e7eb;
-            --text-secondary: #9ca3af;
-            --text-muted: #6b7280;
-            --accent: #10b981;
-            /* Emerald/Green for Terraform */
-            --accent-hover: #34d399;
-            --border: rgba(255, 255, 255, 0.1);
-            --card-bg: rgba(255, 255, 255, 0.03);
-            --code-bg: #0d1117;
-            --heading-gradient-start: #fff;
-            --heading-gradient-end: #6ee7b7;
-            --heading-color: #fff;
-            --table-header-bg: rgba(255, 255, 255, 0.05);
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Terraform at Scale: Module Design Patterns | Chandra Koushik Kodali</title>
+  <meta name="description"
+    content="Learn how to design reusable Terraform modules, implement state management strategies, and build scalable infrastructure-as-code for enterprise environments.">
+  <meta name="author" content="Chandra Koushik Kodali">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* Dark Theme (Default) */
+      --bg-primary: #030014;
+      --bg-gradient-start: #030014;
+      --bg-gradient-end: #0a0a1f;
+      --text-primary: #e5e7eb;
+      --text-secondary: #9ca3af;
+      --text-muted: #6b7280;
+      --accent: #10b981;
+      /* Emerald/Green for Terraform */
+      --accent-hover: #34d399;
+      --border: rgba(255, 255, 255, 0.1);
+      --card-bg: rgba(255, 255, 255, 0.03);
+      --code-bg: #0d1117;
+      --heading-gradient-start: #fff;
+      --heading-gradient-end: #6ee7b7;
+      --heading-color: #fff;
+      --table-header-bg: rgba(255, 255, 255, 0.05);
+    }
 
-        .light {
-            /* Light Theme */
-            --bg-primary: #ffffff;
-            --bg-gradient-start: #ffffff;
-            --bg-gradient-end: #f9fafb;
-            --text-primary: #1f2937;
-            --text-secondary: #4b5563;
-            --text-muted: #6b7280;
-            --accent: #059669;
-            --accent-hover: #047857;
-            --border: #e5e7eb;
-            --card-bg: #f3f4f6;
-            --code-bg: #1f2937;
-            --heading-gradient-start: #111827;
-            --heading-gradient-end: #047857;
-            --heading-color: #111827;
-            --table-header-bg: #f3f4f6;
-        }
+    .light {
+      /* Light Theme */
+      --bg-primary: #ffffff;
+      --bg-gradient-start: #ffffff;
+      --bg-gradient-end: #f9fafb;
+      --text-primary: #1f2937;
+      --text-secondary: #4b5563;
+      --text-muted: #6b7280;
+      --accent: #059669;
+      --accent-hover: #047857;
+      --border: #e5e7eb;
+      --card-bg: #f3f4f6;
+      --code-bg: #1f2937;
+      --heading-gradient-start: #111827;
+      --heading-gradient-end: #047857;
+      --heading-color: #111827;
+      --table-header-bg: #f3f4f6;
+    }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--bg-primary);
-            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
-            color: var(--text-primary);
-            line-height: 1.8;
-            min-height: 100vh;
-            transition: background 0.3s, color 0.3s;
-        }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-primary);
+      background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+      color: var(--text-primary);
+      line-height: 1.8;
+      min-height: 100vh;
+      transition: background 0.3s, color 0.3s;
+    }
 
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 60px 24px;
-            position: relative;
-        }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 60px 24px;
+      position: relative;
+    }
 
-        .nav-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 40px;
-        }
+    .nav-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 40px;
+    }
 
-        .theme-toggle {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            color: var(--text-secondary);
-            cursor: pointer;
-            padding: 8px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-        }
+    .theme-toggle {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
 
-        .theme-toggle:hover {
-            color: var(--text-primary);
-            border-color: var(--accent);
-        }
+    .theme-toggle:hover {
+      color: var(--text-primary);
+      border-color: var(--accent);
+    }
 
-        .back-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--accent);
-            text-decoration: none;
-            font-size: 14px;
-            transition: color 0.2s;
-        }
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 14px;
+      transition: color 0.2s;
+    }
 
-        .back-link:hover {
-            color: var(--accent-hover);
-        }
+    .back-link:hover {
+      color: var(--accent-hover);
+    }
 
-        .tag {
-            display: inline-block;
-            padding: 4px 12px;
-            background: rgba(16, 185, 129, 0.15);
-            border: 1px solid rgba(16, 185, 129, 0.3);
-            border-radius: 9999px;
-            color: var(--accent);
-            font-size: 12px;
-            font-weight: 500;
-            margin-bottom: 16px;
-        }
+    .tag {
+      display: inline-block;
+      padding: 4px 12px;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 9999px;
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 500;
+      margin-bottom: 16px;
+    }
 
-        h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            background: linear-gradient(to right, var(--heading-gradient-start), var(--heading-gradient-end));
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 16px;
-            line-height: 1.2;
-            color: var(--heading-color);
-        }
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      background: linear-gradient(to right, var(--heading-gradient-start), var(--heading-gradient-end));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 16px;
+      line-height: 1.2;
+      color: var(--heading-color);
+    }
 
-        .meta {
-            color: var(--text-muted);
-            font-size: 14px;
-            margin-bottom: 40px;
-            display: flex;
-            gap: 16px;
-            flex-wrap: wrap;
-        }
+    .meta {
+      color: var(--text-muted);
+      font-size: 14px;
+      margin-bottom: 40px;
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
 
-        h2 {
-            font-size: 1.5rem;
-            color: var(--heading-color);
-            margin: 48px 0 16px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid var(--border);
-        }
+    h2 {
+      font-size: 1.5rem;
+      color: var(--heading-color);
+      margin: 48px 0 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
 
-        h3 {
-            font-size: 1.25rem;
-            color: var(--text-primary);
-            margin: 32px 0 12px;
-        }
+    h3 {
+      font-size: 1.25rem;
+      color: var(--text-primary);
+      margin: 32px 0 12px;
+    }
 
-        h4 {
-            font-size: 1.1rem;
-            color: var(--text-secondary);
-            margin: 24px 0 10px;
-        }
+    h4 {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      margin: 24px 0 10px;
+    }
 
-        p {
-            margin-bottom: 20px;
-            color: var(--text-secondary);
-        }
+    p {
+      margin-bottom: 20px;
+      color: var(--text-secondary);
+    }
 
-        ul,
-        ol {
-            margin: 0 0 20px 24px;
-            color: var(--text-secondary);
-        }
+    ul,
+    ol {
+      margin: 0 0 20px 24px;
+      color: var(--text-secondary);
+    }
 
-        li {
-            margin-bottom: 8px;
-        }
+    li {
+      margin-bottom: 8px;
+    }
 
-        .code-block {
-            background: #0d1117;
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 20px;
-            margin: 20px 0;
-            overflow-x: auto;
-            font-family: 'Fira Code', monospace;
-            font-size: 14px;
-            color: #c9d1d9;
-        }
+    .code-block {
+      background: #0d1117;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      margin: 20px 0;
+      overflow-x: auto;
+      font-family: 'Fira Code', monospace;
+      font-size: 14px;
+      color: #c9d1d9;
+    }
 
-        .code-block code {
-            white-space: pre;
-        }
+    .code-block code {
+      white-space: pre;
+    }
 
-        .highlight {
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(6, 182, 212, 0.1));
-            border-left: 3px solid var(--accent);
-            padding: 16px 20px;
-            margin: 24px 0;
-            border-radius: 0 12px 12px 0;
-        }
+    .highlight {
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(6, 182, 212, 0.1));
+      border-left: 3px solid var(--accent);
+      padding: 16px 20px;
+      margin: 24px 0;
+      border-radius: 0 12px 12px 0;
+    }
 
-        .warning {
-            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(239, 68, 68, 0.1));
-            border-left: 3px solid #f59e0b;
-            padding: 16px 20px;
-            margin: 24px 0;
-            border-radius: 0 12px 12px 0;
-        }
+    .warning {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(239, 68, 68, 0.1));
+      border-left: 3px solid #f59e0b;
+      padding: 16px 20px;
+      margin: 24px 0;
+      border-radius: 0 12px 12px 0;
+    }
 
-        .key-point {
-            background: rgba(6, 182, 212, 0.1);
-            border: 1px solid rgba(6, 182, 212, 0.3);
-            border-radius: 12px;
-            padding: 20px;
-            margin: 24px 0;
-        }
+    .key-point {
+      background: rgba(6, 182, 212, 0.1);
+      border: 1px solid rgba(6, 182, 212, 0.3);
+      border-radius: 12px;
+      padding: 20px;
+      margin: 24px 0;
+    }
 
-        .key-point h4 {
-            color: #06b6d4;
-            margin-bottom: 8px;
-            font-size: 14px;
-            margin-top: 0;
-        }
+    .key-point h4 {
+      color: #06b6d4;
+      margin-bottom: 8px;
+      font-size: 14px;
+      margin-top: 0;
+    }
 
-        .edge-case {
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            border-radius: 12px;
-            padding: 20px;
-            margin: 24px 0;
-        }
+    .edge-case {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      border-radius: 12px;
+      padding: 20px;
+      margin: 24px 0;
+    }
 
-        .edge-case h4 {
-            color: #ef4444;
-            margin-bottom: 8px;
-            font-size: 14px;
-            margin-top: 0;
-        }
+    .edge-case h4 {
+      color: #ef4444;
+      margin-bottom: 8px;
+      font-size: 14px;
+      margin-top: 0;
+    }
 
-        strong {
-            color: var(--heading-color);
-        }
+    strong {
+      color: var(--heading-color);
+    }
 
-        .toc {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 24px;
-            margin: 32px 0;
-        }
+    .toc {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      margin: 32px 0;
+    }
 
-        .toc h3 {
-            margin-top: 0;
-            margin-bottom: 16px;
-            color: var(--heading-color);
-        }
+    .toc h3 {
+      margin-top: 0;
+      margin-bottom: 16px;
+      color: var(--heading-color);
+    }
 
-        .toc ul {
-            margin: 0;
-            list-style: none;
-            padding-left: 0;
-        }
+    .toc ul {
+      margin: 0;
+      list-style: none;
+      padding-left: 0;
+    }
 
-        .toc li {
-            margin-bottom: 8px;
-        }
+    .toc li {
+      margin-bottom: 8px;
+    }
 
-        .toc a {
-            color: var(--accent);
-            text-decoration: none;
-        }
+    .toc a {
+      color: var(--accent);
+      text-decoration: none;
+    }
 
-        .toc a:hover {
-            text-decoration: underline;
-        }
+    .toc a:hover {
+      text-decoration: underline;
+    }
 
-        .diagram {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 32px;
-            margin: 32px 0;
-            overflow-x: auto;
-        }
+    .diagram {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      margin: 32px 0;
+      overflow-x: auto;
+    }
 
-        .diagram-title {
-            font-size: 14px;
-            color: var(--text-muted);
-            text-align: center;
-            margin-bottom: 24px;
-            font-weight: 500;
-        }
+    .diagram-title {
+      font-size: 14px;
+      color: var(--text-muted);
+      text-align: center;
+      margin-bottom: 24px;
+      font-weight: 500;
+    }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-            font-size: 14px;
-        }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      font-size: 14px;
+    }
 
-        th,
-        td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid var(--border);
-        }
+    th,
+    td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
 
-        th {
-            color: var(--heading-color);
-            background: var(--table-header-bg);
-        }
+    th {
+      color: var(--heading-color);
+      background: var(--table-header-bg);
+    }
 
-        td {
-            color: var(--text-secondary);
-        }
+    td {
+      color: var(--text-secondary);
+    }
 
-        .tree {
-            font-family: 'Fira Code', monospace;
-            font-size: 13px;
-            line-height: 1.6;
-            color: var(--text-secondary);
-            background: #0d1117;
-            padding: 20px;
-            border-radius: 12px;
-            margin: 20px 0;
-            overflow-x: auto;
-        }
+    .tree {
+      font-family: 'Fira Code', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--text-secondary);
+      background: #0d1117;
+      padding: 20px;
+      border-radius: 12px;
+      margin: 20px 0;
+      overflow-x: auto;
+    }
 
-        .tree .folder {
-            color: var(--accent);
-        }
+    .tree .folder {
+      color: var(--accent);
+    }
 
-        .tree .file {
-            color: var(--text-secondary);
-        }
+    .tree .file {
+      color: var(--text-secondary);
+    }
 
-        .footer {
-            margin-top: 60px;
-            padding-top: 40px;
-            border-top: 1px solid var(--border);
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 14px;
-        }
+    .footer {
+      margin-top: 60px;
+      padding-top: 40px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 14px;
+    }
 
-        .cta {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: linear-gradient(135deg, var(--accent), #06b6d4);
-            color: #fff;
-            padding: 12px 24px;
-            border-radius: 12px;
-            text-decoration: none;
-            font-weight: 500;
-            margin-top: 20px;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
+    .cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, var(--accent), #06b6d4);
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 500;
+      margin-top: 20px;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
 
-        .cta:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 40px rgba(16, 185, 129, 0.3);
-        }
-    </style>
-    <script>
-        // Check for theme preference
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme === 'light') {
-            document.documentElement.classList.add('light');
-        }
+    .cta:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 40px rgba(16, 185, 129, 0.3);
+    }
+  </style>
+  <link rel="stylesheet" href="article-interactive.css">
+  <script>
+    // Check for theme preference
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light') {
+      document.documentElement.classList.add('light');
+    }
 
-        function toggleTheme() {
-            const isLight = document.documentElement.classList.toggle('light');
-            localStorage.setItem('theme', isLight ? 'light' : 'dark');
-        }
-    </script>
+    function toggleTheme() {
+      const isLight = document.documentElement.classList.toggle('light');
+      localStorage.setItem('theme', isLight ? 'light' : 'dark');
+    }
+  </script>
 </head>
 
 <body>
-    <article class="container">
-        <div class="nav-header">
-            <a href="/portfolio/#articles" class="back-link">← Back to Portfolio</a>
-            <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme">
-                <!-- Sun Icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="5"></circle>
-                    <line x1="12" y1="1" x2="12" y2="3"></line>
-                    <line x1="12" y1="21" x2="12" y2="23"></line>
-                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                    <line x1="1" y1="12" x2="3" y2="12"></line>
-                    <line x1="21" y1="12" x2="23" y2="12"></line>
-                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-                </svg>
-            </button>
-        </div>
+  <article class="container">
+    <div class="nav-header">
+      <a href="/portfolio/#articles" class="back-link">← Back to Portfolio</a>
+      <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme">
+        <!-- Sun Icon -->
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="5"></circle>
+          <line x1="12" y1="1" x2="12" y2="3"></line>
+          <line x1="12" y1="21" x2="12" y2="23"></line>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+          <line x1="1" y1="12" x2="3" y2="12"></line>
+          <line x1="21" y1="12" x2="23" y2="12"></line>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+      </button>
+    </div>
 
-        <span class="tag">Infrastructure</span>
-        <h1>Terraform at Scale: Module Design Patterns</h1>
+    <span class="tag">Infrastructure</span>
+    <h1>Terraform at Scale: Module Design Patterns</h1>
 
-        <div class="meta">
-            <span>By Chandra Koushik Kodali</span>
-            <span>•</span>
-            <span>24 min read</span>
-            <span>•</span>
-            <span>January 2026</span>
-        </div>
+    <div class="meta">
+      <span>By Chandra Koushik Kodali</span>
+      <span>•</span>
+      <span>24 min read</span>
+      <span>•</span>
+      <span>January 2026</span>
+    </div>
 
-        <p>
-            Infrastructure as Code (IaC) with Terraform has become the de facto standard for managing cloud
-            infrastructure. However, as organizations scale, the challenges of maintaining Terraform code across
-            hundreds of projects and dozens of teams become significant. In this comprehensive guide, I'll share proven
-            patterns and practices for designing reusable Terraform modules that scale across enterprise environments.
-        </p>
+    <p>
+      Infrastructure as Code (IaC) with Terraform has become the de facto standard for managing cloud
+      infrastructure. However, as organizations scale, the challenges of maintaining Terraform code across
+      hundreds of projects and dozens of teams become significant. In this comprehensive guide, I'll share proven
+      patterns and practices for designing reusable Terraform modules that scale across enterprise environments.
+    </p>
 
-        <div class="toc">
-            <h3>Table of Contents</h3>
-            <ul>
-                <li><a href="#module-principles">1. Module Design Principles</a></li>
-                <li><a href="#module-structure">2. Module Structure and Organization</a></li>
-                <li><a href="#composition-patterns">3. Composition Patterns</a></li>
-                <li><a href="#state-management">4. State Management Strategies</a></li>
-                <li><a href="#testing">5. Testing and Validation</a></li>
-                <li><a href="#cicd">6. CI/CD Pipeline Integration</a></li>
-                <li><a href="#versioning">7. Versioning and Release Management</a></li>
-                <li><a href="#security">8. Security Best Practices</a></li>
-                <li><a href="#cost-optimization">9. Cost Optimization Patterns</a></li>
-                <li><a href="#multi-account">10. Multi-Account and Multi-Region</a></li>
-                <li><a href="#edge-cases">11. Edge Cases and Troubleshooting</a></li>
-                <li><a href="#migration">12. Migration and Upgrade Strategies</a></li>
-            </ul>
-        </div>
+    <div class="toc">
+      <h3>Table of Contents</h3>
+      <ul>
+        <li><a href="#module-principles">1. Module Design Principles</a></li>
+        <li><a href="#module-structure">2. Module Structure and Organization</a></li>
+        <li><a href="#composition-patterns">3. Composition Patterns</a></li>
+        <li><a href="#state-management">4. State Management Strategies</a></li>
+        <li><a href="#testing">5. Testing and Validation</a></li>
+        <li><a href="#cicd">6. CI/CD Pipeline Integration</a></li>
+        <li><a href="#versioning">7. Versioning and Release Management</a></li>
+        <li><a href="#security">8. Security Best Practices</a></li>
+        <li><a href="#cost-optimization">9. Cost Optimization Patterns</a></li>
+        <li><a href="#multi-account">10. Multi-Account and Multi-Region</a></li>
+        <li><a href="#edge-cases">11. Edge Cases and Troubleshooting</a></li>
+        <li><a href="#migration">12. Migration and Upgrade Strategies</a></li>
+      </ul>
+    </div>
 
-        <h2 id="module-principles">1. Module Design Principles</h2>
+    <h2 id="module-principles">1. Module Design Principles</h2>
 
-        <p>Good Terraform modules follow several key principles that make them reusable, maintainable, and safe to use.
-        </p>
+    <p>Good Terraform modules follow several key principles that make them reusable, maintainable, and safe to use.
+    </p>
 
-        <h3>Single Responsibility</h3>
-        <p>
-            Each module should do one thing well. A VPC module creates networking resources. An EKS module creates
-            Kubernetes clusters. Don't combine unrelated resources just because they're often used together.
-        </p>
+    <h3>Single Responsibility</h3>
+    <p>
+      Each module should do one thing well. A VPC module creates networking resources. An EKS module creates
+      Kubernetes clusters. Don't combine unrelated resources just because they're often used together.
+    </p>
 
-        <h3>Sensible Defaults with Overridability</h3>
-        <p>
-            Provide reasonable defaults for all optional variables while allowing users to override everything. This
-            balances ease of use with flexibility.
-        </p>
+    <h3>Sensible Defaults with Overridability</h3>
+    <p>
+      Provide reasonable defaults for all optional variables while allowing users to override everything. This
+      balances ease of use with flexibility.
+    </p>
 
-        <div class="code-block"><code>variable "instance_type" {
+    <div class="code-block"><code>variable "instance_type" {
   description = "EC2 instance type"
   type        = string
   default     = "t3.medium"  # Sensible default
@@ -474,13 +475,13 @@ variable "tags" {
   default     = {}  # Allow complete customization
 }</code></div>
 
-        <h3>Explicit Over Implicit</h3>
-        <p>
-            Make dependencies and requirements explicit. Don't rely on implicit behavior or provider defaults that might
-            change.
-        </p>
+    <h3>Explicit Over Implicit</h3>
+    <p>
+      Make dependencies and requirements explicit. Don't rely on implicit behavior or provider defaults that might
+      change.
+    </p>
 
-        <div class="code-block"><code># Bad: Implicit dependency on default VPC
+    <div class="code-block"><code># Bad: Implicit dependency on default VPC
 resource "aws_instance" "example" {
   ami           = var.ami_id
   instance_type = var.instance_type
@@ -495,62 +496,62 @@ resource "aws_instance" "example" {
   vpc_security_group_ids = var.security_group_ids  # Explicit
 }</code></div>
 
-        <h3>Idempotency and Predictability</h3>
-        <p>
-            Modules should produce the same result when applied multiple times. Avoid resources with random generation,
-            timestamps, or external data sources that change unpredictably.
-        </p>
+    <h3>Idempotency and Predictability</h3>
+    <p>
+      Modules should produce the same result when applied multiple times. Avoid resources with random generation,
+      timestamps, or external data sources that change unpredictably.
+    </p>
 
-        <div class="highlight">
-            <strong>Golden Rule:</strong> A user should be able to read your module's variables.tf and outputs.tf and
-            understand exactly what the module does without reading the implementation.
-        </div>
+    <div class="highlight">
+      <strong>Golden Rule:</strong> A user should be able to read your module's variables.tf and outputs.tf and
+      understand exactly what the module does without reading the implementation.
+    </div>
 
-        <h2 id="module-structure">2. Module Structure and Organization</h2>
+    <h2 id="module-structure">2. Module Structure and Organization</h2>
 
-        <div class="diagram">
-            <div class="diagram-title">Figure 1: Terraform Module Composition</div>
-            <img src="images/terraform-structure.png" alt="Terraform Module Structure Diagram"
-                style="width:100%; border-radius: 8px;">
-        </div>
+    <div class="diagram">
+      <div class="diagram-title">Figure 1: Terraform Module Composition</div>
+      <img src="images/terraform-structure.png" alt="Terraform Module Structure Diagram"
+        style="width:100%; border-radius: 8px;">
+    </div>
 
-        <h3>Standard Module Layout</h3>
-        <p>
-            A consistent directory structure is crucial for discoverability. We recommend the following standard layout
-            that separates implementation, interface, and examples:
-        </p>
+    <h3>Standard Module Layout</h3>
+    <p>
+      A consistent directory structure is crucial for discoverability. We recommend the following standard layout
+      that separates implementation, interface, and examples:
+    </p>
 
-        <div class="tree"><span class="folder">terraform-aws-eks/</span>
-            ├── <span class="file">README.md</span> # Documentation with examples
-            ├── <span class="file">main.tf</span> # Primary resource definitions
-            ├── <span class="file">variables.tf</span> # Input variable definitions
-            ├── <span class="file">outputs.tf</span> # Output value definitions
-            ├── <span class="file">versions.tf</span> # Provider and Terraform version constraints
-            ├── <span class="file">locals.tf</span> # Local value definitions
-            ├── <span class="file">data.tf</span> # Data source definitions
-            ├── <span class="folder">modules/</span> # Nested submodules
-            │ ├── <span class="folder">node-group/</span>
-            │ │ ├── <span class="file">main.tf</span>
-            │ │ ├── <span class="file">variables.tf</span>
-            │ │ └── <span class="file">outputs.tf</span>
-            │ └── <span class="folder">addons/</span>
-            │ ├── <span class="file">main.tf</span>
-            │ ├── <span class="file">variables.tf</span>
-            │ └── <span class="file">outputs.tf</span>
-            ├── <span class="folder">examples/</span> # Usage examples
-            │ ├── <span class="folder">complete/</span>
-            │ ├── <span class="folder">minimal/</span>
-            │ └── <span class="folder">with-fargate/</span>
-            └── <span class="folder">test/</span> # Automated tests
-            └── <span class="file">eks_test.go</span></div>
+    <div class="tree"><span class="folder">terraform-aws-eks/</span>
+      ├── <span class="file">README.md</span> # Documentation with examples
+      ├── <span class="file">main.tf</span> # Primary resource definitions
+      ├── <span class="file">variables.tf</span> # Input variable definitions
+      ├── <span class="file">outputs.tf</span> # Output value definitions
+      ├── <span class="file">versions.tf</span> # Provider and Terraform version constraints
+      ├── <span class="file">locals.tf</span> # Local value definitions
+      ├── <span class="file">data.tf</span> # Data source definitions
+      ├── <span class="folder">modules/</span> # Nested submodules
+      │ ├── <span class="folder">node-group/</span>
+      │ │ ├── <span class="file">main.tf</span>
+      │ │ ├── <span class="file">variables.tf</span>
+      │ │ └── <span class="file">outputs.tf</span>
+      │ └── <span class="folder">addons/</span>
+      │ ├── <span class="file">main.tf</span>
+      │ ├── <span class="file">variables.tf</span>
+      │ └── <span class="file">outputs.tf</span>
+      ├── <span class="folder">examples/</span> # Usage examples
+      │ ├── <span class="folder">complete/</span>
+      │ ├── <span class="folder">minimal/</span>
+      │ └── <span class="folder">with-fargate/</span>
+      └── <span class="folder">test/</span> # Automated tests
+      └── <span class="file">eks_test.go</span></div>
 
-        <h3>Variables Best Practices</h3>
-        <p>
-            Use robust validation rules and explicit types to fail fast. Here is an example of a well-structured
-            <code>variables.tf</code> file:
-        </p>
+    <h3>Variables Best Practices</h3>
+    <p>
+      Use robust validation rules and explicit types to fail fast. Here is an example of a well-structured
+      <code>variables.tf</code> file:
+    </p>
 
-        <div class="code-block"><code># variables.tf
+    <div class="code-block"><code># variables.tf
 variable "cluster_name" {
   description = "Name of the EKS cluster. Must be unique within the AWS account."
   type        = string
@@ -590,14 +591,14 @@ variable "node_groups" {
   default = {}
 }</code></div>
 
-        <h3>Outputs Design</h3>
-        <p>
-            Outputs are the API of your module. Return detailed information that consumers might need, and mark
-            sensitive
-            data appropriately:
-        </p>
+    <h3>Outputs Design</h3>
+    <p>
+      Outputs are the API of your module. Return detailed information that consumers might need, and mark
+      sensitive
+      data appropriately:
+    </p>
 
-        <div class="code-block"><code># outputs.tf
+    <div class="code-block"><code># outputs.tf
 output "cluster_endpoint" {
   description = "Endpoint URL for the EKS cluster API server"
   value       = aws_eks_cluster.this.endpoint
@@ -625,15 +626,15 @@ output "kubectl_config" {
   sensitive = true
 }</code></div>
 
-        <h2 id="composition-patterns">3. Composition Patterns</h2>
+    <h2 id="composition-patterns">3. Composition Patterns</h2>
 
-        <h3>Module Composition</h3>
-        <p>
-            Complex infrastructure should be composed of smaller, focused modules. Here's how to structure a complete
-            platform:
-        </p>
+    <h3>Module Composition</h3>
+    <p>
+      Complex infrastructure should be composed of smaller, focused modules. Here's how to structure a complete
+      platform:
+    </p>
 
-        <div class="code-block"><code># Root module that composes other modules
+    <div class="code-block"><code># Root module that composes other modules
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "5.0.0"
@@ -678,12 +679,12 @@ module "rds" {
   tags = local.common_tags
 }</code></div>
 
-        <h3>The Factory Pattern</h3>
-        <p>
-            For standardized deployments across many environments, use a factory pattern:
-        </p>
+    <h3>The Factory Pattern</h3>
+    <p>
+      For standardized deployments across many environments, use a factory pattern:
+    </p>
 
-        <div class="code-block"><code># environments/factory/main.tf
+    <div class="code-block"><code># environments/factory/main.tf
 variable "environments" {
   type = map(object({
     vpc_cidr          = string
@@ -726,15 +727,15 @@ environments = {
   }
 }</code></div>
 
-        <h2 id="state-management">4. State Management Strategies</h2>
+    <h2 id="state-management">4. State Management Strategies</h2>
 
-        <h3>Remote State Backend</h3>
-        <p>
-            Never store state locally. Use a remote backend like S3 with DynamoDB locking to ensure team collaboration
-            safety:
-        </p>
+    <h3>Remote State Backend</h3>
+    <p>
+      Never store state locally. Use a remote backend like S3 with DynamoDB locking to ensure team collaboration
+      safety:
+    </p>
 
-        <div class="code-block"><code># backend.tf
+    <div class="code-block"><code># backend.tf
 terraform {
   backend "s3" {
     bucket         = "company-terraform-state"
@@ -750,39 +751,39 @@ terraform {
   }
 }</code></div>
 
-        <h3>State Isolation Strategies</h3>
+    <h3>State Isolation Strategies</h3>
 
-        <table>
-            <tr>
-                <th>Strategy</th>
-                <th>When to Use</th>
-                <th>Tradeoffs</th>
-            </tr>
-            <tr>
-                <td>Per-environment</td>
-                <td>Complete isolation between dev/staging/prod</td>
-                <td>Cannot share resources easily</td>
-            </tr>
-            <tr>
-                <td>Per-component</td>
-                <td>Independent lifecycle for VPC, EKS, apps</td>
-                <td>Requires data source lookups</td>
-            </tr>
-            <tr>
-                <td>Monolithic</td>
-                <td>Small projects, tight coupling</td>
-                <td>Blast radius, slow plans</td>
-            </tr>
-        </table>
+    <table>
+      <tr>
+        <th>Strategy</th>
+        <th>When to Use</th>
+        <th>Tradeoffs</th>
+      </tr>
+      <tr>
+        <td>Per-environment</td>
+        <td>Complete isolation between dev/staging/prod</td>
+        <td>Cannot share resources easily</td>
+      </tr>
+      <tr>
+        <td>Per-component</td>
+        <td>Independent lifecycle for VPC, EKS, apps</td>
+        <td>Requires data source lookups</td>
+      </tr>
+      <tr>
+        <td>Monolithic</td>
+        <td>Small projects, tight coupling</td>
+        <td>Blast radius, slow plans</td>
+      </tr>
+    </table>
 
-        <h3>Cross-State References</h3>
-        <p>
-            Use the <code>terraform_remote_state</code> data source to read outputs from other stacks, such as reading
-            VPC
-            details into your EKS stack:
-        </p>
+    <h3>Cross-State References</h3>
+    <p>
+      Use the <code>terraform_remote_state</code> data source to read outputs from other stacks, such as reading
+      VPC
+      details into your EKS stack:
+    </p>
 
-        <div class="code-block"><code># In the EKS module, reference VPC state
+    <div class="code-block"><code># In the EKS module, reference VPC state
 data "terraform_remote_state" "vpc" {
   backend = "s3"
   config = {
@@ -800,20 +801,20 @@ module "eks" {
   subnet_ids = data.terraform_remote_state.vpc.outputs.private_subnets
 }</code></div>
 
-        <div class="warning">
-            <strong>⚠️ Warning:</strong> Cross-state references create implicit dependencies. Document these
-            relationships clearly and consider using explicit data sources instead for better discoverability.
-        </div>
+    <div class="warning">
+      <strong>⚠️ Warning:</strong> Cross-state references create implicit dependencies. Document these
+      relationships clearly and consider using explicit data sources instead for better discoverability.
+    </div>
 
-        <h2 id="testing">5. Testing and Validation</h2>
+    <h2 id="testing">5. Testing and Validation</h2>
 
-        <h3>Static Analysis</h3>
-        <p>
-            Shift testing left by running static analysis tools in your pre-commit hooks. This catches syntax errors and
-            policy violations before code is even pushed:
-        </p>
+    <h3>Static Analysis</h3>
+    <p>
+      Shift testing left by running static analysis tools in your pre-commit hooks. This catches syntax errors and
+      policy violations before code is even pushed:
+    </p>
 
-        <div class="code-block"><code># .pre-commit-config.yaml
+    <div class="code-block"><code># .pre-commit-config.yaml
 repos:
   - repo: https://github.com/antonbabenko/pre-commit-terraform
     rev: v1.83.0
@@ -830,13 +831,13 @@ repos:
         args:
           - '--args=--quiet --framework terraform'</code></div>
 
-        <h3>Unit Tests with Terratest</h3>
-        <p>
-            For critical modules, write integration tests using Terratest (Go) to spin up real resources, validate them,
-            and tear them down:
-        </p>
+    <h3>Unit Tests with Terratest</h3>
+    <p>
+      For critical modules, write integration tests using Terratest (Go) to spin up real resources, validate them,
+      and tear them down:
+    </p>
 
-        <div class="code-block"><code>// test/eks_test.go
+    <div class="code-block"><code>// test/eks_test.go
 package test
 
 import (
@@ -867,12 +868,12 @@ func TestEKSModule(t *testing.T) {
     assert.Equal(t, "1.28", clusterVersion)
 }</code></div>
 
-        <h3>Policy as Code with OPA</h3>
-        <p>
-            Enforce organizational standards (like required tags or encryption) using Open Policy Agent (OPA) rules:
-        </p>
+    <h3>Policy as Code with OPA</h3>
+    <p>
+      Enforce organizational standards (like required tags or encryption) using Open Policy Agent (OPA) rules:
+    </p>
 
-        <div class="code-block"><code># policies/required_tags.rego
+    <div class="code-block"><code># policies/required_tags.rego
 package terraform.policies
 
 deny[msg] {
@@ -891,11 +892,11 @@ deny[msg] {
     msg := sprintf("S3 bucket %s must have versioning enabled", [resource.address])
 }</code></div>
 
-        <h2 id="cicd">6. CI/CD Pipeline Integration</h2>
+    <h2 id="cicd">6. CI/CD Pipeline Integration</h2>
 
-        <h3>GitHub Actions Workflow</h3>
+    <h3>GitHub Actions Workflow</h3>
 
-        <div class="code-block"><code># .github/workflows/terraform.yml
+    <div class="code-block"><code># .github/workflows/terraform.yml
 name: Terraform CI/CD
 
 on:
@@ -987,11 +988,11 @@ jobs:
       - name: Terraform Apply
         run: terraform apply -auto-approve</code></div>
 
-        <h2 id="versioning">7. Versioning and Release Management</h2>
+    <h2 id="versioning">7. Versioning and Release Management</h2>
 
-        <h3>Semantic Versioning for Modules</h3>
+    <h3>Semantic Versioning for Modules</h3>
 
-        <div class="code-block"><code># versions.tf
+    <div class="code-block"><code># versions.tf
 terraform {
   required_version = ">= 1.5.0"  # Minimum Terraform version
 
@@ -1011,9 +1012,9 @@ module "eks" {
   version = "~> 3.2"  # Allow patch updates only
 }</code></div>
 
-        <h3>Changelog and Migration Guides</h3>
+    <h3>Changelog and Migration Guides</h3>
 
-        <div class="code-block"><code># CHANGELOG.md
+    <div class="code-block"><code># CHANGELOG.md
 ## [3.0.0] - 2026-01-15
 
 ### BREAKING CHANGES
@@ -1045,11 +1046,11 @@ module "eks" {
 ### Fixed
 - IAM role trust policy for IRSA</code></div>
 
-        <h2 id="security">8. Security Best Practices</h2>
+    <h2 id="security">8. Security Best Practices</h2>
 
-        <h3>Least Privilege IAM</h3>
+    <h3>Least Privilege IAM</h3>
 
-        <div class="code-block"><code># Create minimal IAM policies for Terraform
+    <div class="code-block"><code># Create minimal IAM policies for Terraform
 data "aws_iam_policy_document" "terraform" {
   # Only allow specific actions
   statement {
@@ -1084,9 +1085,9 @@ data "aws_iam_policy_document" "terraform" {
   }
 }</code></div>
 
-        <h3>Secrets Handling</h3>
+    <h3>Secrets Handling</h3>
 
-        <div class="code-block"><code># Never store secrets in variables or state
+    <div class="code-block"><code># Never store secrets in variables or state
 # Instead, use data sources to fetch at apply time
 
 data "aws_secretsmanager_secret_version" "db_password" {
@@ -1104,11 +1105,11 @@ output "database_password" {
   sensitive = true
 }</code></div>
 
-        <h2 id="cost-optimization">9. Cost Optimization Patterns</h2>
+    <h2 id="cost-optimization">9. Cost Optimization Patterns</h2>
 
-        <h3>Resource Tagging for Cost Allocation</h3>
+    <h3>Resource Tagging for Cost Allocation</h3>
 
-        <div class="code-block"><code># locals.tf
+    <div class="code-block"><code># locals.tf
 locals {
   required_tags = {
     Environment = var.environment
@@ -1131,9 +1132,9 @@ provider "aws" {
   }
 }</code></div>
 
-        <h3>Right-Sizing with Variables</h3>
+    <h3>Right-Sizing with Variables</h3>
 
-        <div class="code-block"><code># Environment-specific sizing
+    <div class="code-block"><code># Environment-specific sizing
 variable "environment_config" {
   type = map(object({
     instance_type = string
@@ -1165,11 +1166,11 @@ resource "aws_autoscaling_group" "main" {
   # ...
 }</code></div>
 
-        <h2 id="multi-account">10. Multi-Account and Multi-Region</h2>
+    <h2 id="multi-account">10. Multi-Account and Multi-Region</h2>
 
-        <h3>Provider Aliases</h3>
+    <h3>Provider Aliases</h3>
 
-        <div class="code-block"><code># providers.tf
+    <div class="code-block"><code># providers.tf
 provider "aws" {
   region = "us-east-1"
   alias  = "us_east"
@@ -1200,9 +1201,9 @@ resource "aws_s3_bucket" "eu_replica" {
   bucket   = "my-bucket-eu"
 }</code></div>
 
-        <h3>Multi-Region Module</h3>
+    <h3>Multi-Region Module</h3>
 
-        <div class="code-block"><code># modules/global-s3/main.tf
+    <div class="code-block"><code># modules/global-s3/main.tf
 terraform {
   required_providers {
     aws = {
@@ -1237,42 +1238,42 @@ resource "aws_s3_bucket_replication_configuration" "primary" {
   }
 }</code></div>
 
-        <h2 id="edge-cases">11. Edge Cases and Troubleshooting</h2>
+    <h2 id="edge-cases">11. Edge Cases and Troubleshooting</h2>
 
-        <div class="edge-case">
-            <h4>⚠️ State Lock Stuck</h4>
-            <p>State lock not released after failed apply:</p>
-            <div class="code-block"><code># Force unlock (use with caution!)
+    <div class="edge-case">
+      <h4>⚠️ State Lock Stuck</h4>
+      <p>State lock not released after failed apply:</p>
+      <div class="code-block"><code># Force unlock (use with caution!)
 terraform force-unlock LOCK_ID
 
 # Check DynamoDB for stuck locks
 aws dynamodb scan --table-name terraform-state-lock</code></div>
-        </div>
+    </div>
 
-        <div class="edge-case">
-            <h4>⚠️ Resource Already Exists</h4>
-            <p>Trying to create a resource that already exists outside Terraform:</p>
-            <div class="code-block"><code># Import existing resource into state
+    <div class="edge-case">
+      <h4>⚠️ Resource Already Exists</h4>
+      <p>Trying to create a resource that already exists outside Terraform:</p>
+      <div class="code-block"><code># Import existing resource into state
 terraform import aws_s3_bucket.example my-existing-bucket
 
 # Verify with plan
 terraform plan</code></div>
-        </div>
+    </div>
 
-        <div class="edge-case">
-            <h4>⚠️ Provider Version Mismatch</h4>
-            <p>Different team members using different provider versions:</p>
-            <div class="code-block"><code># Use .terraform.lock.hcl and commit it
+    <div class="edge-case">
+      <h4>⚠️ Provider Version Mismatch</h4>
+      <p>Different team members using different provider versions:</p>
+      <div class="code-block"><code># Use .terraform.lock.hcl and commit it
 terraform providers lock -platform=darwin_amd64 -platform=linux_amd64
 
 # Upgrade providers consistently
 terraform init -upgrade</code></div>
-        </div>
+    </div>
 
-        <div class="edge-case">
-            <h4>⚠️ Circular Dependencies</h4>
-            <p>Resources that depend on each other:</p>
-            <div class="code-block"><code># Use depends_on for explicit ordering
+    <div class="edge-case">
+      <h4>⚠️ Circular Dependencies</h4>
+      <p>Resources that depend on each other:</p>
+      <div class="code-block"><code># Use depends_on for explicit ordering
 resource "aws_security_group" "a" {
   name = "sg-a"
 }
@@ -1288,13 +1289,13 @@ resource "aws_security_group_rule" "a_to_b" {
   source_security_group_id = aws_security_group.b.id
   # ...
 }</code></div>
-        </div>
+    </div>
 
-        <h2 id="migration">12. Migration and Upgrade Strategies</h2>
+    <h2 id="migration">12. Migration and Upgrade Strategies</h2>
 
-        <h3>State Migration with moved Blocks</h3>
+    <h3>State Migration with moved Blocks</h3>
 
-        <div class="code-block"><code># Rename a resource without destroy/recreate
+    <div class="code-block"><code># Rename a resource without destroy/recreate
 moved {
   from = aws_instance.web_server
   to   = aws_instance.application_server
@@ -1312,9 +1313,9 @@ moved {
   to   = aws_instance.web["primary"]
 }</code></div>
 
-        <h3>Blue-Green Infrastructure Deployment</h3>
+    <h3>Blue-Green Infrastructure Deployment</h3>
 
-        <div class="code-block"><code># Use create_before_destroy for zero-downtime
+    <div class="code-block"><code># Use create_before_destroy for zero-downtime
 resource "aws_launch_template" "app" {
   name_prefix = "app-"
   
@@ -1332,22 +1333,23 @@ terraform apply -var="color=green"
 
 # Switch traffic at load balancer level</code></div>
 
-        <h2>Key Takeaways</h2>
+    <h2>Key Takeaways</h2>
 
-        <ol>
-            <li><strong>Design for reuse:</strong> Build modules with clear interfaces and sensible defaults</li>
-            <li><strong>Isolate state:</strong> Use separate state files per environment and component</li>
-            <li><strong>Test everything:</strong> Static analysis, unit tests, and policy checks before apply</li>
-            <li><strong>Version carefully:</strong> Use semantic versioning and provide migration guides</li>
-            <li><strong>Secure by default:</strong> Least privilege IAM, encrypted state, no secrets in code</li>
-            <li><strong>Plan for scale:</strong> Multi-account, multi-region patterns from the start</li>
-        </ol>
+    <ol>
+      <li><strong>Design for reuse:</strong> Build modules with clear interfaces and sensible defaults</li>
+      <li><strong>Isolate state:</strong> Use separate state files per environment and component</li>
+      <li><strong>Test everything:</strong> Static analysis, unit tests, and policy checks before apply</li>
+      <li><strong>Version carefully:</strong> Use semantic versioning and provide migration guides</li>
+      <li><strong>Secure by default:</strong> Least privilege IAM, encrypted state, no secrets in code</li>
+      <li><strong>Plan for scale:</strong> Multi-account, multi-region patterns from the start</li>
+    </ol>
 
-        <div class="footer">
-            <p>Need help scaling your Terraform infrastructure?</p>
-            <a href="/portfolio/#contact" class="cta">Get in Touch →</a>
-        </div>
-    </article>
+    <div class="footer">
+      <p>Need help scaling your Terraform infrastructure?</p>
+      <a href="/portfolio/#contact" class="cta">Get in Touch →</a>
+    </div>
+  </article>
+  <script src="article-interactive.js"></script>
 </body>
 
 </html>

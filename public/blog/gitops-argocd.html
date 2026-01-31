@@ -2,588 +2,588 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GitOps Best Practices with ArgoCD | Chandra Koushik Kodali</title>
-    <meta name="description"
-        content="A comprehensive guide to implementing GitOps workflows for Kubernetes deployments with ArgoCD, including multi-environment strategies and zero-downtime deployments.">
-    <meta name="author" content="Chandra Koushik Kodali">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            /* Dark Theme (Default) */
-            --bg-primary: #030014;
-            --bg-gradient-start: #030014;
-            --bg-gradient-end: #0a0a1f;
-            --text-primary: #e5e7eb;
-            --text-secondary: #9ca3af;
-            --text-muted: #6b7280;
-            --accent: #8b5cf6;
-            --accent-hover: #a78bfa;
-            --border: rgba(255, 255, 255, 0.1);
-            --card-bg: rgba(255, 255, 255, 0.03);
-            --code-bg: #0d1117;
-            --heading-gradient-start: #fff;
-            --heading-gradient-end: #c4b5fd;
-            --heading-color: #fff;
-            --table-header-bg: rgba(255, 255, 255, 0.05);
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GitOps Best Practices with ArgoCD | Chandra Koushik Kodali</title>
+  <meta name="description"
+    content="A comprehensive guide to implementing GitOps workflows for Kubernetes deployments with ArgoCD, including multi-environment strategies and zero-downtime deployments.">
+  <meta name="author" content="Chandra Koushik Kodali">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* Dark Theme (Default) */
+      --bg-primary: #030014;
+      --bg-gradient-start: #030014;
+      --bg-gradient-end: #0a0a1f;
+      --text-primary: #e5e7eb;
+      --text-secondary: #9ca3af;
+      --text-muted: #6b7280;
+      --accent: #8b5cf6;
+      --accent-hover: #a78bfa;
+      --border: rgba(255, 255, 255, 0.1);
+      --card-bg: rgba(255, 255, 255, 0.03);
+      --code-bg: #0d1117;
+      --heading-gradient-start: #fff;
+      --heading-gradient-end: #c4b5fd;
+      --heading-color: #fff;
+      --table-header-bg: rgba(255, 255, 255, 0.05);
+    }
 
-        .light {
-            /* Light Theme */
-            --bg-primary: #ffffff;
-            --bg-gradient-start: #ffffff;
-            --bg-gradient-end: #f9fafb;
-            --text-primary: #1f2937;
-            --text-secondary: #4b5563;
-            --text-muted: #6b7280;
-            --accent: #7c3aed;
-            --accent-hover: #6d28d9;
-            --border: #e5e7eb;
-            --card-bg: #f3f4f6;
-            --code-bg: #1f2937;
-            --heading-gradient-start: #111827;
-            --heading-gradient-end: #374151;
-            --heading-color: #111827;
-            --table-header-bg: #f3f4f6;
-        }
+    .light {
+      /* Light Theme */
+      --bg-primary: #ffffff;
+      --bg-gradient-start: #ffffff;
+      --bg-gradient-end: #f9fafb;
+      --text-primary: #1f2937;
+      --text-secondary: #4b5563;
+      --text-muted: #6b7280;
+      --accent: #7c3aed;
+      --accent-hover: #6d28d9;
+      --border: #e5e7eb;
+      --card-bg: #f3f4f6;
+      --code-bg: #1f2937;
+      --heading-gradient-start: #111827;
+      --heading-gradient-end: #374151;
+      --heading-color: #111827;
+      --table-header-bg: #f3f4f6;
+    }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: var(--bg-primary);
-            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
-            color: var(--text-primary);
-            line-height: 1.8;
-            min-height: 100vh;
-            transition: background 0.3s, color 0.3s;
-        }
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-primary);
+      background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+      color: var(--text-primary);
+      line-height: 1.8;
+      min-height: 100vh;
+      transition: background 0.3s, color 0.3s;
+    }
 
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 60px 24px;
-            position: relative;
-        }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 60px 24px;
+      position: relative;
+    }
 
-        .nav-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 40px;
-        }
+    .nav-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 40px;
+    }
 
-        .theme-toggle {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            color: var(--text-secondary);
-            cursor: pointer;
-            padding: 8px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-        }
+    .theme-toggle {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
 
-        .theme-toggle:hover {
-            color: var(--text-primary);
-            border-color: var(--accent);
-        }
+    .theme-toggle:hover {
+      color: var(--text-primary);
+      border-color: var(--accent);
+    }
 
-        .back-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            color: var(--accent);
-            text-decoration: none;
-            font-size: 14px;
-            transition: color 0.2s;
-        }
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 14px;
+      transition: color 0.2s;
+    }
 
-        .back-link:hover {
-            color: var(--accent-hover);
-        }
+    .back-link:hover {
+      color: var(--accent-hover);
+    }
 
-        .tag {
-            display: inline-block;
-            padding: 4px 12px;
-            background: rgba(139, 92, 246, 0.15);
-            border: 1px solid rgba(139, 92, 246, 0.3);
-            border-radius: 9999px;
-            color: var(--accent);
-            font-size: 12px;
-            font-weight: 500;
-            margin-bottom: 16px;
-        }
+    .tag {
+      display: inline-block;
+      padding: 4px 12px;
+      background: rgba(139, 92, 246, 0.15);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      border-radius: 9999px;
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 500;
+      margin-bottom: 16px;
+    }
 
-        h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            background: linear-gradient(to right, var(--heading-gradient-start), var(--heading-gradient-end));
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 16px;
-            line-height: 1.2;
-            color: var(--heading-color);
-        }
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      background: linear-gradient(to right, var(--heading-gradient-start), var(--heading-gradient-end));
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 16px;
+      line-height: 1.2;
+      color: var(--heading-color);
+    }
 
-        .meta {
-            color: var(--text-muted);
-            font-size: 14px;
-            margin-bottom: 40px;
-            display: flex;
-            gap: 16px;
-            flex-wrap: wrap;
-        }
+    .meta {
+      color: var(--text-muted);
+      font-size: 14px;
+      margin-bottom: 40px;
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
 
-        h2 {
-            font-size: 1.5rem;
-            color: var(--heading-color);
-            margin: 48px 0 16px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid var(--border);
-        }
+    h2 {
+      font-size: 1.5rem;
+      color: var(--heading-color);
+      margin: 48px 0 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
 
-        h3 {
-            font-size: 1.25rem;
-            color: var(--text-primary);
-            margin: 32px 0 12px;
-        }
+    h3 {
+      font-size: 1.25rem;
+      color: var(--text-primary);
+      margin: 32px 0 12px;
+    }
 
-        h4 {
-            font-size: 1.1rem;
-            color: var(--text-secondary);
-            margin: 24px 0 10px;
-        }
+    h4 {
+      font-size: 1.1rem;
+      color: var(--text-secondary);
+      margin: 24px 0 10px;
+    }
 
-        p {
-            margin-bottom: 20px;
-            color: var(--text-secondary);
-        }
+    p {
+      margin-bottom: 20px;
+      color: var(--text-secondary);
+    }
 
-        ul,
-        ol {
-            margin: 0 0 20px 24px;
-            color: var(--text-secondary);
-        }
+    ul,
+    ol {
+      margin: 0 0 20px 24px;
+      color: var(--text-secondary);
+    }
 
-        li {
-            margin-bottom: 8px;
-        }
+    li {
+      margin-bottom: 8px;
+    }
 
-        .code-block {
-            background: #0d1117;
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 20px;
-            margin: 20px 0;
-            overflow-x: auto;
-            font-family: 'Fira Code', monospace;
-            font-size: 14px;
-            color: #c9d1d9;
-        }
+    .code-block {
+      background: #0d1117;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      margin: 20px 0;
+      overflow-x: auto;
+      font-family: 'Fira Code', monospace;
+      font-size: 14px;
+      color: #c9d1d9;
+    }
 
-        .code-block code {
-            white-space: pre;
-        }
+    .code-block code {
+      white-space: pre;
+    }
 
-        .highlight {
-            background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(6, 182, 212, 0.1));
-            border-left: 3px solid var(--accent);
-            padding: 16px 20px;
-            margin: 24px 0;
-            border-radius: 0 12px 12px 0;
-        }
+    .highlight {
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(6, 182, 212, 0.1));
+      border-left: 3px solid var(--accent);
+      padding: 16px 20px;
+      margin: 24px 0;
+      border-radius: 0 12px 12px 0;
+    }
 
-        .warning {
-            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(239, 68, 68, 0.1));
-            border-left: 3px solid #f59e0b;
-            padding: 16px 20px;
-            margin: 24px 0;
-            border-radius: 0 12px 12px 0;
-        }
+    .warning {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(239, 68, 68, 0.1));
+      border-left: 3px solid #f59e0b;
+      padding: 16px 20px;
+      margin: 24px 0;
+      border-radius: 0 12px 12px 0;
+    }
 
-        .key-point {
-            background: rgba(16, 185, 129, 0.1);
-            border: 1px solid rgba(16, 185, 129, 0.3);
-            border-radius: 12px;
-            padding: 20px;
-            margin: 24px 0;
-        }
+    .key-point {
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 12px;
+      padding: 20px;
+      margin: 24px 0;
+    }
 
-        .key-point h4 {
-            color: #10b981;
-            margin-bottom: 8px;
-            font-size: 14px;
-            margin-top: 0;
-        }
+    .key-point h4 {
+      color: #10b981;
+      margin-bottom: 8px;
+      font-size: 14px;
+      margin-top: 0;
+    }
 
-        .edge-case {
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            border-radius: 12px;
-            padding: 20px;
-            margin: 24px 0;
-        }
+    .edge-case {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      border-radius: 12px;
+      padding: 20px;
+      margin: 24px 0;
+    }
 
-        .edge-case h4 {
-            color: #ef4444;
-            margin-bottom: 8px;
-            font-size: 14px;
-            margin-top: 0;
-        }
+    .edge-case h4 {
+      color: #ef4444;
+      margin-bottom: 8px;
+      font-size: 14px;
+      margin-top: 0;
+    }
 
-        strong {
-            color: var(--heading-color);
-        }
+    strong {
+      color: var(--heading-color);
+    }
 
-        .toc {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 24px;
-            margin: 32px 0;
-        }
+    .toc {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      margin: 32px 0;
+    }
 
-        .toc h3 {
-            margin-top: 0;
-            margin-bottom: 16px;
-            color: var(--heading-color);
-        }
+    .toc h3 {
+      margin-top: 0;
+      margin-bottom: 16px;
+      color: var(--heading-color);
+    }
 
-        .toc ul {
-            margin: 0;
-            list-style: none;
-            padding-left: 0;
-        }
+    .toc ul {
+      margin: 0;
+      list-style: none;
+      padding-left: 0;
+    }
 
-        .toc li {
-            margin-bottom: 8px;
-        }
+    .toc li {
+      margin-bottom: 8px;
+    }
 
-        .toc a {
-            color: var(--accent);
-            text-decoration: none;
-        }
+    .toc a {
+      color: var(--accent);
+      text-decoration: none;
+    }
 
-        .toc a:hover {
-            text-decoration: underline;
-        }
+    .toc a:hover {
+      text-decoration: underline;
+    }
 
-        .diagram {
-            background: var(--card-bg);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 32px;
-            margin: 32px 0;
-            overflow-x: auto;
-        }
+    .diagram {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      margin: 32px 0;
+      overflow-x: auto;
+    }
 
-        .diagram-title {
-            font-size: 14px;
-            color: var(--text-muted);
-            text-align: center;
-            margin-bottom: 24px;
-            font-weight: 500;
-        }
+    .diagram-title {
+      font-size: 14px;
+      color: var(--text-muted);
+      text-align: center;
+      margin-bottom: 24px;
+      font-weight: 500;
+    }
 
-        .diagram svg {
-            display: block;
-            margin: 0 auto;
-            max-width: 100%;
-        }
+    .diagram svg {
+      display: block;
+      margin: 0 auto;
+      max-width: 100%;
+    }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-            font-size: 14px;
-        }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      font-size: 14px;
+    }
 
-        th,
-        td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid var(--border);
-        }
+    th,
+    td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
 
-        th {
-            color: var(--heading-color);
-            background: var(--table-header-bg);
-        }
+    th {
+      color: var(--heading-color);
+      background: var(--table-header-bg);
+    }
 
-        td {
-            color: var(--text-secondary);
-        }
+    td {
+      color: var(--text-secondary);
+    }
 
-        .footer {
-            margin-top: 60px;
-            padding-top: 40px;
-            border-top: 1px solid var(--border);
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 14px;
-        }
+    .footer {
+      margin-top: 60px;
+      padding-top: 40px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 14px;
+    }
 
-        .cta {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: linear-gradient(135deg, var(--accent), #06b6d4);
-            color: #fff;
-            padding: 12px 24px;
-            border-radius: 12px;
-            text-decoration: none;
-            font-weight: 500;
-            margin-top: 20px;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
+    .cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, var(--accent), #06b6d4);
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 500;
+      margin-top: 20px;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
 
-        .cta:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 40px rgba(139, 92, 246, 0.3);
-        }
-    </style>
-    <script>
-        // Check for theme preference
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme === 'light') {
-            document.documentElement.classList.add('light');
-        }
+    .cta:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 40px rgba(139, 92, 246, 0.3);
+    }
+  </style>
+  <link rel="stylesheet" href="article-interactive.css">
+  <script>
+    // Check for theme preference
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light') {
+      document.documentElement.classList.add('light');
+    }
 
-        function toggleTheme() {
-            const isLight = document.documentElement.classList.toggle('light');
-            localStorage.setItem('theme', isLight ? 'light' : 'dark');
-        }
-    </script>
+    function toggleTheme() {
+      const isLight = document.documentElement.classList.toggle('light');
+      localStorage.setItem('theme', isLight ? 'light' : 'dark');
+    }
+  </script>
 </head>
 
 <body>
-    <article class="container">
-        <div class="nav-header">
-            <a href="/portfolio/#articles" class="back-link">
-                ← Back to Portfolio
-            </a>
-            <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme">
-                <!-- Sun Icon -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="5"></circle>
-                    <line x1="12" y1="1" x2="12" y2="3"></line>
-                    <line x1="12" y1="21" x2="12" y2="23"></line>
-                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                    <line x1="1" y1="12" x2="3" y2="12"></line>
-                    <line x1="21" y1="12" x2="23" y2="12"></line>
-                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-                </svg>
-            </button>
-        </div>
+  <article class="container">
+    <div class="nav-header">
+      <a href="/portfolio/#articles" class="back-link">
+        ← Back to Portfolio
+      </a>
+      <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme">
+        <!-- Sun Icon -->
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="5"></circle>
+          <line x1="12" y1="1" x2="12" y2="3"></line>
+          <line x1="12" y1="21" x2="12" y2="23"></line>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+          <line x1="1" y1="12" x2="3" y2="12"></line>
+          <line x1="21" y1="12" x2="23" y2="12"></line>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+      </button>
+    </div>
 
-        <span class="tag">DevOps</span>
-        <h1>GitOps Best Practices with ArgoCD</h1>
+    <span class="tag">DevOps</span>
+    <h1>GitOps Best Practices with ArgoCD</h1>
 
-        <div class="meta">
-            <span>By Chandra Koushik Kodali</span>
-            <span>•</span>
-            <span>22 min read</span>
-            <span>•</span>
-            <span>January 2026</span>
-        </div>
+    <div class="meta">
+      <span>By Chandra Koushik Kodali</span>
+      <span>•</span>
+      <span>22 min read</span>
+      <span>•</span>
+      <span>January 2026</span>
+    </div>
 
-        <p>
-            GitOps has revolutionized how we deploy and manage applications on Kubernetes. By treating Git as the single
-            source of truth for declarative infrastructure and applications, teams gain unprecedented visibility,
-            auditability, and control over their deployments. In this comprehensive guide, I'll share battle-tested
-            patterns and practices for implementing GitOps with ArgoCD at scale.
-        </p>
+    <p>
+      GitOps has revolutionized how we deploy and manage applications on Kubernetes. By treating Git as the single
+      source of truth for declarative infrastructure and applications, teams gain unprecedented visibility,
+      auditability, and control over their deployments. In this comprehensive guide, I'll share battle-tested
+      patterns and practices for implementing GitOps with ArgoCD at scale.
+    </p>
 
-        <div class="toc">
-            <h3>Table of Contents</h3>
-            <ul>
-                <li><a href="#gitops-principles">1. GitOps Principles and Philosophy</a></li>
-                <li><a href="#argocd-architecture">2. ArgoCD Architecture Deep Dive</a></li>
-                <li><a href="#repository-strategies">3. Repository Structure Strategies</a></li>
-                <li><a href="#multi-environment">4. Multi-Environment Management</a></li>
-                <li><a href="#deployment-strategies">5. Deployment Strategies</a></li>
-                <li><a href="#secrets-management">6. Secrets Management</a></li>
-                <li><a href="#rbac-multitenancy">7. RBAC and Multi-Tenancy</a></li>
-                <li><a href="#sync-strategies">8. Sync Strategies and Hooks</a></li>
-                <li><a href="#rollback-recovery">9. Rollback and Disaster Recovery</a></li>
-                <li><a href="#monitoring">10. Monitoring and Alerting</a></li>
-                <li><a href="#edge-cases">11. Edge Cases and Troubleshooting</a></li>
-                <li><a href="#security-hardening">12. Security Hardening</a></li>
-            </ul>
-        </div>
+    <div class="toc">
+      <h3>Table of Contents</h3>
+      <ul>
+        <li><a href="#gitops-principles">1. GitOps Principles and Philosophy</a></li>
+        <li><a href="#argocd-architecture">2. ArgoCD Architecture Deep Dive</a></li>
+        <li><a href="#repository-strategies">3. Repository Structure Strategies</a></li>
+        <li><a href="#multi-environment">4. Multi-Environment Management</a></li>
+        <li><a href="#deployment-strategies">5. Deployment Strategies</a></li>
+        <li><a href="#secrets-management">6. Secrets Management</a></li>
+        <li><a href="#rbac-multitenancy">7. RBAC and Multi-Tenancy</a></li>
+        <li><a href="#sync-strategies">8. Sync Strategies and Hooks</a></li>
+        <li><a href="#rollback-recovery">9. Rollback and Disaster Recovery</a></li>
+        <li><a href="#monitoring">10. Monitoring and Alerting</a></li>
+        <li><a href="#edge-cases">11. Edge Cases and Troubleshooting</a></li>
+        <li><a href="#security-hardening">12. Security Hardening</a></li>
+      </ul>
+    </div>
 
-        <h2 id="gitops-principles">1. GitOps Principles and Philosophy</h2>
+    <h2 id="gitops-principles">1. GitOps Principles and Philosophy</h2>
 
-        <p>GitOps is built on four fundamental principles that differentiate it from traditional CI/CD approaches:</p>
+    <p>GitOps is built on four fundamental principles that differentiate it from traditional CI/CD approaches:</p>
 
-        <h3>Declarative Configuration</h3>
-        <p>
-            Everything about your system — infrastructure, applications, policies — is described declaratively. This
-            means you define <em>what</em> you want, not <em>how</em> to get there. Kubernetes manifests, Helm charts,
-            and Kustomize overlays are all declarative by nature.
-        </p>
+    <h3>Declarative Configuration</h3>
+    <p>
+      Everything about your system — infrastructure, applications, policies — is described declaratively. This
+      means you define <em>what</em> you want, not <em>how</em> to get there. Kubernetes manifests, Helm charts,
+      and Kustomize overlays are all declarative by nature.
+    </p>
 
-        <h3>Versioned and Immutable</h3>
-        <p>
-            The desired state is stored in Git, providing a complete version history. Every change is tracked, authored,
-            and can be audited. You can always answer "who changed what, when, and why?"
-        </p>
+    <h3>Versioned and Immutable</h3>
+    <p>
+      The desired state is stored in Git, providing a complete version history. Every change is tracked, authored,
+      and can be audited. You can always answer "who changed what, when, and why?"
+    </p>
 
-        <h3>Pulled Automatically</h3>
-        <p>
-            Unlike traditional CI/CD where changes are pushed to the cluster, GitOps agents <em>pull</em> the desired
-            state and apply it. This eliminates the need to expose cluster credentials to external systems.
-        </p>
+    <h3>Pulled Automatically</h3>
+    <p>
+      Unlike traditional CI/CD where changes are pushed to the cluster, GitOps agents <em>pull</em> the desired
+      state and apply it. This eliminates the need to expose cluster credentials to external systems.
+    </p>
 
-        <h3>Continuously Reconciled</h3>
-        <p>
-            GitOps agents continuously compare the actual state with the desired state and automatically correct any
-            drift. If someone manually changes something in the cluster (kubectl edit), the agent will revert it.
-        </p>
+    <h3>Continuously Reconciled</h3>
+    <p>
+      GitOps agents continuously compare the actual state with the desired state and automatically correct any
+      drift. If someone manually changes something in the cluster (kubectl edit), the agent will revert it.
+    </p>
 
-        <div class="highlight">
-            <strong>The GitOps Promise:</strong> If it's in Git, it's in the cluster. If it's not in Git, it's not in
-            the cluster. This simple guarantee transforms how teams think about deployments and operations.
-        </div>
+    <div class="highlight">
+      <strong>The GitOps Promise:</strong> If it's in Git, it's in the cluster. If it's not in Git, it's not in
+      the cluster. This simple guarantee transforms how teams think about deployments and operations.
+    </div>
 
-        <div class="diagram">
-            <div class="diagram-title">Figure 1: GitOps Workflow</div>
-            <img src="images/gitops-flow.png" alt="GitOps Workflow Diagram" style="width:100%; border-radius: 8px;">
-        </div>
+    <div class="diagram">
+      <div class="diagram-title">Figure 1: GitOps Workflow</div>
+      <img src="images/gitops-flow.png" alt="GitOps Workflow Diagram" style="width:100%; border-radius: 8px;">
+    </div>
 
-        <h2 id="argocd-architecture">2. ArgoCD Architecture Deep Dive</h2>
+    <h2 id="argocd-architecture">2. ArgoCD Architecture Deep Dive</h2>
 
-        <p>Understanding ArgoCD's architecture is essential for operating it effectively at scale.</p>
+    <p>Understanding ArgoCD's architecture is essential for operating it effectively at scale.</p>
 
-        <div class="diagram">
-            <div class="diagram-title">Figure 1: ArgoCD Architecture</div>
-            <svg viewBox="0 0 700 400" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                    <linearGradient id="argoGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" style="stop-color:#8b5cf6;stop-opacity:0.2" />
-                        <stop offset="100%" style="stop-color:#06b6d4;stop-opacity:0.2" />
-                    </linearGradient>
-                </defs>
+    <div class="diagram">
+      <div class="diagram-title">Figure 1: ArgoCD Architecture</div>
+      <svg viewBox="0 0 700 400" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="argoGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" style="stop-color:#8b5cf6;stop-opacity:0.2" />
+            <stop offset="100%" style="stop-color:#06b6d4;stop-opacity:0.2" />
+          </linearGradient>
+        </defs>
 
-                <!-- Git Repository -->
-                <rect x="30" y="50" width="120" height="60" rx="8" fill="#0d1117" stroke="#f59e0b" stroke-width="2" />
-                <text x="90" y="75" fill="#f59e0b" font-size="12" text-anchor="middle">Git Repository</text>
-                <text x="90" y="95" fill="#9ca3af" font-size="10" text-anchor="middle">Source of Truth</text>
+        <!-- Git Repository -->
+        <rect x="30" y="50" width="120" height="60" rx="8" fill="#0d1117" stroke="#f59e0b" stroke-width="2" />
+        <text x="90" y="75" fill="#f59e0b" font-size="12" text-anchor="middle">Git Repository</text>
+        <text x="90" y="95" fill="#9ca3af" font-size="10" text-anchor="middle">Source of Truth</text>
 
-                <!-- ArgoCD Components Box -->
-                <rect x="200" y="20" width="300" height="280" rx="12" fill="url(#argoGrad)" stroke="#8b5cf6"
-                    stroke-width="1" />
-                <text x="350" y="45" fill="#8b5cf6" font-size="14" font-weight="600" text-anchor="middle">ArgoCD
-                    Components</text>
+        <!-- ArgoCD Components Box -->
+        <rect x="200" y="20" width="300" height="280" rx="12" fill="url(#argoGrad)" stroke="#8b5cf6" stroke-width="1" />
+        <text x="350" y="45" fill="#8b5cf6" font-size="14" font-weight="600" text-anchor="middle">ArgoCD
+          Components</text>
 
-                <!-- API Server -->
-                <rect x="220" y="60" width="120" height="50" rx="8" fill="#0d1117" stroke="#8b5cf6" stroke-width="1" />
-                <text x="280" y="85" fill="#e5e7eb" font-size="11" text-anchor="middle">API Server</text>
-                <text x="280" y="100" fill="#9ca3af" font-size="9" text-anchor="middle">REST/gRPC API</text>
+        <!-- API Server -->
+        <rect x="220" y="60" width="120" height="50" rx="8" fill="#0d1117" stroke="#8b5cf6" stroke-width="1" />
+        <text x="280" y="85" fill="#e5e7eb" font-size="11" text-anchor="middle">API Server</text>
+        <text x="280" y="100" fill="#9ca3af" font-size="9" text-anchor="middle">REST/gRPC API</text>
 
-                <!-- Repo Server -->
-                <rect x="360" y="60" width="120" height="50" rx="8" fill="#0d1117" stroke="#8b5cf6" stroke-width="1" />
-                <text x="420" y="85" fill="#e5e7eb" font-size="11" text-anchor="middle">Repo Server</text>
-                <text x="420" y="100" fill="#9ca3af" font-size="9" text-anchor="middle">Manifest Generation</text>
+        <!-- Repo Server -->
+        <rect x="360" y="60" width="120" height="50" rx="8" fill="#0d1117" stroke="#8b5cf6" stroke-width="1" />
+        <text x="420" y="85" fill="#e5e7eb" font-size="11" text-anchor="middle">Repo Server</text>
+        <text x="420" y="100" fill="#9ca3af" font-size="9" text-anchor="middle">Manifest Generation</text>
 
-                <!-- Application Controller -->
-                <rect x="220" y="130" width="120" height="50" rx="8" fill="#0d1117" stroke="#8b5cf6" stroke-width="1" />
-                <text x="280" y="155" fill="#e5e7eb" font-size="11" text-anchor="middle">App Controller</text>
-                <text x="280" y="170" fill="#9ca3af" font-size="9" text-anchor="middle">Reconciliation</text>
+        <!-- Application Controller -->
+        <rect x="220" y="130" width="120" height="50" rx="8" fill="#0d1117" stroke="#8b5cf6" stroke-width="1" />
+        <text x="280" y="155" fill="#e5e7eb" font-size="11" text-anchor="middle">App Controller</text>
+        <text x="280" y="170" fill="#9ca3af" font-size="9" text-anchor="middle">Reconciliation</text>
 
-                <!-- Redis -->
-                <rect x="360" y="130" width="120" height="50" rx="8" fill="#0d1117" stroke="#8b5cf6" stroke-width="1" />
-                <text x="420" y="155" fill="#e5e7eb" font-size="11" text-anchor="middle">Redis</text>
-                <text x="420" y="170" fill="#9ca3af" font-size="9" text-anchor="middle">Cache</text>
+        <!-- Redis -->
+        <rect x="360" y="130" width="120" height="50" rx="8" fill="#0d1117" stroke="#8b5cf6" stroke-width="1" />
+        <text x="420" y="155" fill="#e5e7eb" font-size="11" text-anchor="middle">Redis</text>
+        <text x="420" y="170" fill="#9ca3af" font-size="9" text-anchor="middle">Cache</text>
 
-                <!-- Dex -->
-                <rect x="220" y="200" width="120" height="50" rx="8" fill="#0d1117" stroke="#8b5cf6" stroke-width="1" />
-                <text x="280" y="225" fill="#e5e7eb" font-size="11" text-anchor="middle">Dex</text>
-                <text x="280" y="240" fill="#9ca3af" font-size="9" text-anchor="middle">SSO/OIDC</text>
+        <!-- Dex -->
+        <rect x="220" y="200" width="120" height="50" rx="8" fill="#0d1117" stroke="#8b5cf6" stroke-width="1" />
+        <text x="280" y="225" fill="#e5e7eb" font-size="11" text-anchor="middle">Dex</text>
+        <text x="280" y="240" fill="#9ca3af" font-size="9" text-anchor="middle">SSO/OIDC</text>
 
-                <!-- Notifications -->
-                <rect x="360" y="200" width="120" height="50" rx="8" fill="#0d1117" stroke="#8b5cf6" stroke-width="1" />
-                <text x="420" y="225" fill="#e5e7eb" font-size="11" text-anchor="middle">Notifications</text>
-                <text x="420" y="240" fill="#9ca3af" font-size="9" text-anchor="middle">Alerts/Webhooks</text>
+        <!-- Notifications -->
+        <rect x="360" y="200" width="120" height="50" rx="8" fill="#0d1117" stroke="#8b5cf6" stroke-width="1" />
+        <text x="420" y="225" fill="#e5e7eb" font-size="11" text-anchor="middle">Notifications</text>
+        <text x="420" y="240" fill="#9ca3af" font-size="9" text-anchor="middle">Alerts/Webhooks</text>
 
-                <!-- Kubernetes Cluster -->
-                <rect x="550" y="50" width="120" height="60" rx="8" fill="#0d1117" stroke="#3b82f6" stroke-width="2" />
-                <text x="610" y="75" fill="#3b82f6" font-size="12" text-anchor="middle">Kubernetes</text>
-                <text x="610" y="95" fill="#9ca3af" font-size="10" text-anchor="middle">Target Cluster</text>
+        <!-- Kubernetes Cluster -->
+        <rect x="550" y="50" width="120" height="60" rx="8" fill="#0d1117" stroke="#3b82f6" stroke-width="2" />
+        <text x="610" y="75" fill="#3b82f6" font-size="12" text-anchor="middle">Kubernetes</text>
+        <text x="610" y="95" fill="#9ca3af" font-size="10" text-anchor="middle">Target Cluster</text>
 
-                <!-- Arrows -->
-                <path d="M150 80 L195 80" stroke="#6b7280" stroke-width="2" />
-                <polygon points="200,80 190,75 190,85" fill="#6b7280" />
+        <!-- Arrows -->
+        <path d="M150 80 L195 80" stroke="#6b7280" stroke-width="2" />
+        <polygon points="200,80 190,75 190,85" fill="#6b7280" />
 
-                <path d="M505 130 L545 80" stroke="#6b7280" stroke-width="2" />
-                <polygon points="550,75 540,80 545,90" fill="#6b7280" />
+        <path d="M505 130 L545 80" stroke="#6b7280" stroke-width="2" />
+        <polygon points="550,75 540,80 545,90" fill="#6b7280" />
 
-                <!-- Users -->
-                <rect x="30" y="320" width="120" height="50" rx="8" fill="#0d1117" stroke="#06b6d4" stroke-width="2" />
-                <text x="90" y="345" fill="#06b6d4" font-size="12" text-anchor="middle">Users/CI</text>
-                <text x="90" y="360" fill="#9ca3af" font-size="10" text-anchor="middle">UI/CLI/API</text>
+        <!-- Users -->
+        <rect x="30" y="320" width="120" height="50" rx="8" fill="#0d1117" stroke="#06b6d4" stroke-width="2" />
+        <text x="90" y="345" fill="#06b6d4" font-size="12" text-anchor="middle">Users/CI</text>
+        <text x="90" y="360" fill="#9ca3af" font-size="10" text-anchor="middle">UI/CLI/API</text>
 
-                <path d="M150 345 L270 270" stroke="#6b7280" stroke-width="2" stroke-dasharray="4" />
-            </svg>
-        </div>
+        <path d="M150 345 L270 270" stroke="#6b7280" stroke-width="2" stroke-dasharray="4" />
+      </svg>
+    </div>
 
-        <h3>Key Components</h3>
+    <h3>Key Components</h3>
 
-        <table>
-            <tr>
-                <th>Component</th>
-                <th>Purpose</th>
-                <th>Scaling Considerations</th>
-            </tr>
-            <tr>
-                <td>API Server</td>
-                <td>Exposes REST/gRPC API, serves UI</td>
-                <td>Stateless, can be horizontally scaled</td>
-            </tr>
-            <tr>
-                <td>Repo Server</td>
-                <td>Clones repos, generates manifests</td>
-                <td>CPU intensive, scale based on repo count</td>
-            </tr>
-            <tr>
-                <td>Application Controller</td>
-                <td>Monitors apps, performs sync</td>
-                <td>Single leader with sharding support</td>
-            </tr>
-            <tr>
-                <td>Redis</td>
-                <td>Caches manifests and app state</td>
-                <td>Consider Redis Cluster for HA</td>
-            </tr>
-            <tr>
-                <td>Dex</td>
-                <td>OIDC provider for SSO</td>
-                <td>Stateless, scale as needed</td>
-            </tr>
-        </table>
+    <table>
+      <tr>
+        <th>Component</th>
+        <th>Purpose</th>
+        <th>Scaling Considerations</th>
+      </tr>
+      <tr>
+        <td>API Server</td>
+        <td>Exposes REST/gRPC API, serves UI</td>
+        <td>Stateless, can be horizontally scaled</td>
+      </tr>
+      <tr>
+        <td>Repo Server</td>
+        <td>Clones repos, generates manifests</td>
+        <td>CPU intensive, scale based on repo count</td>
+      </tr>
+      <tr>
+        <td>Application Controller</td>
+        <td>Monitors apps, performs sync</td>
+        <td>Single leader with sharding support</td>
+      </tr>
+      <tr>
+        <td>Redis</td>
+        <td>Caches manifests and app state</td>
+        <td>Consider Redis Cluster for HA</td>
+      </tr>
+      <tr>
+        <td>Dex</td>
+        <td>OIDC provider for SSO</td>
+        <td>Stateless, scale as needed</td>
+      </tr>
+    </table>
 
-        <h2 id="repository-strategies">3. Repository Structure Strategies</h2>
+    <h2 id="repository-strategies">3. Repository Structure Strategies</h2>
 
-        <p>How you structure your GitOps repositories significantly impacts maintainability and scalability.</p>
+    <p>How you structure your GitOps repositories significantly impacts maintainability and scalability.</p>
 
-        <h3>Mono-Repository Approach</h3>
-        <p>All applications and environments in a single repository:</p>
+    <h3>Mono-Repository Approach</h3>
+    <p>All applications and environments in a single repository:</p>
 
-        <div class="code-block"><code>gitops-repo/
+    <div class="code-block"><code>gitops-repo/
 ├── apps/
 │   ├── team-a/
 │   │   ├── app-1/
@@ -606,20 +606,20 @@
     ├── staging/
     └── prod/</code></div>
 
-        <div class="key-point">
-            <h4>💡 When to Use Mono-Repo</h4>
-            <ul>
-                <li>Smaller organizations (&lt;50 developers)</li>
-                <li>Strong code review culture</li>
-                <li>Need atomic changes across multiple apps</li>
-                <li>Centralized platform team</li>
-            </ul>
-        </div>
+    <div class="key-point">
+      <h4>💡 When to Use Mono-Repo</h4>
+      <ul>
+        <li>Smaller organizations (&lt;50 developers)</li>
+        <li>Strong code review culture</li>
+        <li>Need atomic changes across multiple apps</li>
+        <li>Centralized platform team</li>
+      </ul>
+    </div>
 
-        <h3>Multi-Repository Approach</h3>
-        <p>Separate repositories per team or application:</p>
+    <h3>Multi-Repository Approach</h3>
+    <p>Separate repositories per team or application:</p>
 
-        <div class="code-block"><code># Team-owned repos
+    <div class="code-block"><code># Team-owned repos
 team-a-apps/
 ├── app-1/
 └── app-2/
@@ -639,28 +639,28 @@ cluster-config/
 ├── staging/
 └── prod/</code></div>
 
-        <div class="key-point">
-            <h4>💡 When to Use Multi-Repo</h4>
-            <ul>
-                <li>Larger organizations with autonomous teams</li>
-                <li>Different access control requirements</li>
-                <li>Independent release cycles</li>
-                <li>Compliance requirements for separation</li>
-            </ul>
-        </div>
+    <div class="key-point">
+      <h4>💡 When to Use Multi-Repo</h4>
+      <ul>
+        <li>Larger organizations with autonomous teams</li>
+        <li>Different access control requirements</li>
+        <li>Independent release cycles</li>
+        <li>Compliance requirements for separation</li>
+      </ul>
+    </div>
 
-        <h2 id="multi-environment">4. Multi-Environment Management</h2>
+    <h2 id="multi-environment">4. Multi-Environment Management</h2>
 
-        <p>Managing multiple environments (dev, staging, prod) requires careful design to balance consistency with
-            flexibility.</p>
+    <p>Managing multiple environments (dev, staging, prod) requires careful design to balance consistency with
+      flexibility.</p>
 
-        <h3>Using Kustomize Overlays</h3>
-        <p>
-            Kustomize allows you to define a base configuration and patch it for different environments. This keeps your
-            YAML DRY (Don't Repeat Yourself):
-        </p>
+    <h3>Using Kustomize Overlays</h3>
+    <p>
+      Kustomize allows you to define a base configuration and patch it for different environments. This keeps your
+      YAML DRY (Don't Repeat Yourself):
+    </p>
 
-        <div class="code-block"><code># base/kustomization.yaml
+    <div class="code-block"><code># base/kustomization.yaml
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
@@ -690,11 +690,11 @@ metadata:
 spec:
   replicas: 5</code></div>
 
-        <h3>ApplicationSet for Multi-Environment</h3>
+    <h3>ApplicationSet for Multi-Environment</h3>
 
-        <p>Use ApplicationSets to generate applications across environments:</p>
+    <p>Use ApplicationSets to generate applications across environments:</p>
 
-        <div class="code-block"><code>apiVersion: argoproj.io/v1alpha1
+    <div class="code-block"><code>apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
   name: myapp
@@ -729,12 +729,12 @@ spec:
           prune: true
           selfHeal: true</code></div>
 
-        <h2 id="deployment-strategies">5. Deployment Strategies</h2>
+    <h2 id="deployment-strategies">5. Deployment Strategies</h2>
 
-        <h3>Blue-Green Deployments</h3>
-        <p>Run two identical environments, switch traffic atomically:</p>
+    <h3>Blue-Green Deployments</h3>
+    <p>Run two identical environments, switch traffic atomically:</p>
 
-        <div class="code-block"><code>apiVersion: argoproj.io/v1alpha1
+    <div class="code-block"><code>apiVersion: argoproj.io/v1alpha1
 kind: Rollout
 metadata:
   name: myapp
@@ -766,10 +766,10 @@ spec:
           ports:
             - containerPort: 8080</code></div>
 
-        <h3>Canary Deployments</h3>
-        <p>Gradually shift traffic to the new version:</p>
+    <h3>Canary Deployments</h3>
+    <p>Gradually shift traffic to the new version:</p>
 
-        <div class="code-block"><code>apiVersion: argoproj.io/v1alpha1
+    <div class="code-block"><code>apiVersion: argoproj.io/v1alpha1
 kind: Rollout
 metadata:
   name: myapp
@@ -802,14 +802,14 @@ spec:
             routes:
               - primary</code></div>
 
-        <h2 id="secrets-management">6. Secrets Management</h2>
+    <h2 id="secrets-management">6. Secrets Management</h2>
 
-        <p>Never store secrets in Git. Here are secure alternatives:</p>
+    <p>Never store secrets in Git. Here are secure alternatives:</p>
 
-        <h3>Sealed Secrets</h3>
-        <p>Encrypt secrets that can only be decrypted by the cluster:</p>
+    <h3>Sealed Secrets</h3>
+    <p>Encrypt secrets that can only be decrypted by the cluster:</p>
 
-        <div class="code-block"><code># Create a sealed secret
+    <div class="code-block"><code># Create a sealed secret
 kubeseal --format yaml &lt; secret.yaml &gt; sealed-secret.yaml
 
 # The sealed secret can be safely committed to Git
@@ -822,10 +822,10 @@ spec:
   encryptedData:
     password: AgBy8hCi...</code></div>
 
-        <h3>External Secrets Operator</h3>
-        <p>Sync secrets from external providers (Vault, AWS Secrets Manager):</p>
+    <h3>External Secrets Operator</h3>
+    <p>Sync secrets from external providers (Vault, AWS Secrets Manager):</p>
 
-        <div class="code-block"><code>apiVersion: external-secrets.io/v1beta1
+    <div class="code-block"><code>apiVersion: external-secrets.io/v1beta1
 kind: ExternalSecret
 metadata:
   name: db-credentials
@@ -847,10 +847,10 @@ spec:
         key: secret/data/myapp/db
         property: password</code></div>
 
-        <h3>SOPS with Age/GPG</h3>
-        <p>Encrypt specific values within YAML files:</p>
+    <h3>SOPS with Age/GPG</h3>
+    <p>Encrypt specific values within YAML files:</p>
 
-        <div class="code-block"><code># .sops.yaml
+    <div class="code-block"><code># .sops.yaml
 creation_rules:
   - path_regex: .*secrets.*\.yaml$
     encrypted_regex: ^(data|stringData)$
@@ -867,12 +867,12 @@ sops:
   age:
     - recipient: age1...</code></div>
 
-        <h2 id="rbac-multitenancy">7. RBAC and Multi-Tenancy</h2>
+    <h2 id="rbac-multitenancy">7. RBAC and Multi-Tenancy</h2>
 
-        <h3>AppProjects for Isolation</h3>
-        <p>Use AppProjects to isolate teams:</p>
+    <h3>AppProjects for Isolation</h3>
+    <p>Use AppProjects to isolate teams:</p>
 
-        <div class="code-block"><code>apiVersion: argoproj.io/v1alpha1
+    <div class="code-block"><code>apiVersion: argoproj.io/v1alpha1
 kind: AppProject
 metadata:
   name: team-alpha
@@ -903,9 +903,9 @@ spec:
       groups:
         - team-alpha-devs</code></div>
 
-        <h3>SSO Integration with Dex</h3>
+    <h3>SSO Integration with Dex</h3>
 
-        <div class="code-block"><code>apiVersion: v1
+    <div class="code-block"><code>apiVersion: v1
 kind: ConfigMap
 metadata:
   name: argocd-cm
@@ -927,12 +927,12 @@ data:
             - email
             - groups</code></div>
 
-        <h2 id="sync-strategies">8. Sync Strategies and Hooks</h2>
+    <h2 id="sync-strategies">8. Sync Strategies and Hooks</h2>
 
-        <h3>Sync Waves</h3>
-        <p>Control the order of resource creation:</p>
+    <h3>Sync Waves</h3>
+    <p>Control the order of resource creation:</p>
 
-        <div class="code-block"><code># Namespace first (wave -1)
+    <div class="code-block"><code># Namespace first (wave -1)
 apiVersion: v1
 kind: Namespace
 metadata:
@@ -956,10 +956,10 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "1"</code></div>
 
-        <h3>Resource Hooks</h3>
-        <p>Run jobs at specific phases:</p>
+    <h3>Resource Hooks</h3>
+    <p>Run jobs at specific phases:</p>
 
-        <div class="code-block"><code>apiVersion: batch/v1
+    <div class="code-block"><code>apiVersion: batch/v1
 kind: Job
 metadata:
   name: db-migration
@@ -976,11 +976,11 @@ spec:
       restartPolicy: Never
   backoffLimit: 3</code></div>
 
-        <h2 id="rollback-recovery">9. Rollback and Disaster Recovery</h2>
+    <h2 id="rollback-recovery">9. Rollback and Disaster Recovery</h2>
 
-        <h3>Quick Rollback</h3>
+    <h3>Quick Rollback</h3>
 
-        <div class="code-block"><code># CLI rollback
+    <div class="code-block"><code># CLI rollback
 argocd app rollback myapp --revision 5
 
 # Or simply revert the Git commit
@@ -989,9 +989,9 @@ git push origin main
 
 # ArgoCD will automatically sync to the reverted state</code></div>
 
-        <h3>Backup ArgoCD</h3>
+    <h3>Backup ArgoCD</h3>
 
-        <div class="code-block"><code># Export all ArgoCD resources
+    <div class="code-block"><code># Export all ArgoCD resources
 argocd admin export > argocd-backup.yaml
 
 # Backup specific applications
@@ -1001,42 +1001,42 @@ kubectl get appprojects -n argocd -o yaml > projects-backup.yaml
 # Restore
 kubectl apply -f argocd-backup.yaml</code></div>
 
-        <h2 id="monitoring">10. Monitoring and Alerting</h2>
+    <h2 id="monitoring">10. Monitoring and Alerting</h2>
 
-        <h3>Prometheus Metrics</h3>
-        <p>ArgoCD exposes metrics at /metrics. Key metrics to monitor:</p>
+    <h3>Prometheus Metrics</h3>
+    <p>ArgoCD exposes metrics at /metrics. Key metrics to monitor:</p>
 
-        <table>
-            <tr>
-                <th>Metric</th>
-                <th>Description</th>
-                <th>Alert Threshold</th>
-            </tr>
-            <tr>
-                <td>argocd_app_info</td>
-                <td>Application health/sync status</td>
-                <td>health_status != "Healthy"</td>
-            </tr>
-            <tr>
-                <td>argocd_app_sync_total</td>
-                <td>Sync operations count</td>
-                <td>Failures > 5/hour</td>
-            </tr>
-            <tr>
-                <td>argocd_cluster_api_resource_objects</td>
-                <td>Cluster resource count</td>
-                <td>> 10000</td>
-            </tr>
-            <tr>
-                <td>argocd_git_request_duration</td>
-                <td>Git operation latency</td>
-                <td>> 30s</td>
-            </tr>
-        </table>
+    <table>
+      <tr>
+        <th>Metric</th>
+        <th>Description</th>
+        <th>Alert Threshold</th>
+      </tr>
+      <tr>
+        <td>argocd_app_info</td>
+        <td>Application health/sync status</td>
+        <td>health_status != "Healthy"</td>
+      </tr>
+      <tr>
+        <td>argocd_app_sync_total</td>
+        <td>Sync operations count</td>
+        <td>Failures > 5/hour</td>
+      </tr>
+      <tr>
+        <td>argocd_cluster_api_resource_objects</td>
+        <td>Cluster resource count</td>
+        <td>> 10000</td>
+      </tr>
+      <tr>
+        <td>argocd_git_request_duration</td>
+        <td>Git operation latency</td>
+        <td>> 30s</td>
+      </tr>
+    </table>
 
-        <h3>Notification Configuration</h3>
+    <h3>Notification Configuration</h3>
 
-        <div class="code-block"><code>apiVersion: v1
+    <div class="code-block"><code>apiVersion: v1
 kind: ConfigMap
 metadata:
   name: argocd-notifications-cm
@@ -1053,30 +1053,30 @@ data:
     - when: app.status.operationState.phase in ['Error', 'Failed']
       send: [app-sync-failed]</code></div>
 
-        <h2 id="edge-cases">11. Edge Cases and Troubleshooting</h2>
+    <h2 id="edge-cases">11. Edge Cases and Troubleshooting</h2>
 
-        <div class="edge-case">
-            <h4>⚠️ Application Stuck in "Progressing"</h4>
-            <p>Common causes and solutions:</p>
-            <ul>
-                <li><strong>Image pull failures:</strong> Check imagePullSecrets and registry access</li>
-                <li><strong>Resource limits:</strong> Pod can't be scheduled due to insufficient resources</li>
-                <li><strong>PVC pending:</strong> StorageClass doesn't exist or no capacity</li>
-                <li><strong>Readiness probe failing:</strong> Application not responding on health endpoint</li>
-            </ul>
-            <div class="code-block"><code>kubectl describe pod &lt;pod-name&gt; -n &lt;namespace&gt;
+    <div class="edge-case">
+      <h4>⚠️ Application Stuck in "Progressing"</h4>
+      <p>Common causes and solutions:</p>
+      <ul>
+        <li><strong>Image pull failures:</strong> Check imagePullSecrets and registry access</li>
+        <li><strong>Resource limits:</strong> Pod can't be scheduled due to insufficient resources</li>
+        <li><strong>PVC pending:</strong> StorageClass doesn't exist or no capacity</li>
+        <li><strong>Readiness probe failing:</strong> Application not responding on health endpoint</li>
+      </ul>
+      <div class="code-block"><code>kubectl describe pod &lt;pod-name&gt; -n &lt;namespace&gt;
 kubectl logs &lt;pod-name&gt; -n &lt;namespace&gt;
 argocd app get &lt;app-name&gt; --show-operation</code></div>
-        </div>
+    </div>
 
-        <div class="edge-case">
-            <h4>⚠️ Sync Loops / Continuous Reconciliation</h4>
-            <p>ArgoCD keeps syncing even when nothing changed:</p>
-            <ul>
-                <li>Resource has fields that are constantly mutated (e.g., annotations by other controllers)</li>
-                <li>Solution: Use ignoreDifferences in Application spec</li>
-            </ul>
-            <div class="code-block"><code>spec:
+    <div class="edge-case">
+      <h4>⚠️ Sync Loops / Continuous Reconciliation</h4>
+      <p>ArgoCD keeps syncing even when nothing changed:</p>
+      <ul>
+        <li>Resource has fields that are constantly mutated (e.g., annotations by other controllers)</li>
+        <li>Solution: Use ignoreDifferences in Application spec</li>
+      </ul>
+      <div class="code-block"><code>spec:
   ignoreDifferences:
     - group: apps
       kind: Deployment
@@ -1086,12 +1086,12 @@ argocd app get &lt;app-name&gt; --show-operation</code></div>
       kind: Service
       jqPathExpressions:
         - .metadata.annotations["field.cattle.io/publicEndpoints"]</code></div>
-        </div>
+    </div>
 
-        <div class="edge-case">
-            <h4>⚠️ Out of Sync with Helm Hooks</h4>
-            <p>Helm hooks can cause permanent OutOfSync status:</p>
-            <div class="code-block"><code>spec:
+    <div class="edge-case">
+      <h4>⚠️ Out of Sync with Helm Hooks</h4>
+      <p>Helm hooks can cause permanent OutOfSync status:</p>
+      <div class="code-block"><code>spec:
   source:
     helm:
       skipCrds: true
@@ -1099,13 +1099,13 @@ argocd app get &lt;app-name&gt; --show-operation</code></div>
     syncOptions:
       - RespectIgnoreDifferences=true
       - ApplyOutOfSyncOnly=true</code></div>
-        </div>
+    </div>
 
-        <h2 id="security-hardening">12. Security Hardening</h2>
+    <h2 id="security-hardening">12. Security Hardening</h2>
 
-        <h3>Network Policies</h3>
+    <h3>Network Policies</h3>
 
-        <div class="code-block"><code>apiVersion: networking.k8s.io/v1
+    <div class="code-block"><code>apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: argocd-server
@@ -1134,9 +1134,9 @@ spec:
         - protocol: TCP
           port: 8081</code></div>
 
-        <h3>Audit Logging</h3>
+    <h3>Audit Logging</h3>
 
-        <div class="code-block"><code>apiVersion: v1
+    <div class="code-block"><code>apiVersion: v1
 kind: ConfigMap
 metadata:
   name: argocd-cm
@@ -1144,23 +1144,24 @@ data:
   server.audit.enabled: "true"
   server.audit.log.format: json</code></div>
 
-        <h2>Key Takeaways</h2>
+    <h2>Key Takeaways</h2>
 
-        <ol>
-            <li><strong>Git is the source of truth:</strong> Every change must go through Git for auditability</li>
-            <li><strong>Start simple:</strong> Begin with basic sync, add complexity (Rollouts, hooks) as needed</li>
-            <li><strong>Secure secrets:</strong> Never commit plaintext secrets; use Sealed Secrets or External Secrets
-            </li>
-            <li><strong>Use AppProjects:</strong> Isolate teams with proper RBAC boundaries</li>
-            <li><strong>Monitor aggressively:</strong> Set up alerts for sync failures and application health</li>
-            <li><strong>Test rollbacks:</strong> Regularly practice rollback procedures in non-prod environments</li>
-        </ol>
+    <ol>
+      <li><strong>Git is the source of truth:</strong> Every change must go through Git for auditability</li>
+      <li><strong>Start simple:</strong> Begin with basic sync, add complexity (Rollouts, hooks) as needed</li>
+      <li><strong>Secure secrets:</strong> Never commit plaintext secrets; use Sealed Secrets or External Secrets
+      </li>
+      <li><strong>Use AppProjects:</strong> Isolate teams with proper RBAC boundaries</li>
+      <li><strong>Monitor aggressively:</strong> Set up alerts for sync failures and application health</li>
+      <li><strong>Test rollbacks:</strong> Regularly practice rollback procedures in non-prod environments</li>
+    </ol>
 
-        <div class="footer">
-            <p>Ready to implement GitOps in your organization?</p>
-            <a href="/portfolio/#contact" class="cta">Let's Discuss →</a>
-        </div>
-    </article>
+    <div class="footer">
+      <p>Ready to implement GitOps in your organization?</p>
+      <a href="/portfolio/#contact" class="cta">Let's Discuss →</a>
+    </div>
+  </article>
+  <script src="article-interactive.js"></script>
 </body>
 
 </html>

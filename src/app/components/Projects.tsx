@@ -1,5 +1,5 @@
 import { motion, useMotionValue, useSpring, useTransform } from 'motion/react';
-import { Container, Cloud, GitBranch, Shield, Gauge, Network, ArrowRight, ExternalLink } from 'lucide-react';
+import { Container, Cloud, GitBranch, Shield, Gauge, Network, ExternalLink } from 'lucide-react';
 import { Section } from './Section';
 import { useRef, useState } from 'react';
 
@@ -123,9 +123,8 @@ function ProjectCard({
       className={`group relative ${isFeatured ? 'md:col-span-2 lg:col-span-2' : ''}`}
     >
       <motion.div
-        className={`relative h-full rounded-2xl border border-border/50 bg-card/50 backdrop-blur-xl p-8 overflow-hidden transition-colors duration-500 ${
-          isFeatured ? 'bg-gradient-to-br from-primary/5 via-card/50 to-transparent' : ''
-        }`}
+        className={`relative h-full rounded-2xl border border-border/50 bg-card/50 backdrop-blur-xl p-8 overflow-hidden transition-colors duration-500 ${isFeatured ? 'bg-gradient-to-br from-primary/5 via-card/50 to-transparent' : ''
+          }`}
         whileHover={{
           borderColor: 'hsl(var(--primary) / 0.3)',
           boxShadow: '0 25px 50px -12px hsl(var(--primary) / 0.15)',
@@ -197,19 +196,7 @@ function ProjectCard({
             ))}
           </div>
 
-          {/* Action */}
-          <motion.div
-            className="flex items-center gap-2 text-sm font-medium text-muted-foreground group-hover:text-primary transition-colors cursor-pointer"
-            whileHover={{ x: 5 }}
-          >
-            <span>View Details</span>
-            <motion.div
-              initial={{ x: 0, opacity: 0.5 }}
-              whileHover={{ x: 5, opacity: 1 }}
-            >
-              <ArrowRight className="w-4 h-4" />
-            </motion.div>
-          </motion.div>
+
         </div>
       </motion.div>
     </motion.div>

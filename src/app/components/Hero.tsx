@@ -251,8 +251,8 @@ export function Hero() {
             transition={{ duration: 0.8, delay: 1, ease: [0.22, 1, 0.36, 1] }}
             className="flex flex-col sm:flex-row gap-4 w-full justify-center pt-4"
           >
-            <MagneticButton href="#projects" variant="primary">
-              View Projects
+            <MagneticButton href="#articles" variant="primary">
+              View Articles
               <ArrowRight className="ml-2 h-4 w-4" />
             </MagneticButton>
             <MagneticButton href="#contact" variant="secondary">
