@@ -215,7 +215,7 @@ export const experiences: Experience[] = [
             'Achieved 99.9% uptime SLA for production quote engine while deploying 3-4x weekly',
             'Reduced over-provisioned compute by 25% ($8K/month savings) using VPA recommendations',
         ],
-        technologies: ['AWS EKS', 'Terraform', 'ArgoCD', 'Azure DevOps', 'Kubernetes'],
+        technologies: ['AWS (EKS, EC2, VPC, IAM, RDS, S3, CloudWatch)', 'Terraform', 'Azure DevOps (YAML)', 'PowerShell', 'Docker', 'Kubernetes'],
     },
     {
         title: 'AWS DevOps Engineer',
@@ -230,7 +230,7 @@ export const experiences: Experience[] = [
             'Implemented auto-scaling policies achieving 20% reduction in compute costs ($12K/month)',
             'Developed Python Lambda functions reducing data sync failures from 12/month to 0',
         ],
-        technologies: ['AWS', 'CloudFormation', 'Python', 'Ansible', 'GitHub Actions'],
+        technologies: ['AWS (EC2, VPC, RDS, S3, IAM, Lambda, CloudWatch)', 'CloudFormation', 'Docker', 'GitHub Actions', 'AWS CodePipeline', 'Python', 'Ansible'],
     },
     {
         title: 'DevOps Engineer',
@@ -245,7 +245,7 @@ export const experiences: Experience[] = [
             'Reduced MTTR for data ingestion issues from 2 hours to 15 minutes with Datadog monitoring',
             'Established environment parity eliminating "works on my machine" failures by 80%',
         ],
-        technologies: ['Azure', 'Terraform', 'Jenkins', 'Datadog', 'Docker'],
+        technologies: ['Azure Data Factory', 'Azure SQL', 'Jenkins', 'Git', 'Python', 'Terraform', 'Ansible', 'Docker', 'Kubernetes', 'Helm'],
     },
     {
         title: 'Software Development Engineer (Java)',
@@ -260,6 +260,6 @@ export const experiences: Experience[] = [
             'Led containerization of legacy Java monoliths to Docker-based microservices on AWS ECS',
             'Achieved 85% code coverage with JUnit/Mockito, reducing production defects by 30%',
         ],
-        technologies: ['Java 11', 'Spring Boot', 'PostgreSQL', 'Redis', 'AWS ECS', 'Docker'],
+        technologies: ['Java 11', 'Spring Boot', 'PostgreSQL', 'Redis', 'AWS ECS', 'Docker', 'JUnit'],
     },
 ];
