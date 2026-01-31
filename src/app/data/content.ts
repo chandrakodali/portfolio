@@ -23,16 +23,14 @@ export const siteConfig = {
     // About section
     about: {
         yearsExperience: '5+',
-        certifications: 3,
+        certifications: 0,
         companies: ['Country Financial', 'Humana', 'Deloitte', 'J.P. Morgan'],
         education: {
             degree: 'MS Computer Science',
             school: 'Southern Illinois University',
         },
         certificationsList: [
-            { name: 'AWS Solutions Architect', color: 'from-orange-500 to-amber-500' },
-            { name: 'Kubernetes Administrator (CKA)', color: 'from-blue-500 to-cyan-500' },
-            { name: 'Azure DevOps AZ-400', color: 'from-blue-600 to-violet-500' },
+            // Note: Add certifications here when earned
         ],
     },
 };
@@ -250,7 +248,7 @@ export const experiences: Experience[] = [
         technologies: ['Azure', 'Terraform', 'Jenkins', 'Datadog', 'Docker'],
     },
     {
-        title: 'Software Development Engineer',
+        title: 'Software Development Engineer (Java)',
         company: 'JPMorgan Chase & Co.',
         location: 'Hyderabad, India',
         period: 'Apr 2020 - Jul 2022',
