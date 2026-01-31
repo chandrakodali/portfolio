@@ -698,12 +698,12 @@ resource "aws_instance" "example" {
     </table>
 
     <div class="lesson-learned">
-      <h4>Cost Analysis Drove Our Decision</h4>
+      <h4>Cost Analysis Example</h4>
       <p>
-        At 150+ workspaces, Terraform Cloud would cost us $18K+/year. We built a S3 backend with
-        DynamoDB locking for $240/year. The trade-off: we built our own run history tracking and
-        approval workflows in GitHub Actions. If your team is small and values collaboration UI,
-        TFC's free tier (5 users) is excellent.
+        At scale, Terraform Cloud can become expensive (starts at $20/workspace/month). Many organizations
+        opt for S3 backend with DynamoDB locking which costs under $300/year for most deployments. The trade-off:
+        you need to build your own run history tracking and approval workflows. If your team is small and
+        values collaboration UI, TFC's free tier (5 users) is excellent.
       </p>
     </div>
 
@@ -1093,8 +1093,9 @@ module "eks" {
     <h2 id="day2-operations">6. Day 2 Operations at Scale</h2>
 
     <p>
-      Setup is day one. The real work begins when you're managing 500+ resources across 50+ workspaces.
-      This section covers the operational patterns that tutorials never mention.
+      Setup is day one. The real work begins when you're managing infrastructure across Dev/Staging/Prod
+      environments at organizations like insurance and healthcare companies. This section covers
+      the operational patterns that tutorials never mention.
     </p>
 
     <h3>State Drift Detection and Remediation</h3>
@@ -1659,9 +1660,10 @@ resource "aws_autoscaling_schedule" "scale_up_morning" {
     <div class="lesson-learned">
       <h4>Cost Savings from Parking</h4>
       <p>
-        Implementing parking routines for our 3 non-prod EKS clusters saved <strong>$4,200/month</strong>
-        (65% reduction). The clusters run 50 hours/week instead of 168. Key insight: start conservative
-        (parking enabled) and let teams request exceptions, not the other way around.
+        Implementing parking routines for non-prod EKS clusters can save <strong>50-65%</strong> on
+        compute costs. The clusters run during working hours (50 hours/week) instead of 24/7 (168 hours).
+        Key insight: start conservative (parking enabled) and let teams request exceptions, not the
+        other way around.
       </p>
     </div>
 

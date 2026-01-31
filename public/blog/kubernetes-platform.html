@@ -416,7 +416,8 @@
 
         <p>
             In this comprehensive guide, I'll walk you through how to design and build a production-ready
-            Kubernetes platform that has served 200+ engineers across multiple organizations. We'll cover
+            Kubernetes platform based on experience at organizations like Country Financial, Humana, and JPMorgan. We'll
+            cover
             architecture decisions, implementation details, edge cases you'll encounter, and lessons learned
             from real-world deployments.
         </p>
@@ -1164,9 +1165,9 @@ vault write auth/kubernetes/role/team-alpha \
         <h2 id="day2-operations">8. Day 2 Operations at Scale</h2>
 
         <p>
-            Setup is day one. Managing a platform serving 200+ developers with production workloads
-            is where the real challenges emerge. This section covers the operational patterns we
-            developed after the initial deployment.
+            Setup is day one. Managing a platform serving multiple development teams with production workloads
+            is where the real challenges emerge. This section covers the operational patterns developed
+            after the initial deployment.
         </p>
 
         <h3>EKS Cluster Upgrades (The Right Way)</h3>
@@ -1447,15 +1448,17 @@ spec:
         </table>
 
         <div class="real-world">
-            <h4>Our FinOps Results</h4>
+            <h4>FinOps Approach: What Works</h4>
             <p>
-                Implementing these practices across our 3 EKS clusters saved <strong>$8,400/month</strong>:
+                At Country Financial, implementing VPA recommendations reduced over-provisioned compute by
+                25% (<strong>$8K/month savings</strong>). Key strategies that deliver results:
             </p>
             <ul>
-                <li>Showback visibility: $3,200 (teams self-corrected)</li>
-                <li>VPA right-sizing: $2,100 (reduced over-requests)</li>
-                <li>Spot instances for dev/CI: $2,400 (70% discount)</li>
-                <li>Environment parking: $700 (dev off-hours shutdown)</li>
+                <li>VPA right-sizing: Optimize resource requests based on actual usage patterns</li>
+                <li>Showback visibility: Let teams see their estimated costs (often drives 20-40% voluntary reductions)
+                </li>
+                <li>Spot instances for dev/CI: 60-70% discount for interruptible workloads</li>
+                <li>Auto-scaling policies: Scale down during off-hours</li>
             </ul>
         </div>
 

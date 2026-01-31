@@ -619,8 +619,8 @@
     <div class="lesson-learned">
       <h4>Decision Context</h4>
       <p>
-        We chose ArgoCD because our platform serves 200+ developers who need self-service visibility into
-        deployments. The built-in UI reduced support tickets by 40% — developers could see sync status without
+        We chose ArgoCD because our platform serves multiple development teams who need self-service visibility into
+        deployments. The built-in UI reduced support tickets significantly — developers could see sync status without
         asking the platform team. For teams with strong GitOps maturity and no UI requirements, Flux's
         lighter footprint may be preferable.
       </p>
@@ -1257,18 +1257,18 @@ spec:
     <h2 id="day2-operations">10. Day 2 Operations at Scale</h2>
 
     <p>
-      Setup is easy. Operating ArgoCD at scale with 500+ applications across multiple clusters is where
+      Setup is easy. Operating ArgoCD at scale across multiple environments (Dev/Staging/Prod) is where
       the real engineering challenges emerge. This section covers what the tutorials don't tell you.
     </p>
 
-    <h3>Managing ArgoCD at 1000+ Applications</h3>
+    <h3>Scaling ArgoCD for Multi-Environment Deployments</h3>
 
     <p>At scale, ArgoCD's default configuration becomes a bottleneck. Here's how we scaled:</p>
 
     <h4>Application Controller Sharding</h4>
     <p>
-      The application controller watches all applications by default. At 500+ apps, reconciliation
-      becomes slow. Enable sharding to distribute the load:
+      The application controller watches all applications by default. As your app count grows, reconciliation
+      can become slow. Enable sharding to distribute the load:
     </p>
 
     <div class="code-block"><code># argocd-cm ConfigMap
@@ -1314,12 +1314,12 @@ spec:
               value: "50"    # Default is 0 (unlimited)</code></div>
 
     <div class="lesson-learned">
-      <h4>Lesson Learned: Rate Limiting Saved Our Git Provider</h4>
+      <h4>Lesson Learned: Rate Limiting Considerations</h4>
       <p>
-        With 800+ applications polling Git every 3 minutes, we were hitting GitHub's API rate limits
-        and causing intermittent 403 errors. We implemented: (1) webhook-based sync instead of polling,
-        (2) increased refresh interval to 5 minutes, and (3) added Redis caching. The result:
-        <strong>90% reduction in Git API calls</strong>.
+        With many applications polling Git frequently, you can hit API rate limits
+        causing intermittent 403 errors. Solutions include: (1) webhook-based sync instead of polling,
+        (2) increased refresh interval to 5 minutes, and (3) proper caching. This can result in a
+        <strong>significant reduction in Git API calls</strong>.
       </p>
     </div>
 
