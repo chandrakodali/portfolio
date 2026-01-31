@@ -159,7 +159,7 @@ export function About() {
                   >
                     Chandra Koushik Kodali
                   </motion.h3>
-                  <p className="text-primary font-medium">Platform Engineer</p>
+                  <p className="text-primary font-medium">DevOps / Cloud Engineer</p>
                 </div>
                 <motion.div
                   className="flex items-center text-muted-foreground text-sm px-3 py-1.5 rounded-full bg-secondary/50"
@@ -213,11 +213,11 @@ export function About() {
               <Award className="w-8 h-8" />
             </motion.div>
             <div className="text-4xl font-bold mb-1">
-              <AnimatedCounter value={3} />
+              5+
             </div>
-            <p className="text-sm text-muted-foreground">Key Certifications</p>
+            <p className="text-sm text-muted-foreground">Years Experience</p>
             <div className="mt-3 text-xs text-muted-foreground">
-              CKA • AWS SAA • Terraform
+              AWS • Azure • K8s
             </div>
           </TiltCard>
 

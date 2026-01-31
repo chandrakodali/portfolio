@@ -4,62 +4,66 @@ import { Section } from './Section';
 
 const experiences = [
   {
-    company: 'Country Financial',
-    role: 'Platform Engineer',
+    company: 'Country Financial Group',
+    role: 'AWS DevOps Engineer',
     location: 'Bloomington, IL',
     period: 'Apr 2025 - Present',
     current: true,
-    description: 'Designing Kubernetes platforms supporting 20+ microservices and optimizing deployment workflows.',
+    description: 'Modernizing customer-facing insurance infrastructure serving quote systems and policy management platforms.',
     achievements: [
-      'Designed Kubernetes platform supporting 20+ microservices',
-      'Reduced deployment time from 45 min to under 20 min (-55%)',
-      'Achieved 35% reduction in mean time to detect issues',
-      'Zero downtime during Kubernetes version upgrades',
+      'Refactored Terraform monoliths into versioned modules reducing deployment time by 40%',
+      'Migrated manual EKS deployments to ArgoCD-managed GitOps, reducing incidents by 60%',
+      'Integrated AWS Secrets Manager with External Secrets Operator for PCI-DSS compliance',
+      'Achieved 99.9% uptime SLA while deploying 3-4x weekly',
+      'Reduced compute costs by 25% ($8K/month savings) using VPA recommendations',
     ],
     color: 'from-blue-500/20 to-cyan-500/20',
   },
   {
     company: 'Humana',
-    role: 'DevOps Engineer',
+    role: 'AWS DevOps Engineer',
     location: 'Chicago, IL',
     period: 'Apr 2024 - Mar 2025',
     current: false,
-    description: 'Managed HIPAA-compliant cloud infrastructure and automated CI/CD pipelines for PHI data systems.',
+    description: 'Supported MyHumana member portal and provider verification systems handling PHI for 5M+ members.',
     achievements: [
-      'Managed HIPAA-compliant cloud infrastructure for PHI data',
-      'Reduced failed deployments by 25% through automation',
-      'Built monitoring dashboards improving issue detection',
-      'Cut environment setup time by 30%',
+      'Deployed HIPAA-compliant infrastructure with AES-256 encrypted RDS instances',
+      'Architected CI/CD pipelines reducing deployment time by 60%',
+      'Established CloudWatch Alarms and PagerDuty escalation, improving MTTR by 35%',
+      'Implemented auto-scaling policies achieving 20% reduction in compute costs ($12K/month)',
+      'Developed Python Lambda functions reducing data sync failures from 12/month to 0',
     ],
     color: 'from-emerald-500/20 to-teal-500/20',
   },
   {
-    company: 'Deloitte',
-    role: 'DevOps Consultant',
+    company: 'Deloitte (Sherwin-Williams)',
+    role: 'DevOps Engineer',
     location: 'Hyderabad, India',
     period: 'Aug 2022 - Dec 2023',
     current: false,
-    description: 'Delivered DevOps transformation solutions for enterprise clients, focusing on cost optimization and velocity.',
+    description: 'Embedded with Sherwin-Williams manufacturing analytics team to modernize supply chain data pipelines.',
     achievements: [
-      'Delivered DevOps solutions for enterprise clients',
-      'Increased deployment frequency 2-3x with CI/CD pipelines',
-      'Achieved 20-30% infrastructure cost optimization',
-      'Led architecture discussions for target-state DevOps',
+      'Engineered Azure Data Factory pipelines processing 500GB+ daily manufacturing data',
+      'Managed Jenkins-based release workflows for ColorSnap digital platform',
+      'Standardized Azure resource provisioning using Terraform modules',
+      'Reduced MTTR for data ingestion issues from 2 hours to 15 minutes with Datadog',
+      'Established environment parity eliminating deployment failures by 80%',
     ],
     color: 'from-violet-500/20 to-purple-500/20',
   },
   {
-    company: 'J.P. Morgan',
-    role: 'Cloud Engineer',
-    location: 'India (Remote)',
+    company: 'JPMorgan Chase & Co.',
+    role: 'Software Development Engineer (Java)',
+    location: 'Hyderabad, India',
     period: 'Apr 2020 - Jul 2022',
     current: false,
-    description: 'Engineered high-availability AWS infrastructure and automated build workflows.',
+    description: 'Developed backend systems for internal trade reconciliation platform processing equity and fixed-income transactions.',
     achievements: [
-      'Engineered AWS infrastructure with 99.9%+ uptime SLA',
-      'Reduced incident response time by 25%',
-      'Automated build and deployment workflows',
-      'Received Appreciation Award for cloud excellence',
+      'Developed RESTful APIs processing 10M+ daily equity and fixed-income transactions',
+      'Reduced p95 query latency from 800ms to 120ms through database optimization',
+      'Implemented Redis caching reducing database load by 40%',
+      'Led containerization of legacy Java monoliths to Docker-based microservices on AWS ECS',
+      'Achieved 85% code coverage with JUnit/Mockito, reducing production defects by 30%',
     ],
     color: 'from-orange-500/20 to-amber-500/20',
   },
@@ -84,9 +88,8 @@ function TimelineCard({
         delay: index * 0.15,
         ease: [0.22, 1, 0.36, 1],
       }}
-      className={`relative grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 ${
-        index !== experiences.length - 1 ? 'pb-16' : ''
-      }`}
+      className={`relative grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 ${index !== experiences.length - 1 ? 'pb-16' : ''
+        }`}
     >
       {/* Timeline line */}
       {index !== experiences.length - 1 && (
@@ -109,9 +112,8 @@ function TimelineCard({
         transition={{ type: 'spring', stiffness: 300, delay: 0.2 }}
       >
         <div
-          className={`w-4 h-4 rounded-full border-2 border-background ${
-            exp.current ? 'bg-primary' : 'bg-muted-foreground'
-          }`}
+          className={`w-4 h-4 rounded-full border-2 border-background ${exp.current ? 'bg-primary' : 'bg-muted-foreground'
+            }`}
         >
           {exp.current && (
             <motion.div
@@ -132,9 +134,8 @@ function TimelineCard({
         >
           {/* Card */}
           <div
-            className={`relative rounded-2xl border border-border/50 bg-card/50 backdrop-blur-xl p-6 overflow-hidden transition-all duration-500 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 ${
-              isEven ? 'lg:ml-auto' : ''
-            }`}
+            className={`relative rounded-2xl border border-border/50 bg-card/50 backdrop-blur-xl p-6 overflow-hidden transition-all duration-500 hover:border-primary/30 hover:shadow-xl hover:shadow-primary/5 ${isEven ? 'lg:ml-auto' : ''
+              }`}
           >
             {/* Gradient background */}
             <div
@@ -144,9 +145,8 @@ function TimelineCard({
             <div className="relative z-10">
               {/* Period badge */}
               <div
-                className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-secondary/50 text-sm text-muted-foreground mb-4 ${
-                  isEven ? 'lg:ml-auto lg:flex lg:w-fit' : ''
-                }`}
+                className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-secondary/50 text-sm text-muted-foreground mb-4 ${isEven ? 'lg:ml-auto lg:flex lg:w-fit' : ''
+                  }`}
               >
                 <Calendar className="w-3.5 h-3.5" />
                 {exp.period}

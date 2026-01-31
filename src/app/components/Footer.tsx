@@ -47,7 +47,7 @@ export function Footer() {
               <span className="font-bold text-xl tracking-tight">CK</span>
             </motion.a>
             <p className="text-muted-foreground max-w-md mb-6">
-              Platform Engineer & Cloud Architect specializing in building scalable
+              DevOps / Cloud Engineer specializing in building scalable
               infrastructure and enabling developer velocity.
             </p>
             <div className="flex items-center gap-3">

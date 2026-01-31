@@ -1,6 +1,6 @@
 import { motion, useScroll, useTransform, useMotionValue, useSpring } from 'motion/react';
 import { Github, Linkedin, Mail, ArrowRight } from 'lucide-react';
-import { useRef, useEffect } from 'react';
+import { useRef } from 'react';
 
 // Text reveal animation component
 function TextReveal({ children, delay = 0 }: { children: string; delay?: number }) {
@@ -238,7 +238,7 @@ export function Hero() {
               transition={{ duration: 0.8, delay: 0.8, ease: [0.22, 1, 0.36, 1] }}
               className="mx-auto max-w-[800px] text-muted-foreground text-[length:var(--font-xl)] leading-relaxed font-light"
             >
-              Platform Engineer & Cloud Architect specialized in building scalable
+              DevOps / Cloud Engineer specializing in building scalable
               infrastructure, automating CI/CD pipelines, and enabling developer
               velocity.
             </motion.p>
