@@ -168,29 +168,41 @@ h2:hover::before {
 }
 
 /* ===== Highlight Boxes with Hover ===== */
-.highlight, .warning, .key-point, .edge-case {
+.highlight,
+.warning,
+.key-point,
+.edge-case {
     position: relative;
     transition: all 0.3s ease;
     overflow: hidden;
 }
 
-.highlight::before, .warning::before, .key-point::before, .edge-case::before {
+.highlight::before,
+.warning::before,
+.key-point::before,
+.edge-case::before {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.05) 50%, transparent 60%);
+    background: linear-gradient(135deg, transparent 40%, rgba(255, 255, 255, 0.05) 50%, transparent 60%);
     transform: translateX(-100%);
     transition: transform 0.6s ease;
 }
 
-.highlight:hover::before, .warning:hover::before, .key-point:hover::before, .edge-case:hover::before {
+.highlight:hover::before,
+.warning:hover::before,
+.key-point:hover::before,
+.edge-case:hover::before {
     transform: translateX(100%);
 }
 
-.highlight:hover, .warning:hover, .key-point:hover, .edge-case:hover {
+.highlight:hover,
+.warning:hover,
+.key-point:hover,
+.edge-case:hover {
     transform: translateX(5px);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
@@ -338,8 +350,15 @@ a:not(.back-link):not(.toc a):not(.cta) {
 }
 
 @keyframes tagPulse {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(var(--accent-rgb, 6, 182, 212), 0.4); }
-    50% { box-shadow: 0 0 20px 5px rgba(var(--accent-rgb, 6, 182, 212), 0.1); }
+
+    0%,
+    100% {
+        box-shadow: 0 0 0 0 rgba(var(--accent-rgb, 6, 182, 212), 0.4);
+    }
+
+    50% {
+        box-shadow: 0 0 20px 5px rgba(var(--accent-rgb, 6, 182, 212), 0.1);
+    }
 }
 
 /* ===== CTA Button Enhanced ===== */
@@ -355,7 +374,7 @@ a:not(.back-link):not(.toc a):not(.cta) {
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
     transition: left 0.5s ease;
 }
 
@@ -425,11 +444,11 @@ a:not(.back-link):not(.toc a):not(.cta) {
         width: 44px;
         height: 44px;
     }
-    
+
     .reading-stats {
         display: none;
     }
-    
+
     h2::before {
         display: none;
     }
@@ -437,6 +456,7 @@ a:not(.back-link):not(.toc a):not(.cta) {
 
 /* ===== Print Styles ===== */
 @media print {
+
     .reading-progress,
     .back-to-top,
     .reading-stats,
@@ -444,12 +464,129 @@ a:not(.back-link):not(.toc a):not(.cta) {
     .copy-code-btn {
         display: none !important;
     }
-    
+
     .code-block {
         max-height: none !important;
     }
-    
+
     .code-block::after {
         display: none !important;
     }
+}
+
+/* ===== Real-World Experience Callout ===== */
+.real-world {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    border-left: 4px solid #6366f1;
+    border-radius: 0 12px 12px 0;
+    padding: 20px;
+    margin: 24px 0;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.real-world::before {
+    content: '💼';
+    position: absolute;
+    top: -12px;
+    left: 16px;
+    background: var(--bg-primary, #030014);
+    padding: 0 8px;
+    font-size: 20px;
+}
+
+.real-world h4 {
+    color: #818cf8;
+    margin-bottom: 10px;
+    margin-top: 0;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.real-world:hover {
+    transform: translateX(5px);
+    box-shadow: 0 10px 30px rgba(99, 102, 241, 0.2);
+}
+
+/* ===== Lessons Learned Callout ===== */
+.lesson-learned {
+    background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), rgba(245, 158, 11, 0.1));
+    border: 1px solid rgba(251, 191, 36, 0.3);
+    border-left: 4px solid #fbbf24;
+    border-radius: 0 12px 12px 0;
+    padding: 20px;
+    margin: 24px 0;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.lesson-learned::before {
+    content: '💡';
+    position: absolute;
+    top: -12px;
+    left: 16px;
+    background: var(--bg-primary, #030014);
+    padding: 0 8px;
+    font-size: 20px;
+}
+
+.lesson-learned h4 {
+    color: #fbbf24;
+    margin-bottom: 10px;
+    margin-top: 0;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.lesson-learned:hover {
+    transform: translateX(5px);
+    box-shadow: 0 10px 30px rgba(251, 191, 36, 0.2);
+}
+
+/* ===== GitHub Repo Link ===== */
+.github-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: linear-gradient(135deg, rgba(36, 41, 47, 0.8), rgba(22, 27, 34, 0.9));
+    border: 1px solid rgba(139, 148, 158, 0.3);
+    border-radius: 12px;
+    padding: 16px 24px;
+    margin: 24px 0;
+    text-decoration: none;
+    color: #e6edf3;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.github-link:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    border-color: #58a6ff;
+}
+
+.github-link svg {
+    width: 24px;
+    height: 24px;
+    fill: currentColor;
+}
+
+.github-link span {
+    display: flex;
+    flex-direction: column;
+}
+
+.github-link .repo-name {
+    font-size: 14px;
+    color: #58a6ff;
+}
+
+.github-link .repo-desc {
+    font-size: 12px;
+    color: #8b949e;
 }

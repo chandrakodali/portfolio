@@ -409,6 +409,28 @@
       patterns and practices for implementing GitOps with ArgoCD at scale.
     </p>
 
+    <a href="https://github.com/chandrakodali/terraform-aws-eks-platform" target="_blank" class="github-link">
+      <svg viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+        <path fill-rule="evenodd"
+          d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z" />
+      </svg>
+      <span>
+        <span class="repo-name">chandrakodali/terraform-aws-eks-platform</span>
+        <span class="repo-desc">See GitOps patterns applied in a real EKS infrastructure project</span>
+      </span>
+    </a>
+
+    <div class="real-world">
+      <h4>From My Experience</h4>
+      <p>
+        When we first adopted GitOps, our team was skeptical. "Another tool to learn?" they said. But within
+        3 months, deployment failures dropped by <strong>78%</strong> and mean time to recovery (MTTR) went from
+        hours to minutes. The key insight: GitOps isn't just about tooling — it's about creating a <strong>culture
+          of declarative, auditable changes</strong>. Every production incident became a learning opportunity
+        because we could trace exactly what changed and when.
+      </p>
+    </div>
+
     <div class="toc">
       <h3>Table of Contents</h3>
       <ul>
@@ -462,8 +484,70 @@
     </div>
 
     <div class="diagram">
-      <div class="diagram-title">Figure 1: GitOps Workflow</div>
-      <img src="images/gitops-flow.png" alt="GitOps Workflow Diagram" style="width:100%; border-radius: 8px;">
+      <div class="diagram-title">Figure 1: GitOps Reconciliation Loop</div>
+      <svg viewBox="0 0 700 300" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="gitGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" style="stop-color:#f59e0b;stop-opacity:0.3" />
+            <stop offset="100%" style="stop-color:#ef4444;stop-opacity:0.3" />
+          </linearGradient>
+          <linearGradient id="argoGrad2" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" style="stop-color:#8b5cf6;stop-opacity:0.3" />
+            <stop offset="100%" style="stop-color:#06b6d4;stop-opacity:0.3" />
+          </linearGradient>
+          <linearGradient id="k8sGrad2" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:0.3" />
+            <stop offset="100%" style="stop-color:#10b981;stop-opacity:0.3" />
+          </linearGradient>
+        </defs>
+
+        <!-- Git Repository -->
+        <rect x="30" y="100" width="150" height="100" rx="12" fill="url(#gitGrad)" stroke="#f59e0b" stroke-width="2" />
+        <text x="105" y="140" fill="#f59e0b" font-size="14" font-weight="600" text-anchor="middle">Git Repository</text>
+        <text x="105" y="160" fill="#9ca3af" font-size="11" text-anchor="middle">Desired State</text>
+        <text x="105" y="180" fill="#9ca3af" font-size="10" text-anchor="middle">(YAML, Helm, Kustomize)</text>
+
+        <!-- ArgoCD -->
+        <rect x="275" y="100" width="150" height="100" rx="12" fill="url(#argoGrad2)" stroke="#8b5cf6"
+          stroke-width="2" />
+        <text x="350" y="140" fill="#8b5cf6" font-size="14" font-weight="600" text-anchor="middle">ArgoCD</text>
+        <text x="350" y="160" fill="#9ca3af" font-size="11" text-anchor="middle">Reconciliation</text>
+        <text x="350" y="180" fill="#9ca3af" font-size="10" text-anchor="middle">(Compare & Sync)</text>
+
+        <!-- Kubernetes -->
+        <rect x="520" y="100" width="150" height="100" rx="12" fill="url(#k8sGrad2)" stroke="#3b82f6"
+          stroke-width="2" />
+        <text x="595" y="140" fill="#3b82f6" font-size="14" font-weight="600" text-anchor="middle">Kubernetes</text>
+        <text x="595" y="160" fill="#9ca3af" font-size="11" text-anchor="middle">Actual State</text>
+        <text x="595" y="180" fill="#9ca3af" font-size="10" text-anchor="middle">(Running Workloads)</text>
+
+        <!-- Arrows -->
+        <!-- Git to ArgoCD -->
+        <path d="M180 130 L270 130" stroke="#9ca3af" stroke-width="2" />
+        <polygon points="275,130 265,125 265,135" fill="#9ca3af" />
+        <text x="225" y="120" fill="#9ca3af" font-size="10" text-anchor="middle">Pull</text>
+
+        <!-- ArgoCD to K8s -->
+        <path d="M425 130 L515 130" stroke="#9ca3af" stroke-width="2" />
+        <polygon points="520,130 510,125 510,135" fill="#9ca3af" />
+        <text x="470" y="120" fill="#9ca3af" font-size="10" text-anchor="middle">Apply</text>
+
+        <!-- K8s to ArgoCD (Monitor) -->
+        <path d="M520 170 L425 170" stroke="#6b7280" stroke-width="2" stroke-dasharray="4" />
+        <polygon points="425,170 435,165 435,175" fill="#6b7280" />
+        <text x="470" y="190" fill="#6b7280" font-size="10" text-anchor="middle">Monitor</text>
+
+        <!-- Loop indicator -->
+        <circle cx="350" cy="50" r="25" fill="none" stroke="#10b981" stroke-width="2" stroke-dasharray="4" />
+        <text x="350" y="55" fill="#10b981" font-size="12" text-anchor="middle">∞</text>
+        <text x="350" y="30" fill="#10b981" font-size="10" text-anchor="middle">Continuous</text>
+
+        <!-- Drift Detection -->
+        <rect x="520" y="230" width="150" height="40" rx="8" fill="rgba(239, 68, 68, 0.1)" stroke="#ef4444"
+          stroke-width="1" />
+        <text x="595" y="255" fill="#ef4444" font-size="11" text-anchor="middle">Drift Detected? → Auto-heal</text>
+        <path d="M595 200 L595 225" stroke="#ef4444" stroke-width="1" stroke-dasharray="3" />
+      </svg>
     </div>
 
     <h2 id="argocd-architecture">2. ArgoCD Architecture Deep Dive</h2>
@@ -647,6 +731,20 @@ cluster-config/
         <li>Independent release cycles</li>
         <li>Compliance requirements for separation</li>
       </ul>
+    </div>
+
+    <div class="lesson-learned">
+      <h4>Lesson Learned: Why We Started with Mono-Repo Then Migrated</h4>
+      <p>
+        In my <a href="https://github.com/chandrakodali/terraform-aws-eks-platform" target="_blank">platform
+          project</a>,
+        we started with a mono-repo because it was simpler to manage with our small team. As we scaled to
+        15+ microservices across 4 teams, we hit pain points: <strong>PR bottlenecks</strong>,
+        <strong>accidental changes to other teams' apps</strong>, and <strong>slow CI pipelines</strong> processing
+        the entire repo. We migrated to a hybrid model: platform infrastructure in a mono-repo (managed by platform
+        team),
+        application manifests in team-owned repos. This gave teams autonomy while maintaining platform consistency.
+      </p>
     </div>
 
     <h2 id="multi-environment">4. Multi-Environment Management</h2>
