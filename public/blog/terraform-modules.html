@@ -450,17 +450,20 @@
       <h3>Table of Contents</h3>
       <ul>
         <li><a href="#module-principles">1. Module Design Principles</a></li>
-        <li><a href="#module-structure">2. Module Structure and Organization</a></li>
-        <li><a href="#composition-patterns">3. Composition Patterns</a></li>
-        <li><a href="#state-management">4. State Management Strategies</a></li>
-        <li><a href="#testing">5. Testing and Validation</a></li>
-        <li><a href="#cicd">6. CI/CD Pipeline Integration</a></li>
-        <li><a href="#versioning">7. Versioning and Release Management</a></li>
-        <li><a href="#security">8. Security Best Practices</a></li>
-        <li><a href="#cost-optimization">9. Cost Optimization Patterns</a></li>
-        <li><a href="#multi-account">10. Multi-Account and Multi-Region</a></li>
-        <li><a href="#edge-cases">11. Edge Cases and Troubleshooting</a></li>
-        <li><a href="#migration">12. Migration and Upgrade Strategies</a></li>
+        <li><a href="#architecture-decisions">2. Architecture Decision Records</a></li>
+        <li><a href="#module-structure">3. Module Structure and Organization</a></li>
+        <li><a href="#composition-patterns">4. Composition Patterns</a></li>
+        <li><a href="#state-management">5. State Management Strategies</a></li>
+        <li><a href="#day2-operations">6. Day 2 Operations at Scale</a></li>
+        <li><a href="#testing">7. Testing and Validation</a></li>
+        <li><a href="#cicd">8. CI/CD Pipeline Integration</a></li>
+        <li><a href="#versioning">9. Versioning and Release Management</a></li>
+        <li><a href="#security">10. Security Best Practices</a></li>
+        <li><a href="#cost-optimization">11. Cost Optimization (FinOps)</a></li>
+        <li><a href="#anti-patterns">12. Anti-Patterns to Avoid</a></li>
+        <li><a href="#multi-account">13. Multi-Account and Multi-Region</a></li>
+        <li><a href="#edge-cases">14. Edge Cases and Troubleshooting</a></li>
+        <li><a href="#migration">15. Migration and Upgrade Strategies</a></li>
       </ul>
     </div>
 
@@ -531,7 +534,180 @@ resource "aws_instance" "example" {
       understand exactly what the module does without reading the implementation.
     </div>
 
-    <h2 id="module-structure">2. Module Structure and Organization</h2>
+    <h2 id="architecture-decisions">2. Architecture Decision Records</h2>
+
+    <p>
+      Before diving into patterns, let's document why we chose Terraform and specific architectural
+      decisions. These ADRs explain the trade-offs that shaped our approach.
+    </p>
+
+    <h3>ADR 1: Why Terraform Over CDK/Pulumi?</h3>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Criteria</th>
+          <th>Terraform (HCL)</th>
+          <th>AWS CDK</th>
+          <th>Pulumi</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Language</strong></td>
+          <td>HCL (domain-specific)</td>
+          <td>TypeScript/Python/Java</td>
+          <td>TypeScript/Python/Go</td>
+        </tr>
+        <tr>
+          <td><strong>State management</strong></td>
+          <td>Mature, battle-tested</td>
+          <td>CloudFormation stacks</td>
+          <td>Pulumi Cloud or S3</td>
+        </tr>
+        <tr>
+          <td><strong>Multi-cloud</strong></td>
+          <td>✅ First-class support</td>
+          <td>❌ AWS only</td>
+          <td>✅ Good support</td>
+        </tr>
+        <tr>
+          <td><strong>Provider ecosystem</strong></td>
+          <td>4000+ providers</td>
+          <td>AWS + limited L3</td>
+          <td>Good, growing</td>
+        </tr>
+        <tr>
+          <td><strong>Debugging</strong></td>
+          <td>Declarative (plan-driven)</td>
+          <td>Imperative (stack traces)</td>
+          <td>Imperative</td>
+        </tr>
+        <tr>
+          <td><strong>Team adoption</strong></td>
+          <td>Lower barrier (HCL simple)</td>
+          <td>Requires dev skills</td>
+          <td>Requires dev skills</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="lesson-learned">
+      <h4>Our Decision</h4>
+      <p>
+        We chose Terraform because: (1) our team includes ops engineers who aren't software developers,
+        (2) we deploy across AWS, Azure, and 15+ SaaS providers, and (3) when something breaks at 2 AM,
+        <code>terraform plan</code> output is easier to reason about than a TypeScript stack trace.
+        For pure-AWS shops with strong dev teams, CDK is a valid choice.
+      </p>
+    </div>
+
+    <h3>ADR 2: Monorepo vs. Polyrepo for Modules?</h3>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Aspect</th>
+          <th>Monorepo</th>
+          <th>Polyrepo</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Versioning</strong></td>
+          <td>Atomic cross-module changes</td>
+          <td>Independent semver per module</td>
+        </tr>
+        <tr>
+          <td><strong>Terraform Registry</strong></td>
+          <td>❌ Can't publish (one repo = one module)</td>
+          <td>✅ Each module gets registry entry</td>
+        </tr>
+        <tr>
+          <td><strong>CI complexity</strong></td>
+          <td>Single pipeline, path filtering</td>
+          <td>Multiple pipelines</td>
+        </tr>
+        <tr>
+          <td><strong>Discoverability</strong></td>
+          <td>All modules in one place</td>
+          <td>Need catalog/docs site</td>
+        </tr>
+        <tr>
+          <td><strong>Access control</strong></td>
+          <td>Same permissions for all modules</td>
+          <td>Per-module permissions possible</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="real-world">
+      <h4>From Our EKS Platform</h4>
+      <p>
+        In <a href="https://github.com/chandrakodali/terraform-aws-eks-platform"
+          target="_blank">terraform-aws-eks-platform</a>,
+        we use a monorepo with <code>module/</code> subdirectories because: (1) VPC, EKS, and IAM modules
+        are tightly coupled and change together, (2) we don't publish to the public registry, and
+        (3) testing cross-module integrations is simpler. For enterprise with 50+ modules consumed by
+        different teams, polyrepo makes more sense.
+      </p>
+    </div>
+
+    <h3>ADR 3: Remote State (S3) vs. Terraform Cloud?</h3>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Factor</th>
+          <th>S3 + DynamoDB</th>
+          <th>Terraform Cloud</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Cost (100 workspaces)</strong></td>
+          <td>~$20/month</td>
+          <td>~$700-2000/month</td>
+        </tr>
+        <tr>
+          <td><strong>Setup complexity</strong></td>
+          <td>DIY (bucket, table, policies)</td>
+          <td>Managed SaaS</td>
+        </tr>
+        <tr>
+          <td><strong>UI/collaboration</strong></td>
+          <td>None built-in</td>
+          <td>Excellent</td>
+        </tr>
+        <tr>
+          <td><strong>Policy as Code</strong></td>
+          <td>OPA/Conftest (DIY)</td>
+          <td>Sentinel (built-in)</td>
+        </tr>
+        <tr>
+          <td><strong>Private runners</strong></td>
+          <td>Your CI/CD</td>
+          <td>TFC agents or managed</td>
+        </tr>
+        <tr>
+          <td><strong>Data residency</strong></td>
+          <td>Your AWS region</td>
+          <td>HashiCorp regions</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="lesson-learned">
+      <h4>Cost Analysis Drove Our Decision</h4>
+      <p>
+        At 150+ workspaces, Terraform Cloud would cost us $18K+/year. We built a S3 backend with
+        DynamoDB locking for $240/year. The trade-off: we built our own run history tracking and
+        approval workflows in GitHub Actions. If your team is small and values collaboration UI,
+        TFC's free tier (5 users) is excellent.
+      </p>
+    </div>
+
+    <h2 id="module-structure">3. Module Structure and Organization</h2>
 
     <div class="diagram">
       <div class="diagram-title">Figure 1: Terraform Module Composition</div>
@@ -914,7 +1090,183 @@ module "eks" {
       relationships clearly and consider using explicit data sources instead for better discoverability.
     </div>
 
-    <h2 id="testing">5. Testing and Validation</h2>
+    <h2 id="day2-operations">6. Day 2 Operations at Scale</h2>
+
+    <p>
+      Setup is day one. The real work begins when you're managing 500+ resources across 50+ workspaces.
+      This section covers the operational patterns that tutorials never mention.
+    </p>
+
+    <h3>State Drift Detection and Remediation</h3>
+
+    <p>
+      State drift happens when resources are modified outside Terraform (console clicks, CLI, other tools).
+      Here's how we detect and remediate:
+    </p>
+
+    <h4>Automated Drift Detection Pipeline</h4>
+
+    <div class="code-block"><code># .github/workflows/drift-detection.yml
+name: Terraform Drift Detection
+on:
+  schedule:
+    - cron: '0 6 * * *'  # Daily at 6 AM
+
+jobs:
+  detect-drift:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        environment: [dev, staging, prod]
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Terraform Plan (Drift Check)
+        run: |
+          cd environments/${{ matrix.environment }}
+          terraform init -backend-config="env/${{ matrix.environment }}.hcl"
+          terraform plan -detailed-exitcode -out=plan.out 2>&1 | tee plan.txt
+          EXIT_CODE=$?
+          if [ $EXIT_CODE -eq 2 ]; then
+            echo "DRIFT_DETECTED=true" >> $GITHUB_ENV
+          fi
+      
+      - name: Alert on Drift
+        if: env.DRIFT_DETECTED == 'true'
+        uses: slackapi/slack-github-action@v1
+        with:
+          payload: |
+            {"text": "🚨 Drift detected in ${{ matrix.environment }}! Review plan output."}</code></div>
+
+    <div class="lesson-learned">
+      <h4>Drift Remediation Strategies</h4>
+      <p>
+        Not all drift should be auto-remediated. We categorize drift and handle it differently:
+      </p>
+      <ul>
+        <li><strong>Harmless drift</strong> (tags added by AWS): Add to <code>lifecycle { ignore_changes }</code></li>
+        <li><strong>Expected drift</strong> (autoscaling): Use data sources to read current state</li>
+        <li><strong>Unauthorized drift</strong> (console changes): Alert + automatic terraform apply</li>
+        <li><strong>Critical drift</strong> (security groups): Alert + require manual approval</li>
+      </ul>
+    </div>
+
+    <h3>Breaking Module Changes (v1 → v2 Migration)</h3>
+
+    <p>
+      Module upgrades with breaking changes are the #1 cause of Terraform outages. Here's how we handle them:
+    </p>
+
+    <h4>Using Moved Blocks (Terraform 1.1+)</h4>
+
+    <div class="code-block"><code># When renaming resources within a module
+moved {
+  from = aws_iam_role.eks_cluster
+  to   = aws_iam_role.cluster
+}
+
+moved {
+  from = module.eks_nodes
+  to   = module.node_groups
+}
+
+# For count → for_each migrations
+moved {
+  from = aws_subnet.private[0]
+  to   = aws_subnet.private["us-east-1a"]
+}</code></div>
+
+    <h4>Blue-Green Module Migration</h4>
+
+    <div class="code-block"><code># Step 1: Deploy new module alongside old
+module "eks_v1" {
+  source = "./modules/eks-v1"
+  # ... existing config
+}
+
+module "eks_v2" {
+  source = "./modules/eks-v2"
+  # ... new config (separate cluster initially)
+}
+
+# Step 2: Migrate workloads to v2 cluster
+# Step 3: Remove v1 module
+# Step 4: Rename v2 to primary</code></div>
+
+    <div class="real-world">
+      <h4>From My Experience</h4>
+      <p>
+        When we migrated our EKS module from <code>count</code> to <code>for_each</code> for node groups,
+        we had a choice: force resource recreation (downtime) or use <code>moved</code> blocks. We created
+        120 moved blocks to preserve every resource. The migration took <strong>0 seconds of downtime</strong>
+        — Terraform just updated the state addressing.
+      </p>
+    </div>
+
+    <h3>Terraform at 10,000+ Resources</h3>
+
+    <p>Beyond a few thousand resources, Terraform performance degrades. Here's how to scale:</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Problem</th>
+          <th>Symptom</th>
+          <th>Solution</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Slow refresh</strong></td>
+          <td>Plan takes 10+ minutes</td>
+          <td><code>-refresh=false</code> for known-clean states</td>
+        </tr>
+        <tr>
+          <td><strong>API throttling</strong></td>
+          <td>Rate limit errors</td>
+          <td><code>-parallelism=5</code> (default is 10)</td>
+        </tr>
+        <tr>
+          <td><strong>Large state files</strong></td>
+          <td>State download timeouts</td>
+          <td>Split into smaller state files</td>
+        </tr>
+        <tr>
+          <td><strong>Memory exhaustion</strong></td>
+          <td>OOM kills</td>
+          <td>Use <code>-target</code> for large changes</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h4>State Splitting Strategy</h4>
+
+    <div class="code-block"><code># Before: Monolithic state
+environments/prod/
+  └── main.tf  # 3000 resources, 15 minute plans
+
+# After: Split by blast radius
+environments/prod/
+  ├── networking/      # VPC, subnets, NAT (rarely changes)
+  │   └── main.tf      # 50 resources
+  ├── compute/         # EKS, node groups
+  │   └── main.tf      # 200 resources  
+  ├── data/            # RDS, ElastiCache
+  │   └── main.tf      # 30 resources
+  └── applications/    # Helm releases, K8s resources
+      └── main.tf      # 2700 resources, but isolated</code></div>
+
+    <div class="lesson-learned">
+      <h4>The 1000-Resource Rule</h4>
+      <p>
+        We learned this the hard way: <strong>never exceed 1000 resources per state file</strong>.
+        Beyond that, plan times become unusable, and the blast radius of a corrupted state is too large.
+        Our EKS platform uses 6 separate state files per environment, even though they could technically
+        be one.
+      </p>
+    </div>
+
+    <h2 id="testing">7. Testing and Validation</h2>
 
     <h3>Static Analysis</h3>
     <p>
@@ -1274,7 +1626,149 @@ resource "aws_autoscaling_group" "main" {
   # ...
 }</code></div>
 
-    <h2 id="multi-account">10. Multi-Account and Multi-Region</h2>
+    <h3>Parking Routines (Dev Environment Shutdown)</h3>
+
+    <p>
+      Non-production environments running 24/7 waste money. Implement automated parking to shut
+      down dev/staging outside business hours:
+    </p>
+
+    <div class="code-block"><code># modules/scheduled-actions/main.tf
+resource "aws_autoscaling_schedule" "scale_down_night" {
+  scheduled_action_name  = "scale-down-night"
+  autoscaling_group_name = var.asg_name
+  
+  # Scale to 0 at 7 PM (weekdays)
+  recurrence = "0 19 * * MON-FRI"
+  min_size   = 0
+  max_size   = 0
+  desired_capacity = 0
+}
+
+resource "aws_autoscaling_schedule" "scale_up_morning" {
+  scheduled_action_name  = "scale-up-morning"
+  autoscaling_group_name = var.asg_name
+  
+  # Scale back at 7 AM (weekdays)
+  recurrence = "0 7 * * MON-FRI"
+  min_size   = var.min_size
+  max_size   = var.max_size
+  desired_capacity = var.desired_capacity
+}</code></div>
+
+    <div class="lesson-learned">
+      <h4>Cost Savings from Parking</h4>
+      <p>
+        Implementing parking routines for our 3 non-prod EKS clusters saved <strong>$4,200/month</strong>
+        (65% reduction). The clusters run 50 hours/week instead of 168. Key insight: start conservative
+        (parking enabled) and let teams request exceptions, not the other way around.
+      </p>
+    </div>
+
+    <h3>Tagging Enforcement via OPA</h3>
+
+    <div class="code-block"><code># policies/required_tags.rego
+package terraform.analysis
+
+deny[msg] {
+  resource := input.resource_changes[_]
+  resource.change.actions[_] == "create"
+  
+  required_tags := {"CostCenter", "Owner", "Environment", "ManagedBy"}
+  provided_tags := {tag | resource.change.after.tags[tag]}
+  missing := required_tags - provided_tags
+  
+  count(missing) > 0
+  msg := sprintf(
+    "Resource %s is missing required tags: %v",
+    [resource.address, missing]
+  )
+}
+
+# In CI pipeline
+# terraform plan -out=plan.out
+# terraform show -json plan.out | conftest test - --policy policies/</code></div>
+
+    <h2 id="anti-patterns">12. Anti-Patterns to Avoid</h2>
+
+    <p>
+      These are the mistakes that cause production outages, security breaches, and endless debugging
+      sessions. I've made most of these — learn from my pain.
+    </p>
+
+    <h3>The Good, The Bad, and The Ugly</h3>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Anti-Pattern</th>
+          <th>Why It's Tempting</th>
+          <th>Why It Hurts</th>
+          <th>Better Approach</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong><code>count</code> for conditional resources</strong></td>
+          <td>Simple toggle: count = var.enabled ? 1 : 0</td>
+          <td>Index shift when adding resources → destroys wrong ones</td>
+          <td><code>for_each</code> with map keys</td>
+        </tr>
+        <tr>
+          <td><strong>Env values in module source</strong></td>
+          <td>Works for quick PoC</td>
+          <td>Module not reusable, secrets in code</td>
+          <td>Variables + tfvars per environment</td>
+        </tr>
+        <tr>
+          <td><strong>S3 state without versioning</strong></td>
+          <td>"We don't need history"</td>
+          <td>No recovery from corruption or accidental delete</td>
+          <td>Enable versioning + lifecycle rules</td>
+        </tr>
+        <tr>
+          <td><strong>Local state for team projects</strong></td>
+          <td>No setup required</td>
+          <td>Concurrent modifications corrupt state</td>
+          <td>Remote state with DynamoDB locking</td>
+        </tr>
+        <tr>
+          <td><strong>Monolithic 5000+ resource modules</strong></td>
+          <td>"One apply does everything"</td>
+          <td>30-min plans, massive blast radius</td>
+          <td>Composable modules, split states</td>
+        </tr>
+        <tr>
+          <td><strong>Hardcoded provider versions</strong></td>
+          <td>Avoid breaking changes</td>
+          <td>Stuck on old versions with security vulns</td>
+          <td>Pessimistic constraint: <code>~> 5.0</code></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="lesson-learned">
+      <h4>The count → for_each Migration Disaster</h4>
+      <p>
+        We had <code>count = length(var.subnets)</code> for subnet resources. A team reordered the
+        subnet list alphabetically. Terraform planned to destroy and recreate all subnets — in production.
+        Fortunately, we caught it in PR review. We spent 2 weeks migrating to <code>for_each</code>
+        with keyed maps. <strong>Rule: never use count for lists that might change order.</strong>
+      </p>
+    </div>
+
+    <h3>Code Smell: Your Terraform is Broken If...</h3>
+
+    <ul>
+      <li>❌ <code>terraform plan</code> shows changes when nothing actually changed</li>
+      <li>❌ You routinely use <code>-target</code> because full applies are "too risky"</li>
+      <li>❌ State file contains resources that don't exist anymore</li>
+      <li>❌ Multiple people run <code>terraform apply</code> without coordination</li>
+      <li>❌ You've ever used <code>terraform state rm</code> to "fix" a problem</li>
+      <li>❌ Your modules have 50+ required variables with no defaults</li>
+    </ul>
+
+    <h2 id="multi-account">13. Multi-Account and Multi-Region</h2>
 
     <h3>Provider Aliases</h3>
 

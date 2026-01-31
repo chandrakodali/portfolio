@@ -448,16 +448,20 @@
             <h3>Table of Contents</h3>
             <ul>
                 <li><a href="#what-is-idp">1. What is an Internal Developer Platform?</a></li>
-                <li><a href="#architecture">2. Platform Architecture Deep Dive</a></li>
-                <li><a href="#multi-tenancy">3. Multi-Tenancy and Isolation Strategies</a></li>
-                <li><a href="#gitops">4. GitOps Workflow Implementation</a></li>
-                <li><a href="#security">5. Security Hardening and Best Practices</a></li>
-                <li><a href="#observability">6. Observability and Monitoring</a></li>
-                <li><a href="#scaling">7. Scaling and Capacity Planning</a></li>
-                <li><a href="#disaster-recovery">8. Disaster Recovery and Business Continuity</a></li>
-                <li><a href="#edge-cases">9. Edge Cases and Troubleshooting</a></li>
-                <li><a href="#implementation">10. Step-by-Step Implementation</a></li>
-                <li><a href="#results">11. Results and Metrics</a></li>
+                <li><a href="#architecture-decisions">2. Architecture Decision Records</a></li>
+                <li><a href="#architecture">3. Platform Architecture Deep Dive</a></li>
+                <li><a href="#multi-tenancy">4. Multi-Tenancy and Isolation Strategies</a></li>
+                <li><a href="#gitops">5. GitOps Workflow Implementation</a></li>
+                <li><a href="#security">6. Security Hardening and Best Practices</a></li>
+                <li><a href="#observability">7. Observability and Monitoring</a></li>
+                <li><a href="#day2-operations">8. Day 2 Operations at Scale</a></li>
+                <li><a href="#scaling">9. Scaling and Capacity Planning</a></li>
+                <li><a href="#cost-optimization">10. Cost Optimization (FinOps)</a></li>
+                <li><a href="#anti-patterns">11. Anti-Patterns to Avoid</a></li>
+                <li><a href="#disaster-recovery">12. Disaster Recovery and Business Continuity</a></li>
+                <li><a href="#edge-cases">13. Edge Cases and Troubleshooting</a></li>
+                <li><a href="#implementation">14. Step-by-Step Implementation</a></li>
+                <li><a href="#results">15. Results and Metrics</a></li>
             </ul>
         </div>
 
@@ -507,7 +511,162 @@
             <li>Continuously iterate based on developer feedback</li>
         </ul>
 
-        <h2 id="architecture">2. Platform Architecture Deep Dive</h2>
+        <h2 id="architecture-decisions">2. Architecture Decision Records</h2>
+
+        <p>
+            Before building, we documented key architectural decisions. These ADRs capture the reasoning
+            behind our choices and help future teams understand the trade-offs we made.
+        </p>
+
+        <h3>ADR 1: Platform Abstraction Level</h3>
+
+        <p>How much should we abstract Kubernetes from developers? Here's the spectrum:</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Level</th>
+                    <th>Developer Experience</th>
+                    <th>Flexibility</th>
+                    <th>Platform Complexity</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Raw K8s (kubectl access)</strong></td>
+                    <td>Experts only</td>
+                    <td>100%</td>
+                    <td>Low (just RBAC)</td>
+                </tr>
+                <tr>
+                    <td><strong>Templated Manifests (Helm/Kustomize)</strong></td>
+                    <td>Need K8s knowledge</td>
+                    <td>High</td>
+                    <td>Medium</td>
+                </tr>
+                <tr>
+                    <td><strong>Managed Templates (our choice)</strong></td>
+                    <td>App config only</td>
+                    <td>Medium</td>
+                    <td>High</td>
+                </tr>
+                <tr>
+                    <td><strong>Full PaaS</strong></td>
+                    <td>Push code, done</td>
+                    <td>Low</td>
+                    <td>Very High</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="lesson-learned">
+            <h4>Our Decision: "Paved Roads" with Escape Hatches</h4>
+            <p>
+                We chose <strong>Managed Templates</strong>: developers fill in a simplified app config
+                (name, image, replicas, resources) and we generate the full Deployment, Service, HPA, PDB,
+                and NetworkPolicy. However, we allow "escape hatches" for advanced use cases — if a team
+                needs custom resources, they can request an exception with a documented reason. This gives
+                us <strong>80% standardization</strong> while avoiding the "golden cage" problem.
+            </p>
+        </div>
+
+        <h3>ADR 2: Multi-Tenancy Model</h3>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Approach</th>
+                    <th>Isolation</th>
+                    <th>Cost</th>
+                    <th>Operational Overhead</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Namespace-based</strong></td>
+                    <td>Soft (policy-enforced)</td>
+                    <td>Low (shared nodes)</td>
+                    <td>Low</td>
+                </tr>
+                <tr>
+                    <td><strong>Node Pool-based</strong></td>
+                    <td>Medium (dedicated compute)</td>
+                    <td>Medium</td>
+                    <td>Medium</td>
+                </tr>
+                <tr>
+                    <td><strong>Cluster-based</strong></td>
+                    <td>Hard (separate control planes)</td>
+                    <td>High</td>
+                    <td>High</td>
+                </tr>
+                <tr>
+                    <td><strong>vCluster</strong></td>
+                    <td>Medium-Hard (virtual API servers)</td>
+                    <td>Medium</td>
+                    <td>Medium</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="real-world">
+            <h4>From Our EKS Platform</h4>
+            <p>
+                In <a href="https://github.com/chandrakodali/terraform-aws-eks-platform"
+                    target="_blank">terraform-aws-eks-platform</a>,
+                we implement <strong>namespace-based isolation</strong> with 3-tier RBAC (Admin, Developer, ReadOnly).
+                Each team gets their own namespace with ResourceQuotas, LimitRanges, and NetworkPolicies.
+                For teams requiring PCI-DSS compliance, we offer dedicated node pools with taints.
+                This hybrid approach balances cost (shared cluster) with regulatory requirements
+                (isolated compute for sensitive workloads).
+            </p>
+        </div>
+
+        <h3>ADR 3: EKS vs. Self-Managed Kubernetes</h3>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Factor</th>
+                    <th>EKS (Managed)</th>
+                    <th>Self-Managed (kOps/Kubeadm)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Control plane operations</strong></td>
+                    <td>AWS handles upgrades, HA</td>
+                    <td>You manage everything</td>
+                </tr>
+                <tr>
+                    <td><strong>Cost (100 nodes)</strong></td>
+                    <td>~$73/month per cluster</td>
+                    <td>$0 (but ops cost)</td>
+                </tr>
+                <tr>
+                    <td><strong>AWS integration</strong></td>
+                    <td>Native (IAM, ALB, EBS)</td>
+                    <td>Manual configuration</td>
+                </tr>
+                <tr>
+                    <td><strong>Upgrade effort</strong></td>
+                    <td>One-click (with planning)</td>
+                    <td>Multi-day project</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="lesson-learned">
+            <h4>Why We Chose EKS</h4>
+            <p>
+                At $73/month per cluster, EKS control plane cost is negligible compared to the
+                <strong>40+ engineering hours/quarter</strong> we'd spend managing self-hosted control planes.
+                The OIDC integration for IAM roles alone saved us weeks of custom development. For teams
+                with very specific version requirements or air-gapped environments, self-managed may be necessary.
+            </p>
+        </div>
+
+        <h2 id="architecture">3. Platform Architecture Deep Dive</h2>
 
         <p>
             Our platform consists of four main layers, each with specific responsibilities. Understanding this
@@ -1002,7 +1161,132 @@ vault write auth/kubernetes/role/team-alpha \
             for vendor-agnostic instrumentation.
         </p>
 
-        <h2 id="scaling">7. Scaling and Capacity Planning</h2>
+        <h2 id="day2-operations">8. Day 2 Operations at Scale</h2>
+
+        <p>
+            Setup is day one. Managing a platform serving 200+ developers with production workloads
+            is where the real challenges emerge. This section covers the operational patterns we
+            developed after the initial deployment.
+        </p>
+
+        <h3>EKS Cluster Upgrades (The Right Way)</h3>
+
+        <p>
+            EKS upgrade failures are common and often scary. Here's our battle-tested upgrade process:
+        </p>
+
+        <h4>Pre-Upgrade Checklist</h4>
+
+        <div class="code-block"><code># 1. Check for deprecated APIs
+kubectl get --raw /metrics | grep apiserver_requested_deprecated_apis
+
+# 2. Validate all pods are healthy
+kubectl get pods -A --field-selector status.phase!=Running,status.phase!=Succeeded
+
+# 3. Check for stuck PVCs or PVs
+kubectl get pvc,pv -A | grep -v Bound
+
+# 4. Verify cluster autoscaler is not scaling during upgrade
+kubectl get configmap cluster-autoscaler-status -n kube-system
+
+# 5. Check for pending nodes
+kubectl get nodes | grep -E 'NotReady|SchedulingDisabled'</code></div>
+
+        <h4>Upgrade Order (Critical!)</h4>
+
+        <ol>
+            <li><strong>Control plane</strong> → EKS manages this via Terraform or console</li>
+            <li><strong>Add-ons</strong> → CoreDNS, kube-proxy, vpc-cni (match control plane version)</li>
+            <li><strong>Node groups</strong> → Rolling replacement (one AZ at a time)</li>
+            <li><strong>Application validation</strong> → Smoke tests per namespace</li>
+        </ol>
+
+        <div class="lesson-learned">
+            <h4>The N-1 Version Rule</h4>
+            <p>
+                We never upgrade more than one minor version at a time (1.28 → 1.29, never 1.28 → 1.30).
+                Each upgrade is tested in dev (1 week), then staging (1 week), then prod. Total upgrade
+                cycle: <strong>3 weeks minimum</strong>. Rushing upgrades caused 2 hours of prod downtime
+                once — we learned our lesson.
+            </p>
+        </div>
+
+        <h3>Node Group Migrations (Blue-Green)</h3>
+
+        <div class="code-block"><code># Step 1: Create new node group with updated AMI/instance type
+resource "aws_eks_node_group" "v2" {
+  cluster_name    = aws_eks_cluster.main.name
+  node_group_name = "workers-v2"
+  # ... new configuration
+}
+
+# Step 2: Cordon old nodes (prevent new pod scheduling)
+kubectl cordon $(kubectl get nodes -l node-group=workers-v1 -o name)
+
+# Step 3: Drain old nodes (migrate workloads to new nodes)
+kubectl drain $(kubectl get nodes -l node-group=workers-v1 -o name) \
+  --ignore-daemonsets \
+  --delete-emptydir-data \
+  --grace-period=300
+
+# Step 4: Validate all pods healthy on new nodes
+kubectl get pods -A -o wide | grep -v Running
+
+# Step 5: Remove old node group
+terraform destroy -target=aws_eks_node_group.v1</code></div>
+
+        <h3>Platform Runbooks</h3>
+
+        <p>Every platform team needs documented runbooks. Here are the ones we use daily:</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Scenario</th>
+                    <th>First Response</th>
+                    <th>Escalation Trigger</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Node NotReady</strong></td>
+                    <td>Check kubelet logs, instance health</td>
+                    <td>&gt; 3 nodes affected</td>
+                </tr>
+                <tr>
+                    <td><strong>Pod stuck Pending</strong></td>
+                    <td>kubectl describe pod, check resources</td>
+                    <td>Critical namespace, &gt; 5 min</td>
+                </tr>
+                <tr>
+                    <td><strong>API server slow</strong></td>
+                    <td>Check etcd metrics, request rates</td>
+                    <td>P99 latency &gt; 1s</td>
+                </tr>
+                <tr>
+                    <td><strong>Certificate expiry</strong></td>
+                    <td>Renew via cert-manager</td>
+                    <td>&lt; 7 days remaining</td>
+                </tr>
+                <tr>
+                    <td><strong>ResourceQuota exceeded</strong></td>
+                    <td>Check namespace usage, contact team</td>
+                    <td>Production namespace</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="real-world">
+            <h4>From My Experience</h4>
+            <p>
+                We document runbooks in a Git repo, not a wiki. Why? Runbooks require review (PRs),
+                version history, and can be tested. Every incident triggers a runbook update —
+                if we didn't have a runbook for the incident, we create one. Our runbook coverage
+                went from <strong>30% to 95%</strong> of common incidents over 18 months.
+            </p>
+        </div>
+
+        <h2 id="scaling">9. Scaling and Capacity Planning</h2>
 
         <h3>Horizontal Pod Autoscaling</h3>
         <p>
@@ -1067,7 +1351,195 @@ spec:
             </ul>
         </div>
 
-        <h2 id="disaster-recovery">8. Disaster Recovery and Business Continuity</h2>
+        <h2 id="cost-optimization">10. Cost Optimization (FinOps)</h2>
+
+        <p>
+            Kubernetes makes it easy to overprovision. FinOps practices ensure you're not burning
+            money on unused capacity while maintaining performance for production workloads.
+        </p>
+
+        <h3>Showback Dashboards</h3>
+
+        <p>
+            Before optimizing, you need visibility. Build namespace-level cost dashboards using
+            Prometheus metrics:
+        </p>
+
+        <div class="code-block"><code># Grafana dashboard query for namespace costs
+# Estimate based on CPU/memory requests vs. On-Demand pricing
+(
+  sum(kube_pod_container_resource_requests{resource="cpu"}) by (namespace) 
+  * 0.0342  # us-east-1 m5.large hourly rate / 2 vCPU
+) + (
+  sum(kube_pod_container_resource_requests{resource="memory"}) by (namespace) / 1024 / 1024 / 1024 
+  * 0.00342  # Rough memory cost per GB
+)</code></div>
+
+        <div class="lesson-learned">
+            <h4>Showback Changed Behavior</h4>
+            <p>
+                When we showed teams their estimated monthly costs, 3 teams voluntarily reduced requests
+                by 40% within a week — they had no idea how much resources they were reserving.
+                Our total cluster costs dropped <strong>22%</strong> just from visibility, no policy changes.
+            </p>
+        </div>
+
+        <h3>Right-Sizing with VPA</h3>
+
+        <div class="code-block"><code>apiVersion: autoscaling.k8s.io/v1
+kind: VerticalPodAutoscaler
+metadata:
+  name: api-service-vpa
+spec:
+  targetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: api-service
+  updatePolicy:
+    updateMode: "Off"  # Start with recommendations only
+  resourcePolicy:
+    containerPolicies:
+    - containerName: "*"
+      minAllowed:
+        cpu: 100m
+        memory: 128Mi
+      maxAllowed:
+        cpu: 4
+        memory: 8Gi</code></div>
+
+        <h3>Spot/Preemptible Instances</h3>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Workload Type</th>
+                    <th>Instance Type</th>
+                    <th>Savings</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>CI/CD jobs</strong></td>
+                    <td>Spot (100%)</td>
+                    <td>60-70%</td>
+                </tr>
+                <tr>
+                    <td><strong>Dev environments</strong></td>
+                    <td>Spot (100%)</td>
+                    <td>60-70%</td>
+                </tr>
+                <tr>
+                    <td><strong>Staging/QA</strong></td>
+                    <td>Mixed (50% Spot)</td>
+                    <td>30-35%</td>
+                </tr>
+                <tr>
+                    <td><strong>Production (stateless)</strong></td>
+                    <td>Mixed (30% Spot)</td>
+                    <td>18-21%</td>
+                </tr>
+                <tr>
+                    <td><strong>Production (stateful)</strong></td>
+                    <td>On-Demand only</td>
+                    <td>0%</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="real-world">
+            <h4>Our FinOps Results</h4>
+            <p>
+                Implementing these practices across our 3 EKS clusters saved <strong>$8,400/month</strong>:
+            </p>
+            <ul>
+                <li>Showback visibility: $3,200 (teams self-corrected)</li>
+                <li>VPA right-sizing: $2,100 (reduced over-requests)</li>
+                <li>Spot instances for dev/CI: $2,400 (70% discount)</li>
+                <li>Environment parking: $700 (dev off-hours shutdown)</li>
+            </ul>
+        </div>
+
+        <h2 id="anti-patterns">11. Anti-Patterns to Avoid</h2>
+
+        <p>
+            These are the mistakes I've seen (and made) when building Kubernetes platforms.
+            Each one cost us real money, time, or reliability.
+        </p>
+
+        <h3>Platform Anti-Patterns</h3>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Anti-Pattern</th>
+                    <th>Why It's Tempting</th>
+                    <th>Why It Hurts</th>
+                    <th>Better Approach</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>No resource limits</strong></td>
+                    <td>"Developers know best"</td>
+                    <td>One runaway pod kills the node</td>
+                    <td>LimitRanges + ResourceQuotas per namespace</td>
+                </tr>
+                <tr>
+                    <td><strong>Single cluster for all envs</strong></td>
+                    <td>Simpler to manage</td>
+                    <td>Dev bug affects prod; upgrade risk</td>
+                    <td>Separate clusters per env (at minimum dev vs prod)</td>
+                </tr>
+                <tr>
+                    <td><strong>No PodDisruptionBudgets</strong></td>
+                    <td>"We don't drain nodes"</td>
+                    <td>Upgrades cause outages</td>
+                    <td>PDB for every production deployment</td>
+                </tr>
+                <tr>
+                    <td><strong>Cluster-wide admin RBAC</strong></td>
+                    <td>"Developers need access"</td>
+                    <td>One mistake deletes production</td>
+                    <td>Namespace-scoped roles (Admin/Developer/ReadOnly)</td>
+                </tr>
+                <tr>
+                    <td><strong>Default NetworkPolicy: allow-all</strong></td>
+                    <td>"Zero trust is hard"</td>
+                    <td>Lateral movement on compromise</td>
+                    <td>Default deny + explicit allow per app</td>
+                </tr>
+                <tr>
+                    <td><strong>No pod security standards</strong></td>
+                    <td>"Containers are isolated"</td>
+                    <td>Privileged pods = root on node</td>
+                    <td>PSS restricted + Gatekeeper/Kyverno</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="lesson-learned">
+            <h4>The Great RBAC Mistake</h4>
+            <p>
+                Early on, we gave developers <code>cluster-admin</code> because "they needed to debug".
+                One developer ran <code>kubectl delete namespace production</code> thinking they were
+                on the dev cluster. Recovery took <strong>4 hours</strong> (thank god for Velero backups).
+                We implemented namespace-scoped RBAC the next day. Now developers can only
+                <code>delete</code> resources in their own namespaces.
+            </p>
+        </div>
+
+        <h3>Code Smell: Your Platform is Broken If...</h3>
+
+        <ul>
+            <li>❌ Developers have to file tickets to deploy to dev</li>
+            <li>❌ You don't know which git commit is running in production</li>
+            <li>❌ Node upgrades cause application outages</li>
+            <li>❌ Teams copy-paste manifests instead of using templates</li>
+            <li>❌ There's no way to see costs per team/namespace</li>
+            <li>❌ The "getting started" doc is more than 2 pages</li>
+        </ul>
+
+        <h2 id="disaster-recovery">12. Disaster Recovery and Business Continuity</h2>
 
         <h3>Backup Strategies</h3>
         <p>
