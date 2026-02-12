@@ -1,71 +1,37 @@
 import { motion } from 'motion/react';
-import { Building2, MapPin, Calendar, ArrowUpRight } from 'lucide-react';
+import { Building2, MapPin, Calendar } from 'lucide-react';
 import { Section } from './Section';
 
 const experiences = [
   {
-    company: 'Country Financial Group',
-    role: 'AWS DevOps Engineer',
-    location: 'Bloomington, IL',
-    period: 'Apr 2025 - Present',
+    company: 'PAYPAL',
+    role: 'DevOps',
+    location: 'San Jose, CA, USA',
+    period: 'Apr 2024 - Present',
     current: true,
-    description: 'Modernizing customer-facing insurance infrastructure serving quote systems and policy management platforms.',
-    achievements: [
-      'Refactored Terraform monoliths into versioned modules reducing deployment time by 40%',
-      'Migrated manual EKS deployments to ArgoCD-managed GitOps, reducing incidents by 60%',
-      'Integrated AWS Secrets Manager with External Secrets Operator for PCI-DSS compliance',
-      'Achieved 99.9% uptime SLA while deploying 3-4x weekly',
-      'Reduced compute costs by 25% ($8K/month savings) using VPA recommendations',
-    ],
+    description: '',
+    achievements: [],
     color: 'from-blue-500/20 to-cyan-500/20',
   },
   {
-    company: 'Humana',
-    role: 'AWS DevOps Engineer',
-    location: 'Chicago, IL',
-    period: 'Apr 2024 - Mar 2025',
-    current: false,
-    description: 'Supported MyHumana member portal and provider verification systems handling PHI for 5M+ members.',
-    achievements: [
-      'Deployed HIPAA-compliant infrastructure with AES-256 encrypted RDS instances',
-      'Architected CI/CD pipelines reducing deployment time by 60%',
-      'Established CloudWatch Alarms and PagerDuty escalation, improving MTTR by 35%',
-      'Implemented auto-scaling policies achieving 20% reduction in compute costs ($12K/month)',
-      'Developed Python Lambda functions reducing data sync failures from 12/month to 0',
-    ],
-    color: 'from-emerald-500/20 to-teal-500/20',
-  },
-  {
-    company: 'Deloitte (Sherwin-Williams)',
-    role: 'DevOps Engineer',
+    company: 'DELOITTE',
+    role: 'DevOps',
     location: 'Hyderabad, India',
     period: 'Aug 2022 - Dec 2023',
     current: false,
-    description: 'Embedded with Sherwin-Williams manufacturing analytics team to modernize supply chain data pipelines.',
-    achievements: [
-      'Engineered Azure Data Factory pipelines processing 500GB+ daily manufacturing data',
-      'Managed Jenkins-based release workflows for ColorSnap digital platform',
-      'Standardized Azure resource provisioning using Terraform modules',
-      'Reduced MTTR for data ingestion issues from 2 hours to 15 minutes with Datadog',
-      'Established environment parity eliminating deployment failures by 80%',
-    ],
-    color: 'from-violet-500/20 to-purple-500/20',
+    description: '',
+    achievements: [],
+    color: 'from-purple-500/20 to-pink-500/20',
   },
   {
-    company: 'JPMorgan Chase & Co.',
-    role: 'Software Development Engineer (Java)',
+    company: 'JPMORGAN CHASE & CO.',
+    role: 'Associate DevOps Engineer',
     location: 'Hyderabad, India',
     period: 'Apr 2020 - Jul 2022',
     current: false,
-    description: 'Developed backend systems for internal trade reconciliation platform processing equity and fixed-income transactions.',
-    achievements: [
-      'Developed RESTful APIs processing 10M+ daily equity and fixed-income transactions',
-      'Reduced p95 query latency from 800ms to 120ms through database optimization',
-      'Implemented Redis caching reducing database load by 40%',
-      'Led containerization of legacy Java monoliths to Docker-based microservices on AWS ECS',
-      'Achieved 85% code coverage with JUnit/Mockito, reducing production defects by 30%',
-    ],
-    color: 'from-orange-500/20 to-amber-500/20',
+    description: '',
+    achievements: [],
+    color: 'from-orange-500/20 to-red-500/20',
   },
 ];
 

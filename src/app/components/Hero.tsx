@@ -238,7 +238,7 @@ export function Hero() {
               transition={{ duration: 0.8, delay: 0.8, ease: [0.22, 1, 0.36, 1] }}
               className="mx-auto max-w-[800px] text-muted-foreground text-[length:var(--font-xl)] leading-relaxed font-light"
             >
-              DevOps / Cloud Engineer specializing in building scalable
+              DevOps
               infrastructure, automating CI/CD pipelines, and enabling developer
               velocity.
             </motion.p>

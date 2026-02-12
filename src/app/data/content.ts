@@ -1,10 +1,10 @@
 // Site configuration - Personal information and social links
 export const siteConfig = {
     name: 'Chandra Koushik Kodali',
-    role: 'DevOps / Cloud Engineer',
+    role: 'DevOps',
     email: import.meta.env.VITE_CONTACT_EMAIL || 'chandrakoushik.kodali@gmail.com',
-    phone: '618-453-6722',
-    location: 'Illinois, USA',
+    phone: '618-434-2182',
+    location: 'San Jose, CA',
 
     // Social links
     social: {
@@ -203,63 +203,30 @@ export interface Experience {
 
 export const experiences: Experience[] = [
     {
-        title: 'AWS DevOps Engineer',
-        company: 'Country Financial Group',
-        location: 'Bloomington, IL',
-        period: 'Apr 2025 - Present',
+        title: 'DevOps',
+        company: 'PAYPAL',
+        location: 'San Jose, CA, USA',
+        period: 'Apr 2024 - Present',
         type: 'work',
-        description: [
-            'Refactored Terraform monoliths into versioned, reusable modules reducing deployment time by 40%',
-            'Migrated manual EKS deployments to ArgoCD-managed GitOps, reducing incidents by 60%',
-            'Integrated AWS Secrets Manager with External Secrets Operator for PCI-DSS compliance',
-            'Achieved 99.9% uptime SLA for production quote engine while deploying 3-4x weekly',
-            'Reduced over-provisioned compute by 25% ($8K/month savings) using VPA recommendations',
-        ],
-        technologies: ['AWS (EKS, EC2, VPC, IAM, RDS, S3, CloudWatch)', 'Terraform', 'Azure DevOps (YAML)', 'PowerShell', 'Docker', 'Kubernetes'],
+        description: [],
+        technologies: [],
     },
     {
-        title: 'AWS DevOps Engineer',
-        company: 'Humana',
-        location: 'Chicago, IL',
-        period: 'Apr 2024 - Mar 2025',
-        type: 'work',
-        description: [
-            'Deployed HIPAA-compliant infrastructure for MyHumana portal serving 5M+ members',
-            'Architected CI/CD pipelines with GitHub Actions and AWS CodePipeline, reducing deploy time by 60%',
-            'Established CloudWatch Alarms and PagerDuty escalation, improving MTTR by 35%',
-            'Implemented auto-scaling policies achieving 20% reduction in compute costs ($12K/month)',
-            'Developed Python Lambda functions reducing data sync failures from 12/month to 0',
-        ],
-        technologies: ['AWS (EC2, VPC, RDS, S3, IAM, Lambda, CloudWatch)', 'CloudFormation', 'Docker', 'GitHub Actions', 'AWS CodePipeline', 'Python', 'Ansible'],
-    },
-    {
-        title: 'DevOps Engineer',
-        company: 'Deloitte (Sherwin-Williams)',
+        title: 'DevOps',
+        company: 'DELOITTE',
         location: 'Hyderabad, India',
         period: 'Aug 2022 - Dec 2023',
         type: 'work',
-        description: [
-            'Engineered Azure Data Factory pipelines processing 500GB+ daily manufacturing data',
-            'Managed Jenkins-based release workflows for ColorSnap digital platform',
-            'Standardized Azure resource provisioning using Terraform modules',
-            'Reduced MTTR for data ingestion issues from 2 hours to 15 minutes with Datadog monitoring',
-            'Established environment parity eliminating "works on my machine" failures by 80%',
-        ],
-        technologies: ['Azure Data Factory', 'Azure SQL', 'Jenkins', 'Git', 'Python', 'Terraform', 'Ansible', 'Docker', 'Kubernetes', 'Helm'],
+        description: [],
+        technologies: [],
     },
     {
-        title: 'Software Development Engineer (Java)',
-        company: 'JPMorgan Chase & Co.',
+        title: 'Associate DevOps Engineer',
+        company: 'JPMORGAN CHASE & CO.',
         location: 'Hyderabad, India',
         period: 'Apr 2020 - Jul 2022',
         type: 'work',
-        description: [
-            'Developed RESTful APIs for trade reconciliation processing 10M+ daily transactions',
-            'Reduced p95 query latency from 800ms to 120ms through database optimization',
-            'Implemented Redis caching reducing database load by 40% and improving response times by 60%',
-            'Led containerization of legacy Java monoliths to Docker-based microservices on AWS ECS',
-            'Achieved 85% code coverage with JUnit/Mockito, reducing production defects by 30%',
-        ],
-        technologies: ['Java 11', 'Spring Boot', 'PostgreSQL', 'Redis', 'AWS ECS', 'Docker', 'JUnit'],
+        description: [],
+        technologies: [],
     },
 ];

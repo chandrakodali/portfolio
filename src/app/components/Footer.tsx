@@ -47,7 +47,7 @@ export function Footer() {
               <span className="font-bold text-xl tracking-tight">CK</span>
             </motion.a>
             <p className="text-muted-foreground max-w-md mb-6">
-              DevOps / Cloud Engineer specializing in building scalable
+              DevOps
               infrastructure and enabling developer velocity.
             </p>
             <div className="flex items-center gap-3">
@@ -111,7 +111,7 @@ export function Footer() {
                   chandrakoushik.kodali@gmail.com
                 </a>
               </li>
-              <li>Illinois, USA</li>
+              <li>San Jose, CA</li>
               <li className="pt-2">
                 <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-green-500/10 text-green-500 text-sm">
                   <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />

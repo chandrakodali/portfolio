@@ -159,14 +159,14 @@ export function About() {
                   >
                     Chandra Koushik Kodali
                   </motion.h3>
-                  <p className="text-primary font-medium">DevOps / Cloud Engineer</p>
+                  <p className="text-primary font-medium">DevOps</p>
                 </div>
                 <motion.div
                   className="flex items-center text-muted-foreground text-sm px-3 py-1.5 rounded-full bg-secondary/50"
                   whileHover={{ scale: 1.05 }}
                 >
                   <MapPin className="w-4 h-4 mr-1.5" />
-                  Illinois, USA
+                  San Jose, CA
                 </motion.div>
               </div>
 
@@ -310,7 +310,7 @@ export function About() {
           <TiltCard className="md:col-span-2 lg:col-span-2">
             <p className="text-sm text-muted-foreground mb-4 font-medium">Trusted by Industry Leaders</p>
             <div className="flex flex-wrap gap-3">
-              {['J.P. Morgan', 'Humana', 'Deloitte', 'Country Financial'].map((company, i) => (
+              {['PAYPAL', 'DELOITTE', 'JPMorgan Chase & Co.'].map((company, i) => (
                 <motion.span
                   key={company}
                   initial={{ opacity: 0, y: 10 }}
