@@ -4,8 +4,8 @@
 
 ### Building resilient, scalable cloud infrastructure and ensuring system reliability
 
-> Specializing in AWS, Kubernetes, Terraform, GitOps, and Site Reliability Engineering
-> Focused on infrastructure automation, observability, and platform scalability
+> Specializing in AWS, Azure, GCP, Kubernetes, Terraform, and Site Reliability Engineering
+> Focused on multi-cloud infrastructure, automation, observability, and platform scalability
 
 📍 Based in the US | 🚀 Open to DevOps/SRE/Platform Engineering opportunities
 
@@ -22,11 +22,17 @@
 ### ☁️ Cloud & Infrastructure
 <p>
 <img src="https://img.shields.io/badge/AWS-232F3E?style=for-the-badge&logo=amazon-aws&logoColor=FF9900">
+<img src="https://img.shields.io/badge/Azure-0078D4?style=for-the-badge&logo=microsoft-azure&logoColor=white">
+<img src="https://img.shields.io/badge/GCP-4285F4?style=for-the-badge&logo=google-cloud&logoColor=white">
 <img src="https://img.shields.io/badge/Terraform-7B42BC?style=for-the-badge&logo=terraform&logoColor=white">
 <img src="https://img.shields.io/badge/Kubernetes-326CE5?style=for-the-badge&logo=kubernetes&logoColor=white">
 <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white">
+<img src="https://img.shields.io/badge/EC2-FF9900?style=for-the-badge&logo=amazon-ec2&logoColor=white">
+<img src="https://img.shields.io/badge/ECS-FF9900?style=for-the-badge&logo=amazon-ecs&logoColor=white">
 <img src="https://img.shields.io/badge/EKS-FF9900?style=for-the-badge&logo=amazon-eks&logoColor=white">
 <img src="https://img.shields.io/badge/Lambda-FF9900?style=for-the-badge&logo=aws-lambda&logoColor=white">
+<img src="https://img.shields.io/badge/S3-569A31?style=for-the-badge&logo=amazon-s3&logoColor=white">
+<img src="https://img.shields.io/badge/IAM-DD344C?style=for-the-badge&logo=amazon-aws&logoColor=white">
 <img src="https://img.shields.io/badge/CloudFormation-FF9900?style=for-the-badge&logo=amazon-aws&logoColor=white">
 <img src="https://img.shields.io/badge/Helm-0F1689?style=for-the-badge&logo=helm&logoColor=white">
 <img src="https://img.shields.io/badge/Istio-466BB0?style=for-the-badge&logo=istio&logoColor=white">
@@ -38,12 +44,15 @@
 <img src="https://img.shields.io/badge/Grafana-F46800?style=for-the-badge&logo=grafana&logoColor=white">
 <img src="https://img.shields.io/badge/Datadog-632CA6?style=for-the-badge&logo=datadog&logoColor=white">
 <img src="https://img.shields.io/badge/CloudWatch-FF4F8B?style=for-the-badge&logo=amazon-cloudwatch&logoColor=white">
+<img src="https://img.shields.io/badge/Splunk-000000?style=for-the-badge&logo=splunk&logoColor=white">
+<img src="https://img.shields.io/badge/Dynatrace-1496FF?style=for-the-badge&logo=dynatrace&logoColor=white">
 <img src="https://img.shields.io/badge/ELK_Stack-005571?style=for-the-badge&logo=elastic&logoColor=white">
 <img src="https://img.shields.io/badge/New_Relic-008C99?style=for-the-badge&logo=new-relic&logoColor=white">
 </p>
 
 ### 🔄 GitOps & CI/CD
 <p>
+<img src="https://img.shields.io/badge/Azure_DevOps-0078D7?style=for-the-badge&logo=azure-devops&logoColor=white">
 <img src="https://img.shields.io/badge/ArgoCD-EF7B4D?style=for-the-badge&logo=argo&logoColor=white">
 <img src="https://img.shields.io/badge/FluxCD-5468FF?style=for-the-badge&logo=flux&logoColor=white">
 <img src="https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=github-actions&logoColor=white">
@@ -70,6 +79,35 @@
 <img src="https://img.shields.io/badge/Vault-000000?style=for-the-badge&logo=vault&logoColor=white">
 <img src="https://img.shields.io/badge/Consul-F24C53?style=for-the-badge&logo=consul&logoColor=white">
 <img src="https://img.shields.io/badge/NGINX-009639?style=for-the-badge&logo=nginx&logoColor=white">
+<img src="https://img.shields.io/badge/WebLogic-F80000?style=for-the-badge&logo=oracle&logoColor=white">
+<img src="https://img.shields.io/badge/Active_Directory-0078D4?style=for-the-badge&logo=microsoft&logoColor=white">
+</p>
+
+### 🔐 Security & Compliance
+<p>
+<img src="https://img.shields.io/badge/SonarQube-4E9BCD?style=for-the-badge&logo=sonarqube&logoColor=white">
+<img src="https://img.shields.io/badge/HashiCorp_Vault-000000?style=for-the-badge&logo=vault&logoColor=white">
+<img src="https://img.shields.io/badge/PCI_DSS-005A9C?style=for-the-badge&logo=security&logoColor=white">
+<img src="https://img.shields.io/badge/IAM_Governance-DD344C?style=for-the-badge&logo=amazon-aws&logoColor=white">
+<img src="https://img.shields.io/badge/Secrets_Management-000000?style=for-the-badge&logo=vault&logoColor=white">
+</p>
+
+### 💾 Databases & Storage
+<p>
+<img src="https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white">
+<img src="https://img.shields.io/badge/Oracle-F80000?style=for-the-badge&logo=oracle&logoColor=white">
+<img src="https://img.shields.io/badge/Amazon_S3-569A31?style=for-the-badge&logo=amazon-s3&logoColor=white">
+<img src="https://img.shields.io/badge/Amazon_EBS-FF9900?style=for-the-badge&logo=amazon-aws&logoColor=white">
+<img src="https://img.shields.io/badge/RDS-527FFF?style=for-the-badge&logo=amazon-rds&logoColor=white">
+</p>
+
+### 🤖 AI & Developer Productivity
+<p>
+<img src="https://img.shields.io/badge/GitHub_Copilot-000000?style=for-the-badge&logo=github&logoColor=white">
+<img src="https://img.shields.io/badge/Amazon_Q-FF9900?style=for-the-badge&logo=amazon-aws&logoColor=white">
+<img src="https://img.shields.io/badge/AWS_CodeGuru-FF9900?style=for-the-badge&logo=amazon-aws&logoColor=white">
+<img src="https://img.shields.io/badge/Ansible_Lightspeed-EE0000?style=for-the-badge&logo=ansible&logoColor=white">
+<img src="https://img.shields.io/badge/Claude_Code-000000?style=for-the-badge&logo=anthropic&logoColor=white">
 </p>
 
 ---
@@ -146,36 +184,68 @@ Site Reliability Engineering:
   - Capacity Planning and Performance Optimization
   - Reliability Testing and Chaos Engineering
 
-Cloud Platforms:
-  - AWS: EKS, Lambda, Cost Explorer, CloudFormation, IAM, VPC, EFS, S3, RDS
+Cloud Platforms & Infrastructure:
+  - AWS: EC2, ECS, EKS, Lambda, S3, IAM, VPC, EFS, RDS, CloudFormation, Cost Explorer
+  - Azure: Azure DevOps, Virtual Machines, AKS, Azure Functions, Blob Storage
+  - GCP: Compute Engine, GKE, Cloud Functions, Cloud Storage
+  - Multi-cloud and hybrid cloud architecture
   - Multi-region deployments and disaster recovery
-  - Infrastructure as Code with Terraform
+  - Infrastructure as Code with Terraform, CloudFormation, Ansible
   - Serverless Architecture & Event-Driven Systems
 
 Kubernetes & Container Orchestration:
-  - Production EKS cluster management
+  - Production EKS, AKS, and GKE cluster management
   - RBAC, service accounts, and OIDC integration
   - Storage orchestration with CSI drivers
   - Helm charts and Kubernetes operators
   - Service mesh implementation (Istio)
+  - Docker containerization and ECS orchestration
 
 GitOps & CI/CD:
+  - Azure DevOps pipelines and repositories
   - ArgoCD and FluxCD implementations
   - Multi-environment deployment strategies
   - GitHub Actions, Jenkins, GitLab CI pipelines
   - Automated testing and quality gates
+  - Branching strategies and version control best practices
 
 Observability & Monitoring:
   - Prometheus and Grafana stack deployment
+  - Splunk and Dynatrace enterprise monitoring
   - Distributed tracing and log aggregation
   - Custom metrics and alerting strategies
-  - DataDog, New Relic, ELK stack
+  - DataDog, New Relic, CloudWatch, ELK stack
+
+Security & Compliance:
+  - PCI-DSS compliance and security frameworks
+  - IAM governance and least privilege principles
+  - Secrets management with HashiCorp Vault
+  - Code quality and security scanning with SonarQube
+  - Zero-trust security architecture
+
+Databases & Storage:
+  - PostgreSQL and Oracle database administration
+  - AWS RDS, S3, and EBS management
+  - Database backup and disaster recovery
+  - Performance tuning and optimization
+
+Middleware & OS:
+  - Linux system administration and hardening
+  - Oracle WebLogic middleware management
+  - Active Directory integration and authentication
+  - Automation and configuration management
+
+AI-Powered Development:
+  - GitHub Copilot for code generation
+  - Amazon Q Developer and AWS CodeGuru
+  - Ansible Lightspeed for automation
+  - Claude Code for intelligent assistance
 
 Current Focus:
-  - Platform engineering and developer experience
-  - FinOps and cloud cost optimization
+  - Multi-cloud platform engineering and developer experience
+  - FinOps and cloud cost optimization across AWS/Azure/GCP
   - Zero-trust security and policy enforcement
-  - Multi-cloud infrastructure strategies
+  - AI-powered DevOps automation and productivity
 ```
 
 ---
