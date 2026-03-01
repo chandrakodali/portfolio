@@ -1,17 +1,17 @@
 <div align="center">
 
-# 👋 Platform Engineer × Cloud Architect × Frontend Craftsman
+# 👋 DevOps Engineer × SRE × Platform Engineer
 
-### Building production-grade infrastructure and beautiful web experiences
+### Building resilient, scalable cloud infrastructure and ensuring system reliability
 
-> Currently architecting cloud-native platforms and exploring AI agents
-> Specializing in AWS, Kubernetes, Terraform, and modern React ecosystems
+> Specializing in AWS, Kubernetes, Terraform, GitOps, and Site Reliability Engineering
+> Focused on infrastructure automation, observability, and platform scalability
 
-📍 Based in the US | 🚀 Open to exciting opportunities
+📍 Based in the US | 🚀 Open to DevOps/SRE/Platform Engineering opportunities
 
 [![Portfolio](https://img.shields.io/badge/Portfolio-0A0A0F?style=for-the-badge&logo=react&logoColor=33B3FF)](https://chandrakodali.github.io/portfolio/)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://linkedin.com/in/yourprofile)
-[![Email](https://img.shields.io/badge/Email-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:your.email@example.com)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/chandrakoushikkodali)
+[![Email](https://img.shields.io/badge/Email-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:chandrakoushik.kodali@gmail.com)
 
 </div>
 
@@ -28,65 +28,53 @@
 <img src="https://img.shields.io/badge/EKS-FF9900?style=for-the-badge&logo=amazon-eks&logoColor=white">
 <img src="https://img.shields.io/badge/Lambda-FF9900?style=for-the-badge&logo=aws-lambda&logoColor=white">
 <img src="https://img.shields.io/badge/CloudFormation-FF9900?style=for-the-badge&logo=amazon-aws&logoColor=white">
+<img src="https://img.shields.io/badge/Helm-0F1689?style=for-the-badge&logo=helm&logoColor=white">
+<img src="https://img.shields.io/badge/Istio-466BB0?style=for-the-badge&logo=istio&logoColor=white">
 </p>
 
-### 💻 Languages
+### 📊 Observability & Monitoring
 <p>
-<img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white">
-<img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black">
-<img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white">
-<img src="https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white">
-<img src="https://img.shields.io/badge/HCL-7B42BC?style=for-the-badge&logo=terraform&logoColor=white">
+<img src="https://img.shields.io/badge/Prometheus-E6522C?style=for-the-badge&logo=prometheus&logoColor=white">
+<img src="https://img.shields.io/badge/Grafana-F46800?style=for-the-badge&logo=grafana&logoColor=white">
+<img src="https://img.shields.io/badge/Datadog-632CA6?style=for-the-badge&logo=datadog&logoColor=white">
+<img src="https://img.shields.io/badge/CloudWatch-FF4F8B?style=for-the-badge&logo=amazon-cloudwatch&logoColor=white">
+<img src="https://img.shields.io/badge/ELK_Stack-005571?style=for-the-badge&logo=elastic&logoColor=white">
+<img src="https://img.shields.io/badge/New_Relic-008C99?style=for-the-badge&logo=new-relic&logoColor=white">
 </p>
 
-### ⚛️ Frontend
+### 🔄 GitOps & CI/CD
 <p>
-<img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB">
-<img src="https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white">
-<img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white">
-<img src="https://img.shields.io/badge/Framer_Motion-0055FF?style=for-the-badge&logo=framer&logoColor=white">
-<img src="https://img.shields.io/badge/Material_UI-007FFF?style=for-the-badge&logo=mui&logoColor=white">
-<img src="https://img.shields.io/badge/Radix_UI-161618?style=for-the-badge&logo=radix-ui&logoColor=white">
-</p>
-
-### 🤖 AI & Automation
-<p>
-<img src="https://img.shields.io/badge/LangChain-121212?style=for-the-badge&logo=chainlink&logoColor=white">
-<img src="https://img.shields.io/badge/OpenAI-412991?style=for-the-badge&logo=openai&logoColor=white">
-<img src="https://img.shields.io/badge/TensorFlow-FF6F00?style=for-the-badge&logo=tensorflow&logoColor=white">
-<img src="https://img.shields.io/badge/Selenium-43B02A?style=for-the-badge&logo=selenium&logoColor=white">
-</p>
-
-### 🛢️ Tools & DevOps
-<p>
+<img src="https://img.shields.io/badge/ArgoCD-EF7B4D?style=for-the-badge&logo=argo&logoColor=white">
+<img src="https://img.shields.io/badge/FluxCD-5468FF?style=for-the-badge&logo=flux&logoColor=white">
 <img src="https://img.shields.io/badge/GitHub_Actions-2088FF?style=for-the-badge&logo=github-actions&logoColor=white">
-<img src="https://img.shields.io/badge/Gradle-02303A?style=for-the-badge&logo=gradle&logoColor=white">
+<img src="https://img.shields.io/badge/Jenkins-D24939?style=for-the-badge&logo=jenkins&logoColor=white">
+<img src="https://img.shields.io/badge/GitLab_CI-FC6D26?style=for-the-badge&logo=gitlab&logoColor=white">
+<img src="https://img.shields.io/badge/CircleCI-343434?style=for-the-badge&logo=circleci&logoColor=white">
+</p>
+
+### 💻 Scripting & IaC Languages
+<p>
+<img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white">
+<img src="https://img.shields.io/badge/Bash-4EAA25?style=for-the-badge&logo=gnu-bash&logoColor=white">
+<img src="https://img.shields.io/badge/HCL-7B42BC?style=for-the-badge&logo=terraform&logoColor=white">
+<img src="https://img.shields.io/badge/YAML-CB171E?style=for-the-badge&logo=yaml&logoColor=white">
+<img src="https://img.shields.io/badge/Go-00ADD8?style=for-the-badge&logo=go&logoColor=white">
+<img src="https://img.shields.io/badge/PowerShell-5391FE?style=for-the-badge&logo=powershell&logoColor=white">
+</p>
+
+### 🛢️ Tools & Technologies
+<p>
 <img src="https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white">
 <img src="https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black">
-<img src="https://img.shields.io/badge/Jenkins-D24939?style=for-the-badge&logo=jenkins&logoColor=white">
+<img src="https://img.shields.io/badge/Ansible-EE0000?style=for-the-badge&logo=ansible&logoColor=white">
+<img src="https://img.shields.io/badge/Vault-000000?style=for-the-badge&logo=vault&logoColor=white">
+<img src="https://img.shields.io/badge/Consul-F24C53?style=for-the-badge&logo=consul&logoColor=white">
+<img src="https://img.shields.io/badge/NGINX-009639?style=for-the-badge&logo=nginx&logoColor=white">
 </p>
 
 ---
 
 ## 🚀 Featured Projects
-
-### 🌟 [Interactive Portfolio Website](https://github.com/chandrakodali/portfolio)
-> **A state-of-the-art portfolio showcasing platform engineering expertise**
-
-Premium React portfolio with advanced animations, 3D effects, and an interactive Kubernetes learning platform. Built with accessibility-first principles and pixel-perfect design.
-
-**Tech Stack:** React 18 · TypeScript · Vite · Framer Motion · Tailwind CSS 4 · Radix UI · Mermaid
-
-**Highlights:**
-- ✨ Magnetic UI with spring physics and 3D perspective cards
-- 📚 12 interactive Kubernetes modules with architecture diagrams
-- ♿ Full accessibility with reduced-motion support
-- 🎨 Dark mode with fluid typography and glassmorphism
-- ⚡ Lazy loading and performance optimization
-
-[View Live Demo →](https://chandrakodali.github.io/portfolio/)
-
----
 
 ### ☁️ [AWS EKS Terraform Platform](https://github.com/chandrakodali/terraform-aws-eks-platform)
 > **Production-ready EKS infrastructure with RBAC and EFS storage**
@@ -136,78 +124,71 @@ Scalable Page Object Model framework with Extent Reports, Excel data-driven test
 
 ---
 
-### 🤖 [LangChain Learning Hub](https://github.com/chandrakodali/langchain-learning-hub)
-> **Interactive platform for exploring AI agent development**
+## 📝 Technical Articles & Blog Posts
 
-Modern web application for learning LangChain concepts with hands-on examples and tutorials.
+### [Building a Scalable Kubernetes Platform](https://chandrakodali.github.io/portfolio/blog/kubernetes-platform.html)
+Deep dive into architecting production-grade Kubernetes platforms with best practices for multi-tenancy, security, and scalability.
 
-**Tech Stack:** TypeScript · React · Vite · Tailwind CSS · LangChain
+### [GitOps with ArgoCD: Complete Guide](https://chandrakodali.github.io/portfolio/blog/gitops-argocd.html)
+Comprehensive guide to implementing GitOps workflows using ArgoCD for continuous deployment and declarative infrastructure management.
 
-**Focus:** AI Agents · RAG · Vector Databases · LLM Orchestration
-
----
-
-### 🏥 [AI Doctor Scribe](https://github.com/chandrakodali/Ai_Doctor_Scribe)
-> **AI-powered medical transcription and documentation assistant**
-
-Full-stack application leveraging LLMs for automated clinical documentation.
-
-**Tech Stack:** Python · FastAPI · React · OpenAI · NLP
-
-**Status:** Active Development
-
----
-
-## 📊 GitHub Stats
-
-<div align="center">
-
-<img src="https://github-readme-stats.vercel.app/api/top-langs/?username=chandrakodali&layout=compact&theme=radical&hide_border=true&bg_color=0D1117&title_color=33B3FF&text_color=FAFAFA" alt="Top Languages" height="180"/>
-
-<img src="https://github-readme-streak-stats.herokuapp.com/?user=chandrakodali&theme=radical&hide_border=true&background=0D1117&ring=33B3FF&fire=33B3FF&currStreakLabel=33B3FF" alt="GitHub Streak" height="180"/>
-
-</div>
+### [Terraform Module Design Patterns](https://chandrakodali.github.io/portfolio/blog/terraform-modules.html)
+Best practices for designing reusable, maintainable Terraform modules for enterprise infrastructure automation.
 
 ---
 
 ## 🏆 Achievements & Expertise
 
 ```yaml
-Cloud Platforms:
-  - AWS: EKS, Lambda, Cost Explorer, CloudFormation, IAM, VPC, EFS
-  - Serverless Architecture & Event-Driven Systems
-  - Infrastructure as Code with Terraform
+Site Reliability Engineering:
+  - Service Level Objectives (SLOs) and Error Budgets
+  - Incident Response and Post-Mortem Analysis
+  - Capacity Planning and Performance Optimization
+  - Reliability Testing and Chaos Engineering
 
-Kubernetes:
+Cloud Platforms:
+  - AWS: EKS, Lambda, Cost Explorer, CloudFormation, IAM, VPC, EFS, S3, RDS
+  - Multi-region deployments and disaster recovery
+  - Infrastructure as Code with Terraform
+  - Serverless Architecture & Event-Driven Systems
+
+Kubernetes & Container Orchestration:
   - Production EKS cluster management
   - RBAC, service accounts, and OIDC integration
   - Storage orchestration with CSI drivers
-  - Helm charts and operator patterns
+  - Helm charts and Kubernetes operators
+  - Service mesh implementation (Istio)
 
-Development:
-  - 12 public repositories spanning DevOps, AI, and frontend
-  - Enterprise test automation frameworks
-  - Premium UI/UX with advanced animations
-  - TypeScript-first with strict type safety
+GitOps & CI/CD:
+  - ArgoCD and FluxCD implementations
+  - Multi-environment deployment strategies
+  - GitHub Actions, Jenkins, GitLab CI pipelines
+  - Automated testing and quality gates
+
+Observability & Monitoring:
+  - Prometheus and Grafana stack deployment
+  - Distributed tracing and log aggregation
+  - Custom metrics and alerting strategies
+  - DataDog, New Relic, ELK stack
 
 Current Focus:
-  - AI agents and LLM orchestration
-  - Cloud cost optimization
-  - Interactive developer education
-  - Performance-optimized React applications
+  - Platform engineering and developer experience
+  - FinOps and cloud cost optimization
+  - Zero-trust security and policy enforcement
+  - Multi-cloud infrastructure strategies
 ```
 
 ---
 
 ## 💡 What I Bring
 
-**🎯 Platform Engineering DNA** — I architect scalable, resilient cloud infrastructure that teams actually want to use. From VPCs to EKS clusters to observability, I handle the full stack.
+**🎯 SRE & Reliability Focus** — I build systems that don't just work—they stay working. From implementing SLOs and error budgets to designing resilient architectures, I ensure high availability and quick recovery from failures.
 
-**⚡ Automation-First Mindset** — Whether it's CI/CD pipelines, cost monitoring, or test frameworks, I believe in automating everything. Manual work doesn't scale.
+**⚡ Infrastructure Automation** — Everything should be code. I automate infrastructure provisioning, configuration management, and deployment workflows to eliminate manual toil and reduce mean time to recovery.
 
-**🎨 Design-Conscious Developer** — I don't just make things work—I make them beautiful. My portfolio proves that engineers can build premium, accessible, visually stunning experiences.
+**📊 Observability First** — You can't improve what you can't measure. I implement comprehensive monitoring, logging, and tracing solutions that provide actionable insights and enable data-driven decisions.
 
-**📚 Knowledge Sharer** — I create interactive learning resources (like my Kubernetes guide) because the best way to solidify knowledge is to teach it.
+**🔄 GitOps & Platform Engineering** — I design and build internal developer platforms that make engineering teams more productive, using GitOps principles to ensure infrastructure is versioned, auditable, and easily recoverable.
 
 ---
 
@@ -215,13 +196,13 @@ Current Focus:
 
 <div align="center">
 
-**Looking for a platform engineer who can bridge infrastructure, automation, and user experience?**
+**Looking for a DevOps/SRE/Platform Engineer who can build reliable, scalable infrastructure?**
 
-**Let's build something amazing together.**
+**Let's build something resilient together.**
 
 [![Portfolio](https://img.shields.io/badge/View_My_Work-0A0A0F?style=for-the-badge&logo=react&logoColor=33B3FF)](https://chandrakodali.github.io/portfolio/)
-[![LinkedIn](https://img.shields.io/badge/Connect_on_LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://linkedin.com/in/yourprofile)
-[![Email](https://img.shields.io/badge/Send_Email-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:your.email@example.com)
+[![LinkedIn](https://img.shields.io/badge/Connect_on_LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/chandrakoushikkodali)
+[![Email](https://img.shields.io/badge/Send_Email-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:chandrakoushik.kodali@gmail.com)
 
 </div>
 
@@ -229,7 +210,7 @@ Current Focus:
 
 <div align="center">
 
-### 🌟 "Code is poetry written for machines to execute and humans to understand."
+### 🌟 "Reliability is not just about uptime—it's about building trust through consistent, predictable systems."
 
 *Thanks for visiting! Feel free to explore my repositories and reach out for collaborations.*
 
