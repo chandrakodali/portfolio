@@ -10,7 +10,6 @@ import { Footer } from '@/app/components/Footer';
 import { Articles } from '@/app/components/Articles';
 import { ErrorBoundary, SectionErrorBoundary } from '@/app/components/ErrorBoundary';
 import { KubernetesGuide } from '@/app/components/kubernetes/KubernetesGuide';
-import { CustomCursor } from '@/app/components/CustomCursor';
 
 export default function App() {
   const [isMounted, setIsMounted] = useState(false);
@@ -68,7 +67,6 @@ export default function App() {
 
   return (
     <ErrorBoundary>
-      <CustomCursor />
       <div className="min-h-screen bg-background text-foreground antialiased selection:bg-primary/20 selection:text-primary">
         <Navbar />
 
