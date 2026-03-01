@@ -33,23 +33,24 @@
 
 @layer base {
   :root {
-    /* Professional Dark Theme Palette */
-    /* Backgrounds */
-    --background: 240 10% 3.9%;
-    /* #09090b */
+    /* 2026 PREMIUM DARK THEME - Deep Space with Electric Accents */
+    /* Ultra-dark background for maximum contrast and premium feel */
+    --background: 240 15% 4%;
+    /* #0a0a0f - deeper than before */
     --foreground: 0 0% 98%;
-    /* #fafafa */
+    /* #fafafa - crisp white */
 
-    --card: 240 10% 3.9%;
+    --card: 240 12% 6%;
+    /* #0f0f18 - elevated surface */
     --card-foreground: 0 0% 98%;
 
-    --popover: 240 10% 3.9%;
+    --popover: 240 12% 6%;
     --popover-foreground: 0 0% 98%;
 
-    /* Primary Accent - Professional Blue */
-    --primary: 217.2 91.2% 59.8%;
-    /* #3b82f6 */
-    --primary-foreground: 222.2 47.4% 11.2%;
+    /* Primary Accent - Electric Blue/Cyan (2026 trend: vibrant, energetic) */
+    --primary: 200 100% 60%;
+    /* #33b3ff - electric cyan */
+    --primary-foreground: 240 15% 4%;
 
     /* Secondary - Muted Surface */
     --secondary: 240 3.7% 15.9%;

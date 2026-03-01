@@ -146,41 +146,17 @@ function MagneticButton({
   );
 }
 
-// Floating particles component
-function FloatingParticles() {
-  const particles = Array.from({ length: 20 }, (_, i) => ({
-    id: i,
-    size: Math.random() * 4 + 2,
-    x: Math.random() * 100,
-    delay: Math.random() * 5,
-    duration: Math.random() * 10 + 10,
-  }));
-
+// PERFORMANCE FIX: Replaced heavy 20-particle animation with CSS-only grain effect
+// This reduces DOM nodes and uses GPU-accelerated CSS instead of JS-driven animations
+function GrainOverlay() {
   return (
-    <div className="absolute inset-0 -z-5 overflow-hidden pointer-events-none">
-      {particles.map((particle) => (
-        <motion.div
-          key={particle.id}
-          className="absolute rounded-full bg-primary/20"
-          style={{
-            width: particle.size,
-            height: particle.size,
-            left: `${particle.x}%`,
-            bottom: '-10px',
-          }}
-          animate={{
-            y: [0, -window.innerHeight - 100],
-            opacity: [0, 1, 1, 0],
-          }}
-          transition={{
-            duration: particle.duration,
-            delay: particle.delay,
-            repeat: Infinity,
-            ease: 'linear',
-          }}
-        />
-      ))}
-    </div>
+    <div
+      className="absolute inset-0 -z-5 pointer-events-none opacity-[0.15]"
+      style={{
+        backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
+        mixBlendMode: 'overlay',
+      }}
+    />
   );
 }
 
@@ -202,7 +178,7 @@ export function Hero() {
       className="relative min-h-[100svh] flex items-center justify-center py-20 overflow-hidden"
     >
       <AnimatedBackground />
-      <FloatingParticles />
+      <GrainOverlay />
 
       <motion.div
         className="container px-[var(--container-padding)] z-10 w-full"
@@ -238,9 +214,9 @@ export function Hero() {
               transition={{ duration: 0.8, delay: 0.8, ease: [0.22, 1, 0.36, 1] }}
               className="mx-auto max-w-[800px] text-muted-foreground text-[length:var(--font-xl)] leading-relaxed font-light"
             >
-              DevOps
-              infrastructure, automating CI/CD pipelines, and enabling developer
-              velocity.
+              Platform Engineer architecting cloud-native infrastructure that scales.
+              Specialized in Kubernetes, Terraform, and zero-downtime CI/CD systems
+              for enterprise teams.
             </motion.p>
           </div>
 
